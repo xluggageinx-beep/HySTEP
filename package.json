@@ -1,0 +1,26 @@
+{
+  "name": "ez-step-builder",
+  "version": "1.0.0",
+  "description": "EZ-STEP 차트 빌더 웹사이트",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "create-school": "node scripts/create-school.js"
+  },
+  "keywords": [
+    "ez-step",
+    "hy-step",
+    "dental",
+    "chart",
+    "builder"
+  ],
+  "author": "EZ-STEP",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemailer": "^9.0.3"
+  }
+}

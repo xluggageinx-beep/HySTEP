@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>차트 빌더 | EZ-STEP</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root {
+    --blue:#1976D2; --blue-light:#42A5F5; --blue-dark:#0D47A1;
+    --navy:#0D1B4B; --navy-light:#1A2D6B;
+    --black:#1A1A2E; --gray:#6B7280; --gray-light:#F3F4F6;
+    --gray-mid:#E5E7EB; --white:#FFFFFF;
+    --green:#10B981; --yellow:#F59E0B; --red:#EF4444;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-light);color:var(--black);min-height:100vh;}
+
+  /* ── 헤더 ── */
+  .builder-header{
+    background:var(--white); border-bottom:1px solid var(--gray-mid);
+    padding:0 5%; height:64px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100;
+  }
+  .header-left{display:flex;align-items:center;gap:16px;}
+  .back-btn{
+    display:flex;align-items:center;gap:6px;
+    padding:8px 14px; border-radius:8px;
+    background:var(--gray-light); color:var(--navy);
+    border:1px solid var(--gray-mid);
+    font-size:14px; font-weight:500; cursor:pointer;
+    text-decoration:none; transition:all 0.2s;
+  }
+  .back-btn:hover{background:var(--gray-mid);}
+  .header-logo img{height:32px;object-fit:contain;}
+  .step-indicator{display:flex;align-items:center;gap:0;}
+  .step-dot{
+    display:flex;align-items:center;justify-content:center;
+    width:32px;height:32px;border-radius:50%;
+    font-size:13px;font-weight:700;
+    transition:all 0.3s;
+  }
+  .step-dot.active{background:var(--blue);color:var(--white);}
+  .step-dot.done{background:var(--green);color:var(--white);}
+  .step-dot.inactive{background:var(--gray-mid);color:var(--gray);}
+  .step-line{width:32px;height:2px;background:var(--gray-mid);}
+  .step-line.done{background:var(--green);}
+  .step-label{font-size:13px;font-weight:600;color:var(--blue);white-space:nowrap;}
+
+  /* ── 메인 레이아웃 ── */
+  .builder-main{max-width:860px;margin:0 auto;padding:40px 20px 80px;}
+
+  /* ── 스텝 헤더 ── */
+  .step-header{margin-bottom:32px;}
+  .step-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(25,118,210,0.1);color:var(--blue);
+    padding:5px 14px;border-radius:999px;
+    font-size:13px;font-weight:700;margin-bottom:12px;
+  }
+  .step-header h1{font-size:1.8rem;font-weight:800;color:var(--navy);margin-bottom:8px;}
+  .step-header p{font-size:0.95rem;color:var(--gray);line-height:1.7;}
+
+  /* ── 카드 공통 ── */
+  .card{
+    background:var(--white);border-radius:16px;
+    border:1px solid var(--gray-mid);
+    padding:28px; margin-bottom:20px;
+  }
+  .card-title{
+    font-size:1rem;font-weight:700;color:var(--navy);
+    margin-bottom:20px;display:flex;align-items:center;gap:8px;
+  }
+  .card-title i{color:var(--blue);}
+
+  /* ── 폼 요소 ── */
+  .form-group{margin-bottom:20px;}
+  .form-label{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:8px;display:block;}
+  .form-label span{color:var(--red);margin-left:2px;}
+  .form-input{
+    width:100%;padding:12px 16px;border-radius:10px;
+    border:1.5px solid var(--gray-mid);
+    font-size:15px;font-family:inherit;
+    color:var(--black);background:var(--white);
+    transition:border-color 0.2s;
+    outline:none;
+  }
+  .form-input:focus{border-color:var(--blue);}
+  .form-input::placeholder{color:#9CA3AF;}
+
+  /* ── 학년 토글 버튼 ── */
+  .toggle-grid{display:flex;flex-wrap:wrap;gap:10px;}
+  .toggle-btn{
+    padding:10px 22px;border-radius:10px;
+    border:1.5px solid var(--gray-mid);
+    background:var(--white);color:var(--gray);
+    font-size:14px;font-weight:600;cursor:pointer;
+    transition:all 0.2s;user-select:none;
+  }
+  .toggle-btn:hover{border-color:var(--blue-light);color:var(--blue);}
+  .toggle-btn.selected{
+    background:var(--blue);color:var(--white);
+    border-color:var(--blue);
+    box-shadow:0 4px 12px rgba(25,118,210,0.25);
+  }
+  .selected-info{
+    margin-top:10px;font-size:13px;color:var(--blue);font-weight:500;
+    display:flex;align-items:center;gap:5px;
+    min-height:20px;
+  }
+
+  /* ── 섹션 선택 ── */
+  .section-card{
+    border:1.5px solid var(--gray-mid);border-radius:14px;
+    overflow:hidden;margin-bottom:16px;transition:all 0.2s;
+  }
+  .section-card.selected{border-color:var(--blue);}
+  .section-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;cursor:pointer;
+    background:var(--white);transition:background 0.15s;
+  }
+  .section-header:hover{background:rgba(25,118,210,0.03);}
+  .section-card.selected .section-header{background:rgba(25,118,210,0.05);}
+  .section-left{display:flex;align-items:center;gap:14px;}
+  .section-num{
+    width:36px;height:36px;border-radius:10px;
+    background:var(--gray-light);color:var(--gray);
+    font-size:13px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:all 0.2s;
+  }
+  .section-card.selected .section-num{background:var(--blue);color:var(--white);}
+  .section-info h4{font-size:15px;font-weight:700;color:var(--navy);}
+  .section-info span{font-size:12px;color:var(--gray);}
+  .section-right{display:flex;align-items:center;gap:10px;}
+  .expand-btn{
+    width:28px;height:28px;border-radius:8px;
+    background:var(--gray-light);color:var(--gray);
+    border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;transition:all 0.2s;
+  }
+  .section-card.selected .expand-btn{background:rgba(25,118,210,0.1);color:var(--blue);}
+
+  /* ── 토글 스위치 ── */
+  .toggle-switch{
+    position:relative;width:44px;height:24px;cursor:pointer;
+  }
+  .toggle-switch input{opacity:0;width:0;height:0;}
+  .toggle-slider{
+    position:absolute;inset:0;border-radius:999px;
+    background:var(--gray-mid);transition:0.3s;
+  }
+  .toggle-slider::before{
+    content:'';position:absolute;
+    width:18px;height:18px;
+    left:3px;top:3px;border-radius:50%;
+    background:var(--white);transition:0.3s;
+    box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  }
+  input:checked + .toggle-slider{background:var(--blue);}
+  input:checked + .toggle-slider::before{transform:translateX(20px);}
+
+  /* ── 서브 항목 ── */
+  .section-items{
+    padding:0 20px 16px;display:none;
+    border-top:1px solid var(--gray-mid);
+    background:rgba(249,250,251,0.5);
+  }
+  .section-items.open{display:block;}
+  .items-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-top:12px;}
+  .item-check{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 12px;border-radius:8px;
+    cursor:pointer;transition:background 0.15s;
+    font-size:13px;color:var(--black);
+  }
+  .item-check:hover{background:rgba(25,118,210,0.06);}
+  .item-check input[type=checkbox]{
+    width:16px;height:16px;border-radius:4px;
+    accent-color:var(--blue);cursor:pointer;flex-shrink:0;
+  }
+
+  /* ── 부가기능 카드 ── */
+  .addon-card{
+    border:1.5px solid var(--gray-mid);border-radius:14px;
+    overflow:hidden;margin-bottom:16px;
+    transition:all 0.2s;
+  }
+  .addon-card.active{border-color:var(--blue);}
+  .addon-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 24px;
+  }
+  .addon-left{display:flex;align-items:center;gap:16px;}
+  .addon-icon{
+    width:48px;height:48px;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;color:var(--white);
+    flex-shrink:0;
+  }
+  .addon-info h4{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .addon-info p{font-size:13px;color:var(--gray);line-height:1.5;}
+  .addon-badge{
+    display:inline-block;margin-top:6px;
+    padding:2px 10px;border-radius:999px;
+    font-size:11px;font-weight:700;
+  }
+  .badge-addon{background:rgba(245,158,11,0.12);color:#D97706;}
+  .badge-future{background:rgba(107,114,128,0.12);color:var(--gray);}
+
+  /* ── 요약 카드 ── */
+  .summary-section{margin-bottom:20px;}
+  .summary-label{font-size:13px;font-weight:600;color:var(--gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
+  .summary-value{font-size:15px;font-weight:600;color:var(--navy);}
+  .summary-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .chip{
+    padding:4px 12px;border-radius:999px;font-size:13px;font-weight:500;
+    background:rgba(25,118,210,0.08);color:var(--blue);
+  }
+  .chip.section-chip{background:rgba(16,185,129,0.08);color:var(--green);}
+  .chip.addon-chip{background:rgba(245,158,11,0.1);color:#D97706;}
+
+  /* ── 미리보기 박스 ── */
+  .preview-box{
+    background:linear-gradient(135deg,var(--navy),var(--blue-dark));
+    border-radius:16px;padding:28px;color:var(--white);
+    margin-bottom:20px;
+  }
+  .preview-box h3{font-size:1.1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+  .preview-row{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+  .preview-row:last-child{border-bottom:none;}
+  .preview-key{font-size:13px;color:rgba(255,255,255,0.6);flex-shrink:0;min-width:100px;}
+  .preview-val{font-size:14px;font-weight:600;color:var(--white);text-align:right;}
+
+  /* ── 하단 버튼 바 ── */
+  .btn-bar{
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--white);border-top:1px solid var(--gray-mid);
+    padding:16px 5%;display:flex;justify-content:space-between;align-items:center;
+    z-index:90;
+  }
+  .btn-prev{
+    display:flex;align-items:center;gap:8px;
+    padding:12px 24px;border-radius:10px;
+    background:var(--gray-light);color:var(--navy);
+    border:1px solid var(--gray-mid);
+    font-size:14px;font-weight:600;cursor:pointer;
+    transition:all 0.2s;
+  }
+  .btn-prev:hover{background:var(--gray-mid);}
+  .btn-next{
+    display:flex;align-items:center;gap:8px;
+    padding:13px 36px;border-radius:10px;
+    background:var(--blue);color:var(--white);
+    border:none;font-size:15px;font-weight:700;cursor:pointer;
+    transition:all 0.2s;box-shadow:0 4px 16px rgba(25,118,210,0.3);
+  }
+  .btn-next:hover{background:var(--blue-dark);transform:translateY(-1px);}
+  .btn-next:disabled{background:var(--gray-mid);color:var(--gray);box-shadow:none;cursor:not-allowed;transform:none;}
+
+  /* ── 완료 화면 ── */
+  .success-screen{text-align:center;padding:60px 20px;}
+  .success-icon{
+    width:80px;height:80px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),#34D399);
+    display:flex;align-items:center;justify-content:center;
+    font-size:32px;color:var(--white);
+    margin:0 auto 24px;
+    box-shadow:0 8px 32px rgba(16,185,129,0.3);
+  }
+  .success-screen h2{font-size:1.8rem;font-weight:800;color:var(--navy);margin-bottom:12px;}
+  .success-screen p{font-size:1rem;color:var(--gray);line-height:1.8;max-width:500px;margin:0 auto 32px;}
+  .order-id-box{
+    display:inline-block;
+    background:var(--gray-light);border:1px dashed var(--gray-mid);
+    border-radius:10px;padding:12px 28px;
+    font-size:1.1rem;font-weight:700;color:var(--navy);
+    letter-spacing:2px;margin-bottom:32px;font-family:'Inter',monospace;
+  }
+  .btn-success-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn-success{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 28px;border-radius:10px;
+    font-size:14px;font-weight:700;cursor:pointer;
+    text-decoration:none;transition:all 0.2s;border:none;
+  }
+  .btn-success-primary{background:var(--blue);color:var(--white);box-shadow:0 4px 12px rgba(25,118,210,0.3);}
+  .btn-success-primary:hover{background:var(--blue-dark);}
+  .btn-success-outline{background:var(--white);color:var(--navy);border:1.5px solid var(--gray-mid);}
+  .btn-success-outline:hover{border-color:var(--blue);color:var(--blue);}
+
+  /* ── 반응형 ── */
+  @media(max-width:600px){
+    .items-grid{grid-template-columns:1fr;}
+    .step-indicator{display:none;}
+    .builder-main{padding:24px 16px 80px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header class="builder-header">
+  <div class="header-left">
+    <a href="/" class="back-btn" id="backBtn"><i class="fa-solid fa-arrow-left"></i> 뒤로</a>
+    <a href="/" class="header-logo"><img src="images/logo-ezstep.png" alt="EZ-STEP"/></a>
+  </div>
+  <div class="step-indicator" id="stepIndicator">
+    <div class="step-dot active" id="dot1">1</div>
+    <div class="step-line" id="line12"></div>
+    <div class="step-dot inactive" id="dot2">2</div>
+    <div class="step-line" id="line23"></div>
+    <div class="step-dot inactive" id="dot3">3</div>
+    <div class="step-line" id="line34"></div>
+    <div class="step-dot inactive" id="dot4">4</div>
+  </div>
+  <span class="step-label" id="stepLabel">STEP. 1 / 4</span>
+</header>
+
+<!-- 메인 -->
+<main class="builder-main" id="mainContent"></main>
+
+<!-- 하단 버튼 -->
+<div class="btn-bar" id="btnBar">
+  <button class="btn-prev" id="btnPrev" onclick="goPrev()"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+  <button class="btn-next" id="btnNext" onclick="goNext()">다음 단계 <i class="fa-solid fa-arrow-right"></i></button>
+</div>
+
+<script>
+// ── 상태 관리 ──────────────────────────────────────────────────────────
+const state = {
+  currentStep: 1,
+  totalSteps: 4,
+  schoolName: '',
+  grades: [],
+  sections: {
+    1: { selected: true,  name: '치과병력 및 건강행태', eng: 'Dental Hygiene Assessment', items: {
+      '치과 방문 경험 및 치주치료 이력': true,
+      '칫솔질 습관 (빈도/방법)': true,
+      '구강관리용품 사용 현황': true,
+      '흡연/음주/영양 습관': true,
+      '증상 체크리스트': true,
+      '치과공포도 조사 (자동 점수)': true,
+      'Dental Hygiene Plan': true
+    }},
+    2: { selected: true,  name: '전신병력 및 복용약물', eng: 'Medical History & Medication', items: {
+      '당뇨병 (혈당 수치)': true,
+      '심혈관계 질환': true,
+      '호흡기 질환': true,
+      '근골격계 및 기타 질환': true,
+      '임신 (단계/예정 출산일)': true,
+      '복용 약물 및 부작용': true
+    }},
+    3: { selected: true,  name: '구강 내/외 검사', eng: 'Intra & Extra Oral Examination', items: {
+      'Face & Neck': true,
+      'Lymph Nodes': true,
+      'TMJ': true,
+      'Oral Mucosa & Alveolar Ridge': true,
+      'Palate & Oral Pharynx': true,
+      'Tongue & Floor of Mouth': true,
+      'Gingival Characteristics': true,
+      '치식 다이어그램 연동': true
+    }},
+    4: { selected: true,  name: '구강위생관리 PI 측정', eng: 'Oral Hygiene Care - PI', items: {
+      'PI 측정 인터랙티브 다이어그램': true,
+      "O'Leary Plaque Index 자동 계산": true,
+      '초점 치아 선택 (Focus Teeth)': true,
+      '미생물 검사': true,
+      '구취 측정 (Halitosis)': true,
+      'CO 측정 (흡연자용)': true
+    }},
+    5: { selected: true,  name: '근거중심 치위생판단', eng: 'Evidence-based Judgement', items: {
+      '전신건강위험도 평가': true,
+      '불안/스트레스 평가': true,
+      '구강건강 지식/책임감 평가': true,
+      '머리와 목의 동통 평가': true,
+      '치주 및 피부 점막 평가': true,
+      '치열 및 인상 평가': true,
+      '대상자 성격특성 관찰': true
+    }},
+    6: { selected: true,  name: '치위생 관리 목표 및 계획', eng: 'Client Goals', items: {
+      '진단번호/목표번호별 입력': true,
+      '원인/목표/관리계획 입력': true,
+      '동적 목표 추가/삭제': true
+    }},
+    7: { selected: true,  name: '근거중심 치위생수행', eng: 'Evidence-based Implementation', items: {
+      '수행 내용 기록 (넓은 노트)': true,
+      '대상자 이름 입력': true
+    }},
+    8: { selected: true,  name: '치위생 평가', eng: 'Dental Hygiene Evaluation', items: {
+      '2차 내원 체크리스트': true,
+      '3차 내원 체크리스트': true,
+      '칫솔질 실천 유무': true,
+      '구강관리용품 사용 유무': true,
+      '흡연량/음주량 변화': true
+    }},
+    9: { selected: true,  name: '목표 달성도 평가 및 자기평가', eng: 'Goal Achievement', items: {
+      'Met / Partial met / Unmet 평가': true,
+      '달성근거 입력': true,
+      '구강건강 유지관리 간격': true,
+      '자기평가 (잘한 점/부족한 점)': true,
+      '전체 Met 시 축하 효과 🎉': true
+    }}
+  },
+  addons: {
+    dashboard:  { label:'관리자 대시보드', icon:'fa-chart-line', color:'#1976D2', enabled:false,
+      desc:'교수자가 학생 실습 진행 현황을 실시간 모니터링하고 차트를 일괄 관리합니다.' },
+    ai:         { label:'AI 채팅 어시스턴트', icon:'fa-robot', color:'#7C3AED', enabled:false,
+      desc:'Google Gemini 연동 AI가 환자 데이터 기반 실시간 임상 가이드를 제공합니다.' },
+    calc:       { label:'데이터 자동 계산', icon:'fa-calculator', color:'#059669', enabled:true,
+      desc:'PI, Calculus rate 등 복잡한 임상 지표를 자동 연산합니다.' },
+    photo:      { label:'멀티미디어 사진 업로드', icon:'fa-camera', color:'#D97706', enabled:false,
+      desc:'구강 내외 사진, 방사선 사진 등 시각 자료를 차트에 첨부합니다.' },
+    profEval:   { label:'교수 평가', icon:'fa-user-graduate', color:'#0F766E', enabled:false,
+      desc:'교수 서명란, P/F 평가, 사유 입력란이 포함된 교수 평가 모듈을 차트에 추가합니다.' },
+    survey:     { label:'사전문진 링크 생성', icon:'fa-link', color:'#9333EA', enabled:false,
+      desc:'대상자가 내원 전 스마트폰으로 문진을 작성할 수 있는 개인 링크를 생성합니다.' },
+    reservation:{ label:'예약 시스템 연동', icon:'fa-calendar-check', color:'#DC2626', enabled:false,
+      desc:'대상자 예약부터 차트 작성까지 원스톱 연결 (추후 지원 예정).' }
+  }
+};
+
+// ── 렌더링 ─────────────────────────────────────────────────────────────
+function render() {
+  const main = document.getElementById('mainContent');
+  updateStepUI();
+  switch(state.currentStep) {
+    case 1: main.innerHTML = renderStep1(); bindStep1(); break;
+    case 2: main.innerHTML = renderStep2(); bindStep2(); break;
+    case 3: main.innerHTML = renderStep3(); bindStep3(); break;
+    case 4: main.innerHTML = renderStep4(); break;
+  }
+}
+
+// ── STEP 1 ─────────────────────────────────────────────────────────────
+function renderStep1() {
+  return `
+  <div class="step-header">
+    <div class="step-tag"><i class="fa-solid fa-1"></i> STEP. 1</div>
+    <h1>기본 정보를 입력해주세요</h1>
+    <p>학교 이름과 사용할 학년을 선택하세요. 선택된 학년 수에 맞게 차트 시스템이 구성됩니다.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-school"></i> 소속 학교</div>
+    <div class="form-group">
+      <label class="form-label">학교명 <span>*</span></label>
+      <input type="text" class="form-input" id="schoolInput"
+        placeholder="예) 선문대학교, 연세대학교" value="${state.schoolName}" maxlength="30"/>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-graduation-cap"></i> 학년 선택</div>
+    <label class="form-label">사용할 학년을 모두 선택하세요 (복수 선택 가능) <span>*</span></label>
+    <div class="toggle-grid" id="gradeToggle">
+      ${['1학년','2학년','3학년','4학년'].map(g => `
+        <button class="toggle-btn ${state.grades.includes(g)?'selected':''}" data-grade="${g}">${g}</button>
+      `).join('')}
+    </div>
+    <div class="selected-info" id="gradeInfo">
+      ${state.grades.length > 0
+        ? `<i class="fa-solid fa-circle-check"></i> ${state.grades.join(', ')} 선택됨 (총 ${state.grades.length}개 학년)`
+        : ''}
+    </div>
+  </div>
+  `;
+}
+
+function bindStep1() {
+  document.getElementById('schoolInput').addEventListener('input', e => {
+    state.schoolName = e.target.value.trim();
+    updateNextBtn();
+  });
+  document.querySelectorAll('[data-grade]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const g = btn.dataset.grade;
+      if (state.grades.includes(g)) state.grades = state.grades.filter(x => x !== g);
+      else state.grades.push(g);
+      state.grades.sort();
+      btn.classList.toggle('selected', state.grades.includes(g));
+      const info = document.getElementById('gradeInfo');
+      info.innerHTML = state.grades.length > 0
+        ? `<i class="fa-solid fa-circle-check"></i> ${state.grades.join(', ')} 선택됨 (총 ${state.grades.length}개 학년)`
+        : '';
+      updateNextBtn();
+    });
+  });
+  updateNextBtn();
+}
+
+// ── STEP 2 ─────────────────────────────────────────────────────────────
+function renderStep2() {
+  let html = `
+  <div class="step-header">
+    <div class="step-tag"><i class="fa-solid fa-2"></i> STEP. 2</div>
+    <h1>차트 섹션을 선택하세요</h1>
+    <p>포함할 섹션을 선택하고, 각 섹션 내 세부 항목도 개별적으로 설정할 수 있습니다.</p>
+  </div>
+  <div class="card" style="padding:16px 20px;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span style="font-size:14px;color:var(--gray);">선택된 섹션: <strong style="color:var(--navy);" id="selectedCount">${Object.values(state.sections).filter(s=>s.selected).length}</strong> / 9개</span>
+      <div style="display:flex;gap:8px;">
+        <button onclick="selectAllSections(true)" style="padding:6px 14px;border-radius:8px;border:1px solid var(--gray-mid);background:var(--white);font-size:13px;cursor:pointer;font-weight:600;color:var(--blue);">전체 선택</button>
+        <button onclick="selectAllSections(false)" style="padding:6px 14px;border-radius:8px;border:1px solid var(--gray-mid);background:var(--white);font-size:13px;cursor:pointer;font-weight:600;color:var(--gray);">전체 해제</button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  for (let i = 1; i <= 9; i++) {
+    const sec = state.sections[i];
+    const itemKeys = Object.keys(sec.items);
+    const selectedItems = itemKeys.filter(k => sec.items[k]).length;
+    html += `
+    <div class="section-card ${sec.selected?'selected':''}" id="secCard${i}">
+      <div class="section-header" onclick="toggleSection(${i})">
+        <div class="section-left">
+          <div class="section-num" id="secNum${i}">S${i}</div>
+          <div class="section-info">
+            <h4>Section ${i} · ${sec.name}</h4>
+            <span>${sec.eng} · 세부항목 ${selectedItems}/${itemKeys.length}개</span>
+          </div>
+        </div>
+        <div class="section-right">
+          <button class="expand-btn" id="expandBtn${i}" onclick="event.stopPropagation();expandSection(${i})">
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" ${sec.selected?'checked':''} id="secToggle${i}"
+              onchange="onSectionToggle(${i},this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="section-items" id="secItems${i}">
+        <div class="items-grid">
+          ${itemKeys.map(k => `
+            <label class="item-check">
+              <input type="checkbox" ${sec.items[k]?'checked':''}
+                onchange="onItemToggle(${i},'${k}',this.checked)"/>
+              ${k}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+  return html;
+}
+
+function bindStep2() { updateNextBtn(); }
+
+function toggleSection(i) {
+  const sec = state.sections[i];
+  sec.selected = !sec.selected;
+  document.getElementById(`secToggle${i}`).checked = sec.selected;
+  document.getElementById(`secCard${i}`).classList.toggle('selected', sec.selected);
+  document.getElementById(`secNum${i}`).style.background = sec.selected ? 'var(--blue)' : '';
+  document.getElementById(`secNum${i}`).style.color = sec.selected ? 'white' : '';
+  updateCount();
+}
+function onSectionToggle(i, checked) {
+  state.sections[i].selected = checked;
+  document.getElementById(`secCard${i}`).classList.toggle('selected', checked);
+  updateCount();
+}
+function expandSection(i) {
+  const items = document.getElementById(`secItems${i}`);
+  const btn = document.getElementById(`expandBtn${i}`);
+  const open = items.classList.toggle('open');
+  btn.innerHTML = open ? '<i class="fa-solid fa-chevron-up"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
+}
+function onItemToggle(i, key, checked) {
+  state.sections[i].items[key] = checked;
+}
+function selectAllSections(val) {
+  for (let i = 1; i <= 9; i++) {
+    state.sections[i].selected = val;
+    const toggle = document.getElementById(`secToggle${i}`);
+    const card = document.getElementById(`secCard${i}`);
+    if (toggle) toggle.checked = val;
+    if (card) card.classList.toggle('selected', val);
+  }
+  updateCount();
+}
+function updateCount() {
+  const el = document.getElementById('selectedCount');
+  if (el) el.textContent = Object.values(state.sections).filter(s=>s.selected).length;
+  updateNextBtn();
+}
+
+// ── STEP 3 ─────────────────────────────────────────────────────────────
+function renderStep3() {
+  const addonColors = {
+    dashboard:'linear-gradient(135deg,#1976D2,#42A5F5)',
+    ai:'linear-gradient(135deg,#7C3AED,#A78BFA)',
+    calc:'linear-gradient(135deg,#059669,#34D399)',
+    photo:'linear-gradient(135deg,#D97706,#FCD34D)',
+    profEval:'linear-gradient(135deg,#0F766E,#2DD4BF)',
+    survey:'linear-gradient(135deg,#9333EA,#C084FC)',
+    reservation:'linear-gradient(135deg,#DC2626,#F87171)'
+  };
+  const badges = {
+    dashboard:'부가기능', ai:'부가기능', calc:'기본 포함', photo:'부가기능',
+    profEval:'부가기능', survey:'부가기능', reservation:'추후 지원'
+  };
+
+  let html = `
+  <div class="step-header">
+    <div class="step-tag"><i class="fa-solid fa-3"></i> STEP. 3</div>
+    <h1>부가기능을 선택하세요</h1>
+    <p>기본 차트 외에 추가할 기능을 선택하세요. 각 기능은 추후 선택형 과금 패키지로 제공될 예정입니다.</p>
+  </div>
+  <div class="card" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);">
+    <div style="display:flex;align-items:flex-start;gap:12px;">
+      <i class="fa-solid fa-circle-info" style="color:#D97706;margin-top:2px;"></i>
+      <p style="font-size:13px;color:#92400E;line-height:1.7;">
+        <strong>안내:</strong> 관리자 대시보드, AI 채팅 어시스턴트, 사진 업로드, 교수 평가, 사전문진 링크 생성, 예약 시스템 연동은 추후 <strong>선택형 구독 패키지</strong>로 제공될 예정입니다. 현재는 포함 여부만 선택해주세요.
+      </p>
+    </div>
+  </div>
+  `;
+
+  const circleNums = ['②','③','④','⑤','⑥','⑦','⑧'];
+  Object.entries(state.addons).forEach(([key, addon], idx) => {
+    const badgeClass = addon.enabled ? 'badge-addon' : 'badge-future';
+    const badgeLabel = addon.enabled ? (badges[key] === '기본 포함' ? '기본 포함' : '선택됨') : badges[key];
+    html += `
+    <div class="addon-card ${addon.enabled?'active':''}" id="addonCard_${key}">
+      <div class="addon-header">
+        <div class="addon-left">
+          <div class="addon-icon" style="background:${addonColors[key]};">
+            <i class="fa-solid ${addon.icon}"></i>
+          </div>
+          <div class="addon-info">
+            <h4>${circleNums[idx]} ${addon.label}</h4>
+            <p>${addon.desc}</p>
+            <span class="addon-badge ${badgeClass}" id="addonBadge_${key}">${badgeLabel}</span>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" ${addon.enabled?'checked':''} id="addonToggle_${key}"
+            ${key==='reservation'?'disabled':''}
+            onchange="onAddonToggle('${key}',this.checked)"/>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function bindStep3() {
+  updateNextBtn();
+}
+
+function onAddonToggle(key, checked) {
+  state.addons[key].enabled = checked;
+  const card = document.getElementById(`addonCard_${key}`);
+  const badge = document.getElementById(`addonBadge_${key}`);
+  if (card) card.classList.toggle('active', checked);
+  if (badge) {
+    const defaultLabels = {dashboard:'부가기능',ai:'부가기능',calc:'기본 포함',photo:'부가기능',profEval:'부가기능',survey:'부가기능',reservation:'추후 지원'};
+    badge.textContent = checked ? '선택됨' : defaultLabels[key];
+    badge.className = 'addon-badge ' + (checked ? 'badge-addon' : 'badge-future');
+  }
+}
+
+// ── STEP 4 ─────────────────────────────────────────────────────────────
+function renderStep4() {
+  const selectedSections = Object.entries(state.sections).filter(([,s])=>s.selected);
+  const enabledAddons = Object.entries(state.addons).filter(([,a])=>a.enabled);
+
+  return `
+  <div class="step-header">
+    <div class="step-tag"><i class="fa-solid fa-4"></i> STEP. 4</div>
+    <h1>구성을 확인하고 신청하세요</h1>
+    <p>선택하신 차트 구성을 최종 확인하세요. 미리보기로 실제 동작을 확인할 수도 있습니다.</p>
+  </div>
+
+  <div class="preview-box">
+    <h3><i class="fa-solid fa-list-check"></i> 차트 구성 요약</h3>
+    <div class="preview-row">
+      <span class="preview-key">학교명</span>
+      <span class="preview-val">${state.schoolName}</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">학년</span>
+      <span class="preview-val">${state.grades.join(', ')} (${state.grades.length}개 학년)</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">선택 섹션</span>
+      <span class="preview-val">${selectedSections.length} / 9개</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">부가기능</span>
+      <span class="preview-val">${enabledAddons.length > 0 ? enabledAddons.map(([,a])=>a.label).join(', ') : '없음'}</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-layer-group"></i> 선택된 섹션</div>
+    <div class="summary-chips">
+      ${selectedSections.map(([i,s]) => `<span class="chip section-chip">Section ${i}</span>`).join('')}
+    </div>
+  </div>
+
+  ${enabledAddons.length > 0 ? `
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-puzzle-piece"></i> 선택된 부가기능</div>
+    <div class="summary-chips">
+      ${enabledAddons.map(([,a]) => `<span class="chip addon-chip">${a.label}</span>`).join('')}
+    </div>
+  </div>` : ''}
+
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-eye"></i> 미리보기</div>
+    <p style="font-size:14px;color:var(--gray);margin-bottom:16px;line-height:1.7;">
+      실제 차트가 어떻게 보이는지 미리 확인해보세요.<br/>
+      <strong>대상자 정보는 임시 고정값</strong>(홍길동 / 2000.01.01 / 010-1234-5678)으로 표시되며, 데이터는 저장되지 않습니다.
+    </p>
+    <button onclick="openPreview()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:10px;background:rgba(25,118,210,0.08);color:var(--blue);border:1.5px solid rgba(25,118,210,0.2);font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> 별도 탭에서 미리보기 열기
+    </button>
+  </div>
+
+  <div class="card" style="border-color:rgba(25,118,210,0.3);background:rgba(25,118,210,0.02);">
+    <div class="card-title"><i class="fa-solid fa-user-pen"></i> 신청자 정보</div>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:20px;line-height:1.7;">
+      견적 확인 및 납품 안내를 위해 담당자 정보를 입력해주세요.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">이름 <span>*</span></label>
+        <input type="text" class="form-input" id="contactName" placeholder="홍길동" maxlength="20"/>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">소속 <span>*</span></label>
+        <input type="text" class="form-input" id="contactOrg" placeholder="○○대학교 치위생학과" maxlength="40"/>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">이메일 <span>*</span></label>
+        <input type="email" class="form-input" id="contactEmail" placeholder="example@university.ac.kr"/>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">연락처</label>
+        <input type="tel" class="form-input" id="contactPhone" placeholder="010-0000-0000" maxlength="20"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:rgba(25,118,210,0.3);background:rgba(25,118,210,0.02);">
+    <div class="card-title"><i class="fa-solid fa-paper-plane"></i> 차트 생성 신청</div>
+    <p style="font-size:14px;color:var(--gray);margin-bottom:20px;line-height:1.7;">
+      완료되면 담당자가 확인 후 학교 전용 차트 링크를 전달해드립니다.
+    </p>
+    <button onclick="submitOrder()" id="submitBtn" style="display:inline-flex;align-items:center;gap:10px;padding:14px 40px;border-radius:12px;background:var(--blue);color:white;border:none;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(25,118,210,0.3);transition:all 0.2s;">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> 차트 생성 신청하기
+    </button>
+  </div>
+  `;
+}
+
+function openPreview() {
+  const params = encodeURIComponent(JSON.stringify({
+    schoolName: state.schoolName,
+    grades: state.grades,
+    sections: Object.fromEntries(
+      Object.entries(state.sections).map(([k,v]) => [k, { selected: v.selected, items: v.items }])
+    ),
+    addons: Object.fromEntries(Object.entries(state.addons).map(([k,v]) => [k, v.enabled]))
+  }));
+  window.open(`/preview?config=${params}`, '_blank');
+}
+
+async function submitOrder() {
+  // 개인정보 검증
+  const contactName  = document.getElementById('contactName')?.value.trim();
+  const contactOrg   = document.getElementById('contactOrg')?.value.trim();
+  const contactEmail = document.getElementById('contactEmail')?.value.trim();
+  const contactPhone = document.getElementById('contactPhone')?.value.trim();
+
+  if (!contactName || !contactOrg || !contactEmail) {
+    alert('신청자 정보(이름, 소속, 이메일)를 모두 입력해주세요.');
+    return;
+  }
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(contactEmail)) {
+    alert('올바른 이메일 주소를 입력해주세요.');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 처리 중...';
+
+  const orderData = {
+    schoolName: state.schoolName,
+    grades: state.grades,
+    sections: Object.fromEntries(
+      Object.entries(state.sections)
+        .filter(([,s]) => s.selected)
+        .map(([k,s]) => [k, { name: s.name, items: Object.fromEntries(Object.entries(s.items).filter(([,v])=>v)) }])
+    ),
+    addons: Object.fromEntries(Object.entries(state.addons).map(([k,v]) => [k, v.enabled])),
+    contact: { name: contactName, org: contactOrg, email: contactEmail, phone: contactPhone }
+  };
+
+  try {
+    const res = await fetch('/api/submit-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+    const data = await res.json();
+    if (data.success) showSuccess(data.orderId);
+    else throw new Error(data.error);
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> 차트 생성 신청하기';
+    alert('오류가 발생했습니다. 다시 시도해주세요.\n' + e.message);
+  }
+}
+
+function showSuccess(orderId) {
+  document.getElementById('mainContent').innerHTML = `
+  <div class="success-screen">
+    <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+    <h2>신청이 완료되었습니다! 🎉</h2>
+    <p>
+      <strong>${state.schoolName}</strong> 전용 차트 생성 신청이 접수되었습니다.<br/>
+      담당자가 확인 후 학교 전용 링크를 안내드립니다.
+    </p>
+    <div class="order-id-box">${orderId}</div>
+    <div class="btn-success-group">
+      <a href="/" class="btn-success btn-success-outline"><i class="fa-solid fa-house"></i> 홈으로</a>
+      <button class="btn-success btn-success-primary" onclick="openPreview()">
+        <i class="fa-solid fa-eye"></i> 미리보기 열기
+      </button>
+    </div>
+  </div>`;
+  document.getElementById('btnBar').style.display = 'none';
+}
+
+// ── 네비게이션 ─────────────────────────────────────────────────────────
+function goNext() {
+  if (state.currentStep < state.totalSteps) {
+    state.currentStep++;
+    render();
+    window.scrollTo(0,0);
+  }
+}
+function goPrev() {
+  if (state.currentStep > 1) {
+    state.currentStep--;
+    render();
+    window.scrollTo(0,0);
+  } else {
+    window.location.href = '/';
+  }
+}
+
+function updateStepUI() {
+  const s = state.currentStep;
+  document.getElementById('stepLabel').textContent = `STEP. ${s} / ${state.totalSteps}`;
+  document.getElementById('backBtn').innerHTML = s > 1
+    ? '<i class="fa-solid fa-arrow-left"></i> 이전'
+    : '<i class="fa-solid fa-arrow-left"></i> 뒤로';
+
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById(`dot${i}`);
+    if (i < s) { dot.className = 'step-dot done'; dot.innerHTML = '<i class="fa-solid fa-check" style="font-size:11px"></i>'; }
+    else if (i === s) { dot.className = 'step-dot active'; dot.textContent = i; }
+    else { dot.className = 'step-dot inactive'; dot.textContent = i; }
+  }
+  for (let i = 1; i <= 3; i++) {
+    const line = document.getElementById(`line${i}${i+1}`);
+    if (line) line.className = 'step-line' + (i < s ? ' done' : '');
+  }
+
+  const prevBtn = document.getElementById('btnPrev');
+  const nextBtn = document.getElementById('btnNext');
+  prevBtn.style.visibility = 'visible';
+  if (s === state.totalSteps) {
+    nextBtn.style.display = 'none';
+  } else {
+    nextBtn.style.display = 'flex';
+    nextBtn.innerHTML = s < state.totalSteps - 1
+      ? '다음 단계 <i class="fa-solid fa-arrow-right"></i>'
+      : '최종 확인 <i class="fa-solid fa-arrow-right"></i>';
+  }
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById('btnNext');
+  if (!btn) return;
+  if (state.currentStep === 1) {
+    const ok = state.schoolName.length > 0 && state.grades.length > 0;
+    btn.disabled = !ok;
+  } else if (state.currentStep === 2) {
+    const ok = Object.values(state.sections).some(s => s.selected);
+    btn.disabled = !ok;
+  } else {
+    btn.disabled = false;
+  }
+}
+
+// ── 초기 실행 ──────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

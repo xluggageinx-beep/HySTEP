@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>차트 미리보기 | Hy-STEP</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  body { font-family: 'Noto Sans KR', sans-serif; }
+  :root { --primary: #0059D7; }
+
+  /* ── 미리보기 배너 ── */
+  .preview-banner {
+    position: sticky; top: 0; z-index: 200;
+    background: linear-gradient(90deg, #F59E0B, #D97706);
+    color: white; padding: 10px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 14px; font-weight: 600;
+  }
+
+  /* ── 섹션 버튼 (기존 차트웹 동일) ── */
+  .section-button {
+    background: white;
+    border: 2px solid #0059D7;
+    padding: 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+  }
+  .section-button:hover {
+    background: #0059D7; color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,89,215,0.3);
+  }
+  .section-number {
+    background: #0059D7; color: white;
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 18px; flex-shrink: 0;
+  }
+  .section-button:hover .section-number { background: white; color: #0059D7; }
+
+  /* ── 모달 오버레이 ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 500;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: white; border-radius: 16px;
+    width: min(900px, 96vw); max-height: 92vh;
+    overflow-y: auto;
+    margin: auto;
+    padding: 0;
+  }
+  .modal-sticky-bar {
+    position: sticky; top: 0; z-index: 10;
+    background: white; padding: 12px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-content { padding: 24px 28px 32px; }
+
+  /* ── 기존 차트웹 section-content 스타일 ── */
+  .section-content {}
+  .btn-primary {
+    background: #0059D7; color: white;
+    padding: 8px 20px; border-radius: 8px;
+    border: none; font-size: 14px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary:hover { background: #0047b3; }
+  .btn-secondary {
+    background: #f3f4f6; color: #374151;
+    padding: 8px 20px; border-radius: 8px;
+    border: 1px solid #e5e7eb; font-size: 14px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-secondary:hover { background: #e5e7eb; }
+
+  /* ── 목표 달성도 버튼 ── */
+  .goal-status-btn {
+    padding: 10px 20px; border-radius: 8px; font-weight: 600;
+    border: 2px solid #e5e7eb; background: white; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .goal-status-btn[data-status="selected"][data-type="met"] {
+    background: #10B981; color: white; border-color: #10B981;
+  }
+  .goal-status-btn[data-status="selected"][data-type="partial"] {
+    background: #F59E0B; color: white; border-color: #F59E0B;
+  }
+  .goal-status-btn[data-status="selected"][data-type="unmet"] {
+    background: #EF4444; color: white; border-color: #EF4444;
+  }
+
+  /* ── 저장 불가 안내 ── */
+  .nosave-note {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 24px; padding: 10px 16px;
+    background: rgba(245,158,11,0.1); border-radius: 8px;
+    font-size: 13px; color: #D97706; font-weight: 500;
+    border: 1px solid rgba(245,158,11,0.3);
+  }
+
+  /* ── 반응형 ── */
+  @media (max-width: 600px) {
+    .modal-content { padding: 16px; }
+    .grid-cols-2 { grid-template-columns: 1fr !important; }
+  }
+
+  /* ── PI 다이어그램 ── */
+  .pi-cell-wrap {
+    position: relative; width: 48px; height: 48px; margin: auto;
+  }
+  .pi-surf {
+    position: absolute; width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid #d1d5db; cursor: pointer; transition: all 0.15s;
+    background: white;
+  }
+  .pi-surf:hover { border-color: #0059D7; }
+  .pi-surf.hit { background: #EF4444; border-color: #EF4444; }
+  .pi-surf.top  { top: 2px;  left: 50%; transform: translateX(-50%); }
+  .pi-surf.right{ top: 50%; right: 2px;  transform: translateY(-50%); }
+  .pi-surf.bottom{ bottom: 2px; left: 50%; transform: translateX(-50%); }
+  .pi-surf.left { top: 50%; left: 2px;  transform: translateY(-50%); }
+</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- 미리보기 배너 -->
+<div class="preview-banner">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <i class="fa-solid fa-eye"></i>
+    <span>미리보기 모드 — 데이터 저장 없음 | 대상자: 홍길동 (임시 고정)</span>
+  </div>
+  <button onclick="window.close()" style="padding:5px 14px;border-radius:7px;background:rgba(255,255,255,0.25);color:white;border:1px solid rgba(255,255,255,0.4);font-size:13px;font-weight:600;cursor:pointer;">
+    <i class="fa-solid fa-xmark"></i> 닫기
+  </button>
+</div>
+
+<!-- 메인 컨테이너 -->
+<div class="container mx-auto px-4 py-8" style="max-width:960px;">
+
+  <!-- 상단 헤더 (기존 차트웹 동일 구조) -->
+  <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+    <div class="flex justify-between items-start mb-4" style="gap:8px;flex-wrap:wrap;">
+      <h1 class="text-3xl font-bold" style="color:#0059D7;flex:1;min-width:0;">
+        <i class="fas fa-file-medical mr-2"></i>
+        <span id="chartTitle">Hy-STEP 임상실습 차트</span>
+      </h1>
+      <div class="flex gap-3" style="flex-shrink:0;flex-wrap:wrap;">
+        <!-- Photo 버튼 (차트웹 동일: 초록색) — addon.photo 활성 시만 표시 -->
+        <button id="pvPhotoBtn" onclick="openPhotoModalPv()" style="display:none;background:#10B981;color:white;border:none;border-radius:8px;padding:9px 18px;font-size:14px;font-weight:700;cursor:pointer;align-items:center;gap:6px;">
+          <i class="fas fa-camera"></i> Photo
+        </button>
+        <button style="background:#0059D7;color:white;border:none;border-radius:8px;padding:9px 18px;font-size:14px;font-weight:700;cursor:not-allowed;display:flex;align-items:center;gap:6px;opacity:0.5;" title="미리보기 모드에서는 저장되지 않습니다">
+          <i class="fas fa-save"></i> 저장하기
+        </button>
+        <button onclick="window.close()" style="background:#6b7280;color:white;border:none;border-radius:8px;padding:9px 18px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <i class="fas fa-arrow-left"></i> 닫기
+        </button>
+      </div>
+    </div>
+
+    <!-- 대상자 정보 (기존 차트웹 동일) -->
+    <div class="bg-blue-50 rounded-lg p-4">
+      <h2 class="text-xl font-semibold mb-3" style="color:#0059D7;">대상자 정보</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div><p class="text-gray-600 text-sm">이름</p><p class="font-semibold">홍길동</p></div>
+        <div><p class="text-gray-600 text-sm">전화번호</p><p class="font-semibold">010-1234-5678</p></div>
+        <div><p class="text-gray-600 text-sm">생년월일/연령</p><p class="font-semibold">2000.01.01 / 26세</p></div>
+        <div><p class="text-gray-600 text-sm">성별</p><p class="font-semibold">남성</p></div>
+        <div><p class="text-gray-600 text-sm">주소</p><p class="font-semibold">충청남도 천안시</p></div>
+        <div><p class="text-gray-600 text-sm">직업</p><p class="font-semibold">-</p></div>
+        <div><p class="text-gray-600 text-sm">술자와의 관계</p><p class="font-semibold">-</p></div>
+        <div><p class="text-gray-600 text-sm">방문이유</p><p class="font-semibold">구강검진</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 선택 그리드 -->
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <h2 class="text-2xl font-bold mb-6" style="color:#0059D7;">
+      <i class="fas fa-list-check mr-2"></i>차트 섹션
+    </h2>
+    <div class="grid gap-4 section-grid" id="sectionGrid"
+         style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));"></div>
+  </div>
+
+  <!-- ── 부가기능 패널 (addon 선택 시 표시) ── -->
+  <div id="addonPanels"></div>
+
+</div>
+
+<!-- 섹션 모달 -->
+<div class="modal-overlay" id="sectionModal">
+  <div class="modal-box">
+    <div class="modal-sticky-bar">
+      <h2 id="modalTitle" class="text-xl font-bold" style="color:#0059D7;"></h2>
+      <button onclick="closeModal()" style="padding:6px 16px;border-radius:8px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;font-size:13px;font-weight:600;cursor:pointer;">
+        <i class="fas fa-arrow-left mr-1"></i>목록으로
+      </button>
+    </div>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+// ── config 파싱 ────────────────────────────────────────────────────
+let config = {};
+try {
+  const p = new URLSearchParams(window.location.search);
+  const raw = p.get('config');
+  if (raw) config = JSON.parse(decodeURIComponent(raw));
+} catch(e) {
+  config = { schoolName:'미리보기', grades:['2학년'], sections:{
+    1:{selected:true,items:{}}, 2:{selected:true,items:{}},
+    3:{selected:true,items:{}}, 4:{selected:true,items:{}},
+    5:{selected:true,items:{}}, 6:{selected:true,items:{}},
+    7:{selected:true,items:{}}, 8:{selected:true,items:{}},
+    9:{selected:true,items:{}}
+  }, addons:{} };
+}
+
+if (config.schoolName) {
+  document.getElementById('chartTitle').textContent =
+    config.schoolName + ' Hy-STEP 임상실습 차트 (미리보기)';
+}
+
+// ── 섹션 메타 (원래 번호 → 레이블/아이콘) ────────────────────────
+const SECTION_META = {
+  1:{ label:'치과병력 및 건강행태',     roman:'Ⅰ',  sub:'Dental Hygiene Assessment',         icon:'fa-notes-medical' },
+  2:{ label:'전신병력 및 복용약물',     roman:'Ⅱ',  sub:'Medical History & Medication',       icon:'fa-heartbeat' },
+  3:{ label:'구강 내/외 검사',          roman:'Ⅲ',  sub:'Intra & Extra Oral Examination',     icon:'fa-tooth' },
+  4:{ label:'구강위생관리 PI 측정',     roman:'Ⅳ',  sub:'Oral Hygiene Care - PI',             icon:'fa-chart-bar' },
+  5:{ label:'근거중심 치위생판단',      roman:'Ⅴ',  sub:'Evidence-based Judgement',           icon:'fa-brain' },
+  6:{ label:'치위생 관리 목표 및 계획', roman:'Ⅵ',  sub:'Client Goals for Dental Hygiene Care', icon:'fa-bullseye' },
+  7:{ label:'근거중심 치위생수행',      roman:'Ⅶ',  sub:'Evidence-based Implementation',      icon:'fa-hand-holding-medical' },
+  8:{ label:'치위생 평가',              roman:'Ⅷ',  sub:'Dental Hygiene Evaluation',          icon:'fa-clipboard-check' },
+  9:{ label:'목표 달성도 평가 및 자기평가', roman:'Ⅸ', sub:'Goal Achievement',               icon:'fa-trophy' }
+};
+
+// ── 선택된 섹션 목록 (원래 번호 순 정렬) ─────────────────────────
+const selectedOrigNums = Object.entries(config.sections || {})
+  .filter(([,s]) => s && s.selected)
+  .map(([k]) => parseInt(k))
+  .sort((a,b) => a-b);
+
+// ── 섹션 그리드 렌더 (표시 번호: 1부터 순서대로) ─────────────────
+const grid = document.getElementById('sectionGrid');
+if (selectedOrigNums.length === 0) {
+  grid.innerHTML = '<p class="text-gray-400 col-span-full text-center py-8">선택된 섹션이 없습니다.</p>';
+} else {
+  selectedOrigNums.forEach((origNum, idx) => {
+    const displayNum = idx + 1;   // 표시 번호는 1부터 순서대로
+    const m = SECTION_META[origNum];
+    const btn = document.createElement('button');
+    btn.className = 'section-button';
+    btn.onclick = () => openSection(origNum, displayNum);
+    btn.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;flex:1;">
+        <div class="section-number">${displayNum}</div>
+        <div style="text-align:left;">
+          <div style="font-weight:700;font-size:15px;">${m.label}</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:2px;">${m.sub}</div>
+        </div>
+      </div>
+      <i class="fas ${m.icon}" style="font-size:22px;color:#0059D7;opacity:0.6;"></i>
+    `;
+    grid.appendChild(btn);
+  });
+}
+
+// ── 모달 열기/닫기 ────────────────────────────────────────────────
+function openSection(origNum, displayNum) {
+  const m = SECTION_META[origNum];
+  document.getElementById('modalTitle').textContent =
+    `Section ${displayNum} · ${m.roman}. ${m.label}`;
+  document.getElementById('modalContent').innerHTML =
+    renderSection(origNum, displayNum);
+  document.getElementById('sectionModal').classList.add('open');
+  document.getElementById('sectionModal').scrollTop = 0;
+  if (origNum === 4) initPI();
+}
+function closeModal() {
+  document.getElementById('sectionModal').classList.remove('open');
+}
+document.getElementById('sectionModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── 섹션 렌더 디스패처 ───────────────────────────────────────────
+function renderSection(origNum, displayNum) {
+  const renders = {1:sec1, 2:sec2, 3:sec3, 4:sec4, 5:sec5, 6:sec6, 7:sec7, 8:sec8, 9:sec9};
+  const fn = renders[origNum] || (() => `<p class="text-gray-400 py-8 text-center">준비 중입니다.</p>`);
+  return fn(displayNum) + `
+    <div class="nosave-note">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      미리보기 모드 — 입력한 내용은 저장되지 않습니다
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 1 · 치과병력 및 건강행태
+// ═══════════════════════════════════════════════════════════════════
+function sec1(dn) { return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅰ. 치과병력 및 건강행태 (Dental Hygiene Assessment)</h2>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <div class="mb-6 pb-6 border-b-2 border-blue-100">
+      <h3 class="font-bold mb-3 text-blue-700"><i class="fas fa-clipboard-list mr-2"></i>대상자 방문이유</h3>
+      <textarea rows="3" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 transition" placeholder="방문이유 입력"></textarea>
+    </div>
+    <div class="mb-6 pb-6 border-b-2 border-blue-100">
+      <h3 class="font-bold mb-3 text-blue-700"><i class="fas fa-hospital mr-2"></i>주 치과명</h3>
+      <input type="text" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 transition" placeholder="주로 이용하시는 치과 이름을 입력하세요">
+    </div>
+
+    <div class="mb-6">
+      <h3 class="font-bold mb-3">Q1. 최근 1년 동안 치과 방문경험이 있습니까(보건소 포함)?</h3>
+      <div class="flex gap-4 mb-2">
+        <label class="flex items-center"><input type="radio" name="q1" value="no" class="mr-2"> 아니오</label>
+        <label class="flex items-center"><input type="radio" name="q1" value="yes" class="mr-2"> 예</label>
+      </div>
+      <div class="ml-4">
+        <p class="text-sm text-gray-600 mb-2">※ 치주치료 경험(진료사항, 부위):</p>
+        <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="진료사항 및 부위 입력">
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="font-bold mb-3">Q2. 현재 귀하의 건강행태에 대해 해당사항에 기입해 주십시오.</h3>
+
+      <div class="bg-gray-50 p-4 rounded-lg mb-4">
+        <h4 class="font-semibold mb-3">칫솔질 습관</h4>
+        <div class="mb-3">
+          <p class="text-sm font-medium mb-2">빈도:</p>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+            ${['아침식사 전','아침식사 후','점심식사 전','점심식사 후','저녁식사 전','저녁식사 후','잠자기 전','칫솔질을 하지 않음'].map(v=>`<label class="flex items-center"><input type="checkbox" class="mr-2"> ${v}</label>`).join('')}
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-medium mb-2">방법: (다중선택 가능)</p>
+          <div class="space-y-1">
+            ${['잇몸에서부터 쓸어 내리듯이 닦는다','칫솔모를 잇몸 안쪽으로 살짝 삽입하여 진동을 주어 닦는다','가로방향으로 닦는다'].map(v=>`<label class="flex items-center"><input type="checkbox" class="mr-2"> ${v}</label>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-lg mb-4">
+        <h4 class="font-semibold mb-3">구강관리용품</h4>
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          ${['치실','치간칫솔','구강양치액','워터픽','없음'].map(v=>`<label class="flex items-center"><input type="checkbox" class="mr-2"> ${v}</label>`).join('')}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-medium mb-1">칫솔:</label>
+            <input type="text" class="w-full px-2 py-1 border rounded" placeholder="브랜드/종류 입력"></div>
+          <div><label class="block text-sm font-medium mb-1">치약:</label>
+            <input type="text" class="w-full px-2 py-1 border rounded" placeholder="브랜드/종류 입력"></div>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-lg mb-4">
+        <h4 class="font-semibold mb-3">흡연</h4>
+        <div class="space-y-2">
+          <label class="flex items-center"><input type="radio" name="smoke" class="mr-2"> 흡연자: <input type="number" class="ml-2 w-20 px-2 py-1 border rounded" placeholder="0"> 개피/일</label>
+          <div class="ml-6 grid grid-cols-2 gap-1">
+            ${['일반 담배','전자담배'].map(v=>`<label class="flex items-center"><input type="checkbox" class="mr-2"> ${v}</label>`).join('')}
+          </div>
+          <label class="flex items-center"><input type="radio" name="smoke" class="mr-2"> 비흡연자</label>
+          <label class="flex items-center"><input type="radio" name="smoke" class="mr-2"> 과거흡연자 (금연시기: <input type="text" class="ml-2 w-32 px-2 py-1 border rounded">)</label>
+        </div>
+        <input type="text" class="w-full mt-2 px-2 py-1 border rounded text-sm" placeholder="흡연 관련 서술 (선택사항)">
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-lg mb-4">
+        <h4 class="font-semibold mb-3">음주</h4>
+        <div class="space-y-2">
+          ${['최근 1년간 전혀 마시지 않음','한 달에 1번 미만','한 달에 1번 정도','한 달에 2-3번','일주일에 2-3번','일주일에 4번 이상'].map(v=>`<label class="flex items-center"><input type="radio" name="drink" class="mr-2"> ${v}</label>`).join('')}
+        </div>
+        <input type="text" class="w-full mt-2 px-2 py-1 border rounded text-sm" placeholder="음주 관련 서술 (선택사항)">
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h4 class="font-semibold mb-3">영양</h4>
+        <p class="text-sm font-medium mb-2">평상시 음식 습관:</p>
+        <div class="space-y-1">
+          ${['아주 짜게 먹음','약간 짜게 먹음','보통으로 먹음','약간 싱겁게 먹음','아주 싱겁게 먹음'].map(v=>`<label class="flex items-center"><input type="radio" name="food" class="mr-2"> ${v}</label>`).join('')}
+        </div>
+        <p class="text-sm font-medium mt-3 mb-2">지난 일주일 동안 설탕이 든 간식 섭취 횟수:</p>
+        <div class="space-y-1">
+          ${['먹지 않음','1주일에 1번','2-3일에 1번','하루 1번','하루 2번 이상'].map(v=>`<label class="flex items-center"><input type="radio" name="sugar" class="mr-2"> ${v}</label>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="font-bold mb-3">Q3. 최근 1년 동안, 다음과 같은 증상 또는 불편감을 경험한 적이 있습니까?</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        ${['치아가 깨지거나 부러짐','치아가 쑤시고 욱신거리고 아픔','잇몸이 아프거나 피가 남','혀 또는 입 안쪽 뺨이 욱신거리며 아픔','불쾌한 입냄새가 남','구강 악습관 있음(이갈이, 이 악물기 등)','입 안이 건조함'].map(v=>`<label class="flex items-center"><input type="checkbox" class="mr-2"> ${v}</label>`).join('')}
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="font-bold mb-3">Q4. 치과공포도 조사 (1~5점)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse border">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border p-2 text-sm"></th>
+              <th class="border p-2 text-sm">전혀<br>불안하지 않음<br>(1)</th>
+              <th class="border p-2 text-sm">불안하지<br>않음<br>(2)</th>
+              <th class="border p-2 text-sm">보통<br>(3)</th>
+              <th class="border p-2 text-sm">불안함<br>(4)</th>
+              <th class="border p-2 text-sm">매우<br>불안함<br>(5)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[
+              '1. 진료를 받기 위해 내일 치과의사를 방문하기로 되어 있다면 어떻게 느껴지십니까?',
+              '2. 진료를 받기 위해 대기실에 앉아있다고 상상하면 어떻게 느껴지십니까?',
+              '3. 치아를 삭제하기 직전이라고 상상하면 어떻게 느껴지십니까?',
+              '4. 스케일링을 받거나 치아면을 매끈하게 연마받기 직전이라고 상상하면 어떻게 느껴지십니까?',
+              '5. 마취제를 주사하기 직전이라고 상상하면 어떻게 느껴지십니까?'
+            ].map((q,i)=>`<tr><td class="border p-2 text-sm">${q}</td>${[1,2,3,4,5].map(v=>`<td class="border p-2 text-center"><input type="radio" name="anxiety${i}" value="${v}" onchange="calcAnxiety()"></td>`).join('')}</tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <p class="font-semibold mt-3">◎ 총점: <span id="anxTotal">0</span>점</p>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="font-bold mb-3">Q5. 기타 추가 기입 사항</h3>
+      <textarea rows="5" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 transition" placeholder="추가로 기입하실 사항이 있으시면 자유롭게 작성해주세요."></textarea>
+    </div>
+  </div>
+
+  <div class="bg-yellow-50 rounded-lg border-2 border-yellow-400 p-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;"><i class="fas fa-clipboard-list mr-2"></i>Dental hygiene Plan ①</h3>
+    <div class="space-y-4">
+      <div><label class="block text-sm font-medium mb-1">정기검진 계획</label>
+        <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="예) 3개월 후 재내원"></div>
+      <div><label class="block text-sm font-medium mb-1">자가 구강위생관리 계획</label>
+        <textarea rows="3" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="자가관리 계획 입력..."></textarea></div>
+    </div>
+  </div>
+</div>`; }
+
+function calcAnxiety() {
+  let t=0;
+  for(let i=0;i<5;i++){const el=document.querySelector(`input[name="anxiety${i}"]:checked`);if(el)t+=parseInt(el.value);}
+  const el=document.getElementById('anxTotal');if(el)el.textContent=t;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 2 · 전신병력 및 복용약물
+// ═══════════════════════════════════════════════════════════════════
+function sec2(dn) { return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅱ. 전신병력: 해당사항에 ✓표시 하세요.</h2>
+  </div>
+
+  <div class="bg-blue-50 rounded-lg border-2 border-blue-200 p-4 mb-6">
+    <h3 class="text-lg font-bold mb-4" style="color:#0059D7;"><i class="fas fa-heartbeat mr-2"></i>혈당 및 혈압 측정</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-white p-4 rounded-lg border border-gray-300">
+        <label class="block font-semibold mb-2">혈당 (Blood Sugar)</label>
+        <div class="flex items-center gap-2 mb-3">
+          <input type="number" class="flex-1 px-3 py-2 border-2 border-gray-300 rounded" placeholder="수치 입력">
+          <span class="font-medium text-gray-700">mg/dL</span>
+        </div>
+        <label class="block text-sm font-semibold mb-1 text-gray-700">공복 여부</label>
+        <div class="flex gap-3">
+          ${['공복','식후','모름'].map(v=>`<label class="flex items-center gap-1 text-sm"><input type="radio" name="bs_fast" class="mr-1"> ${v}</label>`).join('')}
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg border border-gray-300">
+        <label class="block font-semibold mb-2">혈압 (Blood Pressure)</label>
+        <div class="flex items-center gap-2">
+          <input type="number" class="w-24 px-3 py-2 border-2 border-gray-300 rounded" placeholder="수축기">
+          <span class="font-bold">/</span>
+          <input type="number" class="w-24 px-3 py-2 border-2 border-gray-300 rounded" placeholder="이완기">
+          <span class="font-medium text-gray-700">mmHg</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-6 overflow-x-auto">
+    <table class="w-full border-collapse border-2 border-gray-400">
+      <thead>
+        <tr class="bg-orange-100">
+          <th class="border border-gray-400 p-2 text-sm font-bold" style="width:25%;">전신상태</th>
+          <th class="border border-gray-400 p-2 text-sm font-bold" style="width:15%;">진단시기</th>
+          <th class="border border-gray-400 p-2 text-sm font-bold" style="width:12%;">현재 치료 여부</th>
+          <th class="border border-gray-400 p-2 text-sm font-bold" style="width:12%;">약물복용여부</th>
+          <th class="border border-gray-400 p-2 text-sm font-bold" style="width:36%;">Dental hygiene Plan ②</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${['당뇨병','고혈압','협심증/심근경색','뇌졸중','호흡기질환','골다공증','간염','임신','기타'].map((d,i)=>`
+        <tr>
+          <td class="border border-gray-400 p-2">
+            <label class="flex items-center"><input type="checkbox" class="mr-2 disease-cb" data-idx="${i}"> <span class="font-medium">${d}</span></label>
+          </td>
+          <td class="border border-gray-400 p-2">
+            <input type="text" class="w-full px-2 py-1 border rounded text-sm" placeholder="YYYY-MM">
+          </td>
+          <td class="border border-gray-400 p-2 text-center">
+            <input type="checkbox">
+          </td>
+          <td class="border border-gray-400 p-2 text-center">
+            <input type="checkbox">
+          </td>
+          ${i===0 ? `<td class="border border-gray-400 p-2" rowspan="9">
+            <div class="space-y-2 text-sm">
+              <div><label class="font-semibold text-blue-700">전신질환 치위생 관리계획</label>
+                <textarea rows="4" class="w-full mt-1 px-2 py-1 border rounded" placeholder="치위생 관리 계획 입력..."></textarea></div>
+              <div><label class="font-semibold text-blue-700">구강 내 부작용 치위생 관리계획</label>
+                <textarea rows="3" class="w-full mt-1 px-2 py-1 border rounded" placeholder="구강 부작용 관리 계획..."></textarea></div>
+            </div>
+          </td>` : ''}
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">복용 약물</h3>
+    <div id="medList_s2">
+      <div class="border-2 border-gray-200 rounded-lg p-4 mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div><label class="block text-sm font-medium mb-1">약물명</label>
+            <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="약물명"></div>
+          <div><label class="block text-sm font-medium mb-1">복용량 / 부작용</label>
+            <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="용량 및 부작용"></div>
+        </div>
+      </div>
+    </div>
+    <button onclick="addMedS2()" class="mt-2 px-4 py-2 border-2 border-dashed border-blue-400 text-blue-600 rounded-lg font-semibold bg-transparent hover:bg-blue-50 cursor-pointer">
+      <i class="fas fa-plus mr-1"></i>약물 추가
+    </button>
+    <div class="mt-4">
+      <label class="block text-sm font-medium mb-1">알레르기</label>
+      <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="알레르기 약물 또는 성분">
+    </div>
+  </div>
+</div>`; }
+
+function addMedS2() {
+  const list = document.getElementById('medList_s2');
+  if (!list) return;
+  const d = document.createElement('div');
+  d.className = 'border-2 border-gray-200 rounded-lg p-4 mb-3';
+  d.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div><label class="block text-sm font-medium mb-1">약물명</label>
+      <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="약물명"></div>
+    <div><label class="block text-sm font-medium mb-1">복용량 / 부작용</label>
+      <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="용량 및 부작용"></div>
+  </div>
+  <button onclick="this.parentElement.remove()" class="mt-2 px-3 py-1 border border-red-400 text-red-500 rounded text-sm">삭제</button>`;
+  list.appendChild(d);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 3 · 구강 내/외 검사
+// ═══════════════════════════════════════════════════════════════════
+function sec3(dn) {
+  const areas = [
+    ['Face & Neck','face'], ['Lymph Nodes','lymph'], ['TMJ','tmj'],
+    ['Oral Mucosa','mucosa'], ['Alveolar Ridge & Lips','ridge'],
+    ['Palate & Oral Pharynx','palate'], ['Tongue','tongue'],
+    ['Floor of Mouth','floor'], ['Gingival Characteristics','gingival']
+  ];
+  return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅲ. 구강 내/외 검사 (Intra & Extra Oral Examination)</h2>
+  </div>
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <p class="text-sm text-gray-500 mb-4">각 부위별 이상 소견을 기록하세요. WNL = Within Normal Limits (정상 범위)</p>
+    ${areas.map(([label, key]) => `
+    <div class="mb-5 pb-5 border-b border-gray-100">
+      <label class="font-semibold block mb-2" style="color:#0059D7;">${label}</label>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+        <div class="flex gap-4">
+          <label class="flex items-center"><input type="radio" name="oral_${key}" value="WNL" checked class="mr-2"> WNL</label>
+          <label class="flex items-center"><input type="radio" name="oral_${key}" value="비정상" class="mr-2"> 비정상</label>
+        </div>
+        <div class="md:col-span-2">
+          <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 transition" placeholder="소견 내용">
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">치식 다이어그램</h3>
+    <p class="text-sm text-gray-500 mb-4">상실치(✕), 우식치(○), 충전치(■) 등 치식 기호를 기록하세요.</p>
+    <div class="overflow-x-auto">
+      <table class="border-collapse mx-auto mb-4">
+        <tbody>
+          <tr><td class="p-1 text-center text-xs text-gray-400 font-semibold" colspan="16">상악 (Maxilla)</td></tr>
+          <tr>${[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28].map(n=>`<td class="border border-gray-300 p-1 text-center text-xs font-bold w-8">${n}</td>`).join('')}</tr>
+          <tr>${[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28].map(n=>`<td class="border border-gray-300 p-0.5"><input type="text" maxlength="2" class="w-8 h-8 text-center text-xs border-0 outline-none focus:bg-blue-50" placeholder=""></td>`).join('')}</tr>
+        </tbody>
+      </table>
+      <table class="border-collapse mx-auto">
+        <tbody>
+          <tr>${[48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38].map(n=>`<td class="border border-gray-300 p-0.5"><input type="text" maxlength="2" class="w-8 h-8 text-center text-xs border-0 outline-none focus:bg-blue-50" placeholder=""></td>`).join('')}</tr>
+          <tr>${[48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38].map(n=>`<td class="border border-gray-300 p-1 text-center text-xs font-bold w-8">${n}</td>`).join('')}</tr>
+          <tr><td class="p-1 text-center text-xs text-gray-400 font-semibold" colspan="16">하악 (Mandible)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>`; }
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 4 · PI 측정 (O'Leary 인터랙티브)
+// ═══════════════════════════════════════════════════════════════════
+let piMarked = {};
+
+function sec4(dn) {
+  const upper = [18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
+  const lower = [48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38];
+
+  const makeCell = (tooth) => `
+    <td class="border border-gray-300 p-0.5">
+      <div class="pi-cell-wrap">
+        <svg width="48" height="48" style="position:absolute;top:0;left:0;pointer-events:none;">
+          <rect width="48" height="48" fill="white" stroke="#9ca3af" stroke-width="1.5"/>
+          <line x1="0" y1="0" x2="48" y2="48" stroke="#9ca3af" stroke-width="1.5"/>
+          <line x1="48" y1="0" x2="0" y2="48" stroke="#9ca3af" stroke-width="1.5"/>
+        </svg>
+        ${['top','right','bottom','left'].map(s=>`<div class="pi-surf ${s}" id="pi_${tooth}_${s}" onclick="togglePI(${tooth},'${s}')" title="${tooth}번 ${s}"></div>`).join('')}
+      </div>
+    </td>`;
+
+  return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅳ. 구강위생관리 PI 측정 (Plaque Index)</h2>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold" style="color:#0059D7;">1회차 PI 측정</h3>
+      <button onclick="clearAllPI()" class="text-red-600 hover:text-red-800 font-semibold text-sm">
+        <i class="fas fa-eraser mr-1"></i>초기화
+      </button>
+    </div>
+    <div class="overflow-x-auto">
+      <p class="text-xs text-gray-500 mb-2 font-semibold">상악 (Maxilla)</p>
+      <table class="border-collapse mb-1">
+        <thead><tr>${upper.map(n=>`<th class="border border-gray-300 p-1 text-xs w-12">${n}</th>`).join('')}</tr></thead>
+        <tbody><tr>${upper.map(n=>makeCell(n)).join('')}</tr></tbody>
+      </table>
+      <div class="border-t-2 border-dashed border-gray-300 my-3"></div>
+      <table class="border-collapse mt-1">
+        <tbody><tr>${lower.map(n=>makeCell(n)).join('')}</tr></tbody>
+        <tfoot><tr>${lower.map(n=>`<th class="border border-gray-300 p-1 text-xs w-12">${n}</th>`).join('')}</tr></tfoot>
+      </table>
+      <p class="text-xs text-gray-500 mt-2 font-semibold">하악 (Mandible)</p>
+    </div>
+
+    <div class="flex flex-wrap gap-6 bg-gray-50 rounded-lg p-4 mt-4">
+      <div class="text-center"><p class="text-xs text-gray-500">착색면 수</p><p class="text-2xl font-bold" style="color:#0059D7;" id="piCount">0</p></div>
+      <div class="text-center"><p class="text-xs text-gray-500">전체 치면 수</p><p class="text-2xl font-bold" style="color:#0059D7;" id="piTotal">128</p></div>
+      <div class="text-center"><p class="text-xs text-gray-500">O'Leary Index</p><p class="text-2xl font-bold" style="color:#0059D7;" id="piOleary">0.0%</p></div>
+      <div class="text-center"><p class="text-xs text-gray-500">Modified O'Leary</p><p class="text-2xl font-bold" style="color:#0059D7;" id="piMod">100.0%</p></div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">구취 측정 (Halitosis)</h3>
+    <p class="text-sm text-gray-500 mb-3">Level 0~5</p>
+    <div class="flex flex-wrap gap-3">
+      ${[0,1,2,3,4,5].map(v=>`<label class="flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400"><input type="radio" name="halit"> Level ${v}</label>`).join('')}
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">CO 측정 (흡연자용)</h3>
+    <div class="flex items-center gap-3">
+      <input type="number" class="px-3 py-2 border-2 border-gray-300 rounded-lg w-32" placeholder="수치">
+      <span class="text-gray-600">ppm</span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">미생물 검사</h3>
+    <div class="space-y-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><label class="block text-sm font-medium mb-1">검사 종류</label>
+          <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="예) 타액 미생물 검사"></div>
+        <div><label class="block text-sm font-medium mb-1">결과</label>
+          <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="검사 결과 입력"></div>
+      </div>
+    </div>
+  </div>
+</div>`; }
+
+function initPI() { piMarked = {}; }
+function togglePI(tooth, surf) {
+  const key = `${tooth}_${surf}`;
+  const el = document.getElementById(`pi_${tooth}_${surf}`);
+  if (!el) return;
+  if (piMarked[key]) { delete piMarked[key]; el.classList.remove('hit'); }
+  else { piMarked[key] = true; el.classList.add('hit'); }
+  const total = document.querySelectorAll('.pi-surf').length;
+  const count = Object.keys(piMarked).length;
+  const oleary = total > 0 ? (count/total*100).toFixed(1) : '0.0';
+  const el1=document.getElementById('piCount'); if(el1)el1.textContent=count;
+  const el2=document.getElementById('piTotal'); if(el2)el2.textContent=total;
+  const el3=document.getElementById('piOleary'); if(el3)el3.textContent=oleary+'%';
+  const el4=document.getElementById('piMod'); if(el4)el4.textContent=(100-parseFloat(oleary)).toFixed(1)+'%';
+}
+function clearAllPI() {
+  piMarked = {};
+  document.querySelectorAll('.pi-surf').forEach(el=>el.classList.remove('hit'));
+  const el1=document.getElementById('piCount'); if(el1)el1.textContent='0';
+  const el3=document.getElementById('piOleary'); if(el3)el3.textContent='0.0%';
+  const el4=document.getElementById('piMod'); if(el4)el4.textContent='100.0%';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 5 · 근거중심 치위생판단
+// ═══════════════════════════════════════════════════════════════════
+function sec5(dn) {
+  const categories = [
+    { title:'1) 전신건강위험도', fields:[
+      ['고혈압 등 전신질환','systemic_disease'],
+      ['약물 및 주사 부작용','medication_se'],
+      ['흡연','smoking_judge']
+    ]},
+    { title:'2) 불안/스트레스', fields:[
+      ['치과공포','dental_fear'],
+      ['구강악습관(이갈이 등)','oral_habits'],
+      ['스트레스','stress_judge']
+    ]},
+    { title:'3) 구강건강에 대한 지식', fields:[
+      ['구강건강 지식 수준','oral_knowledge']
+    ]},
+    { title:'4) 구강건강에 대한 책임감', fields:[
+      ['자가 구강관리 실천 수준','oral_resp']
+    ]},
+    { title:'5) 머리와 목의 동통', fields:[
+      ['두통, 목 통증 등','head_pain']
+    ]},
+    { title:'6) 머리와 목의 피부 및 점막, 치주', fields:[
+      ['치주 상태 및 점막 이상','perio_judge']
+    ]},
+    { title:'7) 치열', fields:[
+      ['치열 불규칙, 교합 이상 등','dentition_judge']
+    ]},
+    { title:'8) 인상', fields:[
+      ['전반적 인상 및 특이사항','impression_judge']
+    ]}
+  ];
+  return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅴ. 근거중심의 치위생판단 (Evidence-based Dental Hygiene Judgement)</h2>
+  </div>
+  <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6">
+    <p class="text-sm font-medium text-red-700"><i class="fas fa-info-circle mr-2"></i>
+      치위생사정 결과를 인간욕구이론에 근거하여 치위생판단문을 작성하시오. (빨간색 사용)
+    </p>
+  </div>
+  ${categories.map(cat=>`
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">${cat.title}</h3>
+    <div class="space-y-4">
+      ${cat.fields.map(([label, id])=>`
+      <div>
+        <label class="text-sm font-medium">${label}:
+          <button type="button" onclick="document.getElementById('${id}').value='✕'" style="margin-left:6px;padding:1px 8px;font-size:11px;font-weight:700;color:#6b7280;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;cursor:pointer;">✕</button>
+        </label>
+        <textarea id="${id}" rows="2" class="w-full mt-1 px-3 py-2 border rounded-lg" placeholder="${label} 관련 판단 입력" style="color:#DC2626;"></textarea>
+      </div>`).join('')}
+    </div>
+  </div>`).join('')}
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">대상자의 관찰된 성격특성</h3>
+    <textarea rows="3" class="w-full px-3 py-2 border rounded-lg" placeholder="협조적, 비협조적, 불안, 긴장 등..."></textarea>
+  </div>
+</div>`; }
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 6 · 치위생 관리 목표 및 계획
+// ═══════════════════════════════════════════════════════════════════
+function sec6(dn) { return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅵ. 치위생 관리 목표 및 계획 수립 (Client Goals for Dental Hygiene Care)</h2>
+  </div>
+  <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-6">
+    <p class="text-sm font-medium text-blue-700"><i class="fas fa-info-circle mr-2"></i>
+      진단 결과를 바탕으로 대상자의 구강건강 증진을 위한 목표와 계획을 수립하세요.
+    </p>
+  </div>
+
+  <div id="goalEntries_s6">
+    ${[1,2,3].map(n=>`
+    <div class="border-2 border-gray-200 rounded-xl p-5 mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="font-bold text-base" style="color:#0059D7;">목표 ${n}</h4>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+        <div><label class="block text-sm font-medium mb-1">진단번호</label>
+          <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="예) 1"></div>
+        <div><label class="block text-sm font-medium mb-1">목표번호</label>
+          <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="예) 1"></div>
+      </div>
+      <div class="mb-3"><label class="block text-sm font-medium mb-1">원인</label>
+        <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="원인 입력"></div>
+      <div class="mb-3"><label class="block text-sm font-medium mb-1">목표</label>
+        <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="목표 입력"></div>
+      <div><label class="block text-sm font-medium mb-1">관리 계획</label>
+        <textarea rows="2" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="관리 계획 입력"></textarea></div>
+    </div>`).join('')}
+  </div>
+  <button onclick="addGoalS6()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+    <i class="fas fa-plus mr-2"></i>목표 및 계획 추가
+  </button>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+    <div><label class="block text-sm font-medium mb-1">대상자 이름</label>
+      <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg bg-gray-50" value="홍길동" readonly></div>
+    <div><label class="block text-sm font-medium mb-1">날짜</label>
+      <input type="date" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg"></div>
+  </div>
+</div>`; }
+
+let goalCountS6 = 3;
+function addGoalS6() {
+  goalCountS6++;
+  const c = document.getElementById('goalEntries_s6');
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'border-2 border-gray-200 rounded-xl p-5 mb-4';
+  d.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <h4 class="font-bold text-base" style="color:#0059D7;">목표 ${goalCountS6}</h4>
+      <button onclick="this.closest('.border-2').remove()" class="text-red-500 hover:text-red-700 text-sm">삭제</button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+      <div><label class="block text-sm font-medium mb-1">진단번호</label>
+        <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="예) ${goalCountS6}"></div>
+      <div><label class="block text-sm font-medium mb-1">목표번호</label>
+        <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="예) 1"></div>
+    </div>
+    <div class="mb-3"><label class="block text-sm font-medium mb-1">원인</label>
+      <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="원인 입력"></div>
+    <div class="mb-3"><label class="block text-sm font-medium mb-1">목표</label>
+      <input type="text" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="목표 입력"></div>
+    <div><label class="block text-sm font-medium mb-1">관리 계획</label>
+      <textarea rows="2" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="관리 계획 입력"></textarea></div>`;
+  c.appendChild(d);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 7 · 근거중심 치위생수행
+// ═══════════════════════════════════════════════════════════════════
+function sec7(dn) { return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅶ. 근거중심의 치위생수행 (Evidence-based Dental Hygiene Implementation)</h2>
+  </div>
+  <div class="bg-green-50 border-2 border-green-300 rounded-lg p-4 mb-6">
+    <p class="text-sm font-medium text-green-700"><i class="fas fa-check-circle mr-2"></i>
+      수립된 계획을 바탕으로 실제 수행한 치위생 관리 내용을 상세히 기록하세요.
+    </p>
+  </div>
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-4 mb-4">
+    <label class="text-sm font-medium">◎ 대상자 이름:</label>
+    <input type="text" class="ml-2 px-3 py-2 border rounded-lg bg-gray-50" value="홍길동" readonly>
+  </div>
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+    <h3 class="text-lg font-bold mb-4" style="color:#0059D7;"><i class="fas fa-clipboard-list mr-2"></i>치위생수행 기록</h3>
+    <div style="border:1.5px solid #e5e7eb;border-radius:8px;min-height:400px;padding:16px;font-size:14px;line-height:1.8;outline:none;"
+         contenteditable="true"
+         placeholder="치위생 수행 내용을 상세히 기록하세요..."
+         onkeydown="if(this.textContent.trim()==='')this.style.color='#9ca3af';else this.style.color='#374151';">
+    </div>
+    <p class="text-xs text-gray-400 mt-2">* 실제 차트웹에서는 서식 툴바(굵게/기울임/밑줄/표/목록 등)가 제공됩니다.</p>
+  </div>
+</div>`; }
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 8 · 치위생 평가
+// ═══════════════════════════════════════════════════════════════════
+function sec8(dn) {
+  const items = ['칫솔질 실천 유무','구강관리용품 사용 유무','흡연량 변화','음주량 변화','전신질환자 건강행동 교육 실천'];
+  const makeVisit = (v) => `
+    <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+      <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">
+        <i class="fas fa-calendar-check mr-2"></i>${v}차 내원
+      </h3>
+      <div class="space-y-4">
+        ${items.map(item=>`
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <label class="font-medium block mb-2">${item}</label>
+          <div class="space-y-1">
+            <label class="flex items-center gap-2"><input type="radio" name="${v}v_${item}"> 예</label>
+            <label class="flex items-center gap-2"><input type="radio" name="${v}v_${item}"> 아니오</label>
+            <label class="flex items-center gap-2"><input type="radio" name="${v}v_${item}"> 부분 실천</label>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅷ. 치위생 평가 (Dental Hygiene Evaluation)</h2>
+  </div>
+  <div class="bg-purple-50 border-2 border-purple-300 rounded-lg p-4 mb-6">
+    <p class="text-sm font-medium text-purple-700"><i class="fas fa-chart-line mr-2"></i>
+      대상자의 내원 시마다 구강건강 행동 변화를 평가하세요.
+    </p>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    ${makeVisit(2)}${makeVisit(3)}
+  </div>
+</div>`; }
+
+// ═══════════════════════════════════════════════════════════════════
+// Section 9 · 목표 달성도 평가 및 자기평가
+// ═══════════════════════════════════════════════════════════════════
+function sec9(dn) { return `
+<div class="section-content">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold" style="color:#0059D7;">Ⅸ. 목표 달성도 평가 및 자기평가</h2>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">대상자의 구강건강증진목표 달성 여부 평가</h3>
+    <div class="mb-4">
+      <label class="text-sm font-medium">대상자:</label>
+      <input type="text" class="ml-2 px-3 py-2 border rounded-lg bg-gray-50" value="홍길동" readonly>
+    </div>
+    <p class="text-sm text-gray-600 mb-4">의 구강건강증진을 위한 목표</p>
+    <div id="goal9Rows">
+      ${[1,2,3,4,5,6].map(n=>`
+      <div class="p-4 bg-gray-50 rounded-lg mb-4" id="goal9_${n}">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h4 class="font-semibold mb-1">목표${n}.</h4>
+            <p class="text-sm text-gray-700">목표 ${n} 내용 (Section 6에서 연동)</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <button type="button" onclick="setGoal9(${n},'met')" class="goal-status-btn" data-type="met">Met</button>
+          <button type="button" onclick="setGoal9(${n},'partial')" class="goal-status-btn" data-type="partial">Partial met</button>
+          <button type="button" onclick="setGoal9(${n},'unmet')" class="goal-status-btn" data-type="unmet">Unmet</button>
+        </div>
+        <div><label class="block text-sm font-medium mb-1">달성 근거</label>
+          <textarea rows="2" class="w-full px-3 py-2 border rounded-lg" placeholder="달성 근거 입력"></textarea></div>
+      </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6 mb-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">자기평가</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div><label class="block text-sm font-medium mb-1">잘한 점</label>
+        <textarea rows="4" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="잘한 점을 작성하세요..."></textarea></div>
+      <div><label class="block text-sm font-medium mb-1">부족한 점</label>
+        <textarea rows="4" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg" placeholder="부족한 점을 작성하세요..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-6">
+    <h3 class="text-xl font-bold mb-4" style="color:#0059D7;">구강건강 유지관리 간격</h3>
+    <div class="flex flex-wrap gap-3">
+      ${['1개월','2개월','3개월','6개월','12개월'].map(v=>`
+      <label class="flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400">
+        <input type="radio" name="interval9"> ${v}
+      </label>`).join('')}
+    </div>
+  </div>
+</div>`; }
+
+function setGoal9(n, status) {
+  const row = document.getElementById('goal9_' + n);
+  if (!row) return;
+  row.querySelectorAll('.goal-status-btn').forEach(btn => btn.removeAttribute('data-status'));
+  const btn = row.querySelector(`.goal-status-btn[data-type="${status}"]`);
+  if (btn) btn.setAttribute('data-status', 'selected');
+  row.style.background = status==='met' ? 'rgba(16,185,129,0.07)' : status==='partial' ? 'rgba(245,158,11,0.07)' : 'rgba(239,68,68,0.07)';
+  row.style.borderLeft = `4px solid ${status==='met'?'#10B981':status==='partial'?'#F59E0B':'#EF4444'}`;
+}
+
+// ── 부가기능 패널 렌더링 ───────────────────────────────────────────
+// Gemini SVG 로고 (ai-chat.js 동일)
+var GEMINI_SVG_PREVIEW = '<svg style="width:20px;height:20px;flex-shrink:0;" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">'
+  + '<defs><linearGradient id="gLgPv" x1="0" y1="0" x2="1" y2="1">'
+  + '<stop offset="0%" stop-color="#f87171"/>'
+  + '<stop offset="33%" stop-color="#facc15"/>'
+  + '<stop offset="66%" stop-color="#34d399"/>'
+  + '<stop offset="100%" stop-color="#60a5fa"/>'
+  + '</linearGradient></defs>'
+  + '<path d="M14 2 C14 2 16.5 10 24 14 C16.5 18 14 26 14 26 C14 26 11.5 18 4 14 C11.5 10 14 2 14 2Z" fill="url(#gLgPv)"/>'
+  + '</svg>';
+
+function renderAddonPanels() {
+  const addons = config.addons || {};
+  const container = document.getElementById('addonPanels');
+  if (!container) return;
+  let html = '';
+
+  // ① 사진 업로드 — 차트웹 동일: 우상단 Photo 버튼 → 팝업 모달
+  if (addons.photo) {
+    // Photo 버튼 활성화
+    const pvPhotoBtn = document.getElementById('pvPhotoBtn');
+    if (pvPhotoBtn) pvPhotoBtn.style.display = 'flex';
+    // 안내 카드 (섹션 목록 내 위치 안내)
+    html += `
+    <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:2px solid #10B981;">
+      <div style="background:linear-gradient(135deg,#059669,#10B981);padding:16px 24px;display:flex;align-items:center;gap:12px;">
+        <i class="fas fa-camera" style="color:white;font-size:20px;"></i>
+        <div style="flex:1;">
+          <div style="color:white;font-weight:700;font-size:15px;">사진 업로드 및 관리</div>
+          <div style="color:rgba(255,255,255,0.8);font-size:12px;margin-top:2px;">1~3회차 · 5매법 / 6매법 · 세트 2개</div>
+        </div>
+        <button onclick="openPhotoModalPv()"
+          style="background:white;color:#059669;border:none;border-radius:8px;
+                 padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;
+                 display:flex;align-items:center;gap:6px;">
+          <i class="fas fa-camera"></i> Photo 열기
+        </button>
+      </div>
+      <div style="padding:16px 24px;display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;">
+        <i class="fas fa-info-circle" style="color:#10B981;flex-shrink:0;"></i>
+        우상단 <strong style="color:#059669;">Photo 버튼</strong>을 클릭하거나 위의 버튼을 누르면 팝업이 열립니다.
+        회차(1~3)와 촬영법(5매법·6매법)을 선택 후 각 세트에 사진을 업로드합니다.
+      </div>
+    </div>`;
+  }
+
+  // ② AI 어시스턴트 패널 — ai-chat.js 구조 완전 동일 (고정 토글 버튼 + 740×600 플로팅 패널)
+  if (addons.ai) {
+    // 인라인 CSS (ai-chat.js style.textContent와 동일)
+    if (!document.getElementById('aiPreviewStyle')) {
+      const s = document.createElement('style');
+      s.id = 'aiPreviewStyle';
+      s.textContent = `
+        #aiToggleBtnPv{position:fixed;bottom:28px;right:28px;z-index:9990;
+          width:52px;height:52px;border-radius:50%;border:none;
+          background:#2563eb;color:#fff;font-size:22px;cursor:pointer;
+          box-shadow:0 4px 16px rgba(37,99,235,0.35);
+          display:flex;align-items:center;justify-content:center;transition:transform .15s;}
+        #aiToggleBtnPv:hover{transform:scale(1.08);}
+        #aiChatPanelPv{display:none;position:fixed;bottom:90px;right:28px;z-index:9989;
+          width:740px;max-width:calc(100vw - 32px);height:600px;
+          background:#fff;border-radius:16px;
+          box-shadow:0 8px 40px rgba(0,0,0,0.22);
+          flex-direction:row;overflow:hidden;border:1px solid #e5e7eb;}
+        #aiSessionSidebarPv{width:200px;min-width:140px;background:#f8fafc;
+          border-right:1px solid #e5e7eb;display:flex;flex-direction:column;flex-shrink:0;}
+        #aiSessionSidebarPv .sb-header{padding:8px 10px;
+          border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:4px;}
+        #aiSessionSidebarPv .sb-title{font-size:12px;font-weight:700;color:#374151;flex:1;}
+        #aiNewChatBtnPv{border:none;background:#2563eb;color:#fff;border-radius:6px;
+          padding:4px 8px;font-size:11px;cursor:pointer;white-space:nowrap;}
+        #aiNewChatBtnPv:hover{background:#1d4ed8;}
+        #aiSessionListPv{flex:1;overflow-y:auto;padding:6px 4px;}
+        .ai-sess-item-pv{display:flex;align-items:center;padding:8px 8px;border-radius:6px;
+          font-size:12px;color:#374151;border:1px solid transparent;margin-bottom:2px;cursor:pointer;}
+        .ai-sess-item-pv:hover{background:#e5e7eb;}
+        .ai-sess-item-pv.active{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8;font-weight:600;}
+        #aiChatAreaPv{flex:1;display:flex;flex-direction:column;min-width:0;}
+        #aiChatHeaderPv{background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 60%,#4f46e5 100%);
+          color:#fff;padding:11px 14px;
+          display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+        #aiChatHeaderPv .hdr-left{display:flex;align-items:center;gap:8px;min-width:0;}
+        #aiChatHeaderPv .hdr-titles{display:flex;flex-direction:column;min-width:0;}
+        #aiChatHeaderPv .hdr-main{font-weight:700;font-size:13px;letter-spacing:-0.2px;white-space:nowrap;}
+        #aiChatHeaderPv .hdr-sub{font-size:11px;opacity:0.82;white-space:nowrap;}
+        #aiMessagesPv{flex:1;overflow-y:auto;padding:12px;
+          display:flex;flex-direction:column;gap:10px;background:#f8fafc;}
+        .ai-bw-pv{display:flex;align-items:flex-start;gap:6px;max-width:90%;}
+        .ai-bw-pv.usr{align-self:flex-end;flex-direction:row-reverse;}
+        .ai-bw-pv.bot{align-self:flex-start;}
+        .ai-b-usr-pv{background:#2563eb;color:#fff;
+          border-radius:14px 14px 4px 14px;padding:8px 12px;font-size:13px;line-height:1.5;}
+        .ai-b-bot-pv{background:#fff;color:#1e293b;
+          border-radius:14px 14px 14px 4px;padding:8px 12px;font-size:13px;
+          line-height:1.6;border:1px solid #e5e7eb;}
+        #aiShortcutBarPv{padding:6px 10px 4px;border-top:1px solid #e5e7eb;
+          display:flex;gap:6px;flex-shrink:0;background:#fff;flex-wrap:wrap;}
+        .ai-sc-btn-pv{border:1px solid #d1d5db;background:#f9fafb;color:#374151;
+          border-radius:16px;padding:4px 12px;font-size:11px;cursor:pointer;
+          transition:all .12s;white-space:nowrap;font-weight:500;}
+        .ai-sc-btn-pv:hover{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;}
+        #aiInputRowPv{padding:8px 10px;border-top:1px solid #e5e7eb;
+          display:flex;gap:6px;flex-shrink:0;background:#fff;align-items:flex-end;}
+        #aiAttachBtnPv{background:none;border:1px solid #d1d5db;border-radius:8px;
+          padding:6px 8px;cursor:pointer;color:#6b7280;font-size:14px;
+          display:flex;align-items:center;flex-shrink:0;}
+        #aiAttachBtnPv:hover{background:#f3f4f6;color:#374151;}
+        #aiInputPv{flex:1;border:1px solid #d1d5db;border-radius:8px;padding:7px 10px;
+          font-size:13px;resize:none;outline:none;font-family:inherit;}
+        #aiInputPv:focus{border-color:#2563eb;}
+        #aiSendBtnPv{background:#2563eb;color:#fff;border:none;border-radius:8px;
+          padding:0 14px;cursor:pointer;font-size:18px;align-self:stretch;}
+        #aiSendBtnPv:hover{background:#1d4ed8;}
+        @media(max-width:600px){
+          #aiChatPanelPv{width:calc(100vw - 16px);height:70vh;bottom:80px;right:8px;}
+          #aiSessionSidebarPv{width:44px;min-width:44px;}
+        }
+      `;
+      document.head.appendChild(s);
+    }
+
+    // 토글 버튼 + 플로팅 패널 (ai-chat.js HTML 구조 동일)
+    if (!document.getElementById('aiToggleBtnPv')) {
+      const w = document.createElement('div');
+      w.innerHTML = `
+        <button id="aiToggleBtnPv" title="AI 어시스턴트">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2C14 2 16.5 10 24 14C16.5 18 14 26 14 26C14 26 11.5 18 4 14C11.5 10 14 2 14 2Z" fill="white"/>
+          </svg>
+        </button>
+        <div id="aiChatPanelPv">
+          <!-- 좌: 세션 사이드바 -->
+          <div id="aiSessionSidebarPv">
+            <div class="sb-header">
+              <span class="sb-title">채팅 목록</span>
+              <button id="aiNewChatBtnPv" title="새 채팅">＋</button>
+            </div>
+            <div id="aiSessionListPv">
+              <div class="ai-sess-item-pv active">
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">예시 채팅 세션</span>
+              </div>
+              <div class="ai-sess-item-pv">
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#9ca3af;">새 채팅...</span>
+              </div>
+            </div>
+          </div>
+          <!-- 우: 채팅 영역 -->
+          <div id="aiChatAreaPv">
+            <div id="aiChatHeaderPv">
+              <div class="hdr-left">
+                ${GEMINI_SVG_PREVIEW}
+                <div class="hdr-titles">
+                  <span class="hdr-main">AI 어시스턴트 채팅</span>
+                  <span class="hdr-sub">예시 채팅 세션</span>
+                </div>
+              </div>
+              <button id="aiCloseBtnPv"
+                style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;flex-shrink:0;">×</button>
+            </div>
+            <div id="aiMessagesPv">
+              <!-- AI 환영 메시지 -->
+              <div class="ai-bw-pv bot">
+                <div class="ai-b-bot-pv">
+                  안녕하세요! 저는 Hy-STEP AI 어시스턴트입니다.<br>
+                  입력하신 차트 데이터를 기반으로 임상 가이드, 치위생 목표 수립,<br>구강위생교육 방향 등을 제안해드릴 수 있습니다.
+                </div>
+              </div>
+              <!-- 예시 사용자 메시지 -->
+              <div class="ai-bw-pv usr">
+                <div class="ai-b-usr-pv">섹션1 문진 내용을 기반으로 대상자 치위생관리 목표를 추천해줘</div>
+              </div>
+              <!-- 예시 AI 응답 -->
+              <div class="ai-bw-pv bot">
+                <div class="ai-b-bot-pv">
+                  <strong>📋 치위생관리 목표 (예시)</strong><br>
+                  1. 구강위생 관리 능력 향상 — 칫솔질 방법 개선<br>
+                  2. 치주 건강 유지 — 치석 제거 및 잇몸 관리<br>
+                  3. 식이 습관 개선 — 당분 섭취 감소<br>
+                  <span style="font-size:11px;color:#64748b;margin-top:6px;display:block;">※ 미리보기 예시입니다. 실제 차트 데이터로 구동됩니다.</span>
+                </div>
+              </div>
+            </div>
+            <!-- 단축키 버튼 바 (ai-chat.js 동일) -->
+            <div id="aiShortcutBarPv">
+              <button class="ai-sc-btn-pv">📋 차트 기반</button>
+              <button class="ai-sc-btn-pv">📝 요약하기</button>
+              <button class="ai-sc-btn-pv">🗂 정리하기</button>
+            </div>
+            <!-- 입력 영역 -->
+            <div id="aiInputRowPv">
+              <button id="aiAttachBtnPv" title="파일 첨부">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                </svg>
+              </button>
+              <textarea id="aiInputPv" placeholder="질문을 입력하세요." rows="2"></textarea>
+              <button id="aiSendBtnPv">➤</button>
+            </div>
+          </div>
+        </div>`;
+      document.body.appendChild(w);
+
+      // 토글 동작
+      var pvPanel = document.getElementById('aiChatPanelPv');
+      var pvOpen  = false;
+      document.getElementById('aiToggleBtnPv').onclick = function() {
+        pvOpen = !pvOpen;
+        pvPanel.style.display = pvOpen ? 'flex' : 'none';
+      };
+      document.getElementById('aiCloseBtnPv').onclick = function() {
+        pvOpen = false;
+        pvPanel.style.display = 'none';
+      };
+    }
+
+    // 섹션 내 안내 카드
+    html += `
+    <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
+      <div style="background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 60%,#4f46e5 100%);padding:16px 24px;display:flex;align-items:center;gap:12px;">
+        ${GEMINI_SVG_PREVIEW}
+        <div>
+          <div style="color:white;font-weight:700;font-size:15px;">AI 어시스턴트 채팅</div>
+          <div style="color:rgba(255,255,255,0.72);font-size:12px;margin-top:2px;">Powered by Google Gemini</div>
+        </div>
+        <div style="margin-left:auto;background:rgba(255,255,255,0.15);border-radius:999px;padding:4px 14px;font-size:11px;color:rgba(255,255,255,0.9);white-space:nowrap;">
+          <i class="fas fa-circle" style="color:#4ade80;font-size:8px;margin-right:4px;"></i>활성
+        </div>
+      </div>
+      <div style="padding:20px 24px;">
+        <!-- 기능 안내 카드들 -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:18px;">
+          ${[
+            {icon:'fa-notes-medical', color:'#2563eb', bg:'#eff6ff', title:'차트 기반 분석', desc:'입력 데이터 기반 임상 가이드'},
+            {icon:'fa-file-alt',       color:'#7c3aed', bg:'#f5f3ff', title:'요약하기',      desc:'차트 내용 자동 요약'},
+            {icon:'fa-list-check',     color:'#059669', bg:'#ecfdf5', title:'정리하기',      desc:'목표·계획 체계적 정리'},
+          ].map(f => `
+          <div style="background:${f.bg};border-radius:10px;padding:14px;border:1px solid ${f.color}22;">
+            <i class="fas ${f.icon}" style="color:${f.color};font-size:18px;margin-bottom:8px;display:block;"></i>
+            <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:3px;">${f.title}</div>
+            <div style="font-size:11px;color:#64748b;">${f.desc}</div>
+          </div>`).join('')}
+        </div>
+        <!-- 열기 버튼 -->
+        <button onclick="document.getElementById('aiToggleBtnPv').click()"
+          style="width:100%;padding:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);
+                 color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;
+                 cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+          ${GEMINI_SVG_PREVIEW}
+          AI 어시스턴트 열기
+        </button>
+        <div style="margin-top:12px;padding:10px 14px;background:#f0f9ff;border-radius:8px;
+                    font-size:12px;color:#0369a1;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-info-circle" style="flex-shrink:0;"></i>
+          우측 하단 <strong>파란 버튼</strong>을 눌러도 AI 패널을 열 수 있습니다. (740×600 플로팅 패널)
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ③ 교수평가 패널 — professor-evaluation.js _operatorHTML() 동일 (학생 읽기전용 뷰)
+  if (addons.profEval) {
+    // 섹션 1~9 각각 교수평가 패널 생성 (차트웹 동일: 각 섹션 하단에 삽입)
+    const evalSections = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let evalHtml = '';
+    evalSections.forEach(n => {
+      evalHtml += `
+        <div id="professorEval_section${n}"
+             style="margin-top:16px;padding:16px;background:linear-gradient(135deg,#f3e5f5,#fce4ec);
+                    border:2px solid #9c27b0;border-radius:10px;">
+          <div style="display:flex;align-items:center;margin-bottom:12px;gap:8px;">
+            <i class="fas fa-user-tie" style="color:#6a1b9a;"></i>
+            <span style="font-size:13px;font-weight:700;color:#6a1b9a;">교수평가 · Section ${n}</span>
+            <span style="font-size:10px;background:#e1bee7;color:#6a1b9a;padding:2px 8px;border-radius:10px;">읽기 전용</span>
+          </div>
+          <!-- 2열: 평가내용 + 서명 -->
+          <div style="display:flex;gap:16px;align-items:stretch;">
+            <!-- 평가 내용 -->
+            <div style="flex:1;">
+              <label style="display:block;font-size:11px;font-weight:600;color:#6a1b9a;margin-bottom:4px;">평가 내용</label>
+              <div style="min-height:80px;background:white;border:1px solid #e1bee7;border-radius:6px;
+                          padding:10px;font-size:12px;line-height:1.6;color:#333;">
+                <span style="color:#bbb;font-style:italic;font-size:11px;">교수평가가 등록되지 않았습니다.</span>
+              </div>
+            </div>
+            <!-- 서명 -->
+            <div style="flex:0 0 140px;display:flex;flex-direction:column;">
+              <label style="font-size:11px;font-weight:600;color:#6a1b9a;margin-bottom:4px;">담당 교수 서명</label>
+              <div style="flex:1;min-height:80px;background:white;border:2px dashed #9c27b0;
+                          border-radius:6px;display:flex;align-items:center;justify-content:center;padding:8px;">
+                <span style="color:#bbb;font-size:10px;text-align:center;">서명 등록 전</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    html += `
+    <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
+      <!-- 헤더 -->
+      <div style="background:linear-gradient(135deg,#7b1fa2,#9c27b0);padding:16px 24px;display:flex;align-items:center;gap:12px;">
+        <i class="fas fa-user-tie" style="color:white;font-size:20px;"></i>
+        <div>
+          <div style="color:white;font-weight:700;font-size:15px;">교수평가</div>
+          <div style="color:rgba(255,255,255,0.72);font-size:12px;margin-top:2px;">담당 교수의 평가 및 서명 확인</div>
+        </div>
+        <div style="margin-left:auto;background:rgba(255,255,255,0.15);border-radius:999px;padding:4px 14px;font-size:11px;color:rgba(255,255,255,0.9);white-space:nowrap;">
+          읽기 전용
+        </div>
+      </div>
+      <!-- 섹션별 교수평가 (professor-evaluation.js _operatorHTML 동일 구조) -->
+      <div style="padding:20px 24px;">
+        <div style="background:#f3e5f5;border:1px solid #ce93d8;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#6a1b9a;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-info-circle" style="flex-shrink:0;"></i>
+          교수님이 각 섹션 평가를 저장하고 서명을 등록하면 아래에 표시됩니다.
+        </div>
+        ${evalHtml}
+      </div>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+
+  // 패널 간격 스타일
+  if (html) {
+    container.style.cssText = 'display:flex;flex-direction:column;gap:24px;margin-top:0;';
+  }
+}
+
+// 페이지 로드 시 addon 패널 렌더
+renderAddonPanels();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     Photo 모달 — 차트웹(_worker.js) 구조 완전 동일
+     회차: 1·2·3  /  촬영법: 5매법·6매법  /  세트: 각 2개
+══════════════════════════════════════════════════════════════ -->
+<div id="pvPhotoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:8000;overflow-y:auto;align-items:flex-start;justify-content:center;padding:20px 0;">
+  <div style="background:white;border-radius:16px;width:min(1400px,95vw);margin:auto;padding:0;overflow:hidden;">
+    <div style="padding:24px 32px 28px;">
+      <!-- 타이틀 + 닫기 -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h2 style="font-size:22px;font-weight:800;color:#0059D7;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-camera"></i> 사진 업로드 및 관리
+        </h2>
+        <button onclick="closePhotoModalPv()" style="background:none;border:none;cursor:pointer;color:#6b7280;font-size:24px;line-height:1;">&times;</button>
+      </div>
+
+      <!-- 회차 선택 -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        <button onclick="pvSelectVisit(1)" id="pvVisitBtn_1"
+          class="pv-visit-btn"
+          style="padding:10px 22px;border-radius:8px;font-weight:700;border:2px solid #3b82f6;background:#3b82f6;color:white;cursor:pointer;font-size:14px;transition:all 0.15s;">
+          1회차
+        </button>
+        <button onclick="pvSelectVisit(2)" id="pvVisitBtn_2"
+          class="pv-visit-btn"
+          style="padding:10px 22px;border-radius:8px;font-weight:700;border:2px solid #d1d5db;background:white;color:#374151;cursor:pointer;font-size:14px;transition:all 0.15s;">
+          2회차
+        </button>
+        <button onclick="pvSelectVisit(3)" id="pvVisitBtn_3"
+          class="pv-visit-btn"
+          style="padding:10px 22px;border-radius:8px;font-weight:700;border:2px solid #d1d5db;background:white;color:#374151;cursor:pointer;font-size:14px;transition:all 0.15s;">
+          3회차
+        </button>
+      </div>
+
+      <!-- 촬영법 탭 -->
+      <div style="display:flex;gap:0;border-bottom:2px solid #e5e7eb;margin-bottom:24px;overflow-x:auto;">
+        <button onclick="pvSelectMethod('5')" id="pvMethodBtn_5"
+          style="padding:10px 28px;font-weight:700;border:none;background:none;cursor:pointer;font-size:14px;border-bottom:4px solid #3b82f6;color:#2563eb;white-space:nowrap;transition:all 0.15s;">
+          5매법
+        </button>
+        <button onclick="pvSelectMethod('6')" id="pvMethodBtn_6"
+          style="padding:10px 28px;font-weight:700;border:none;background:none;cursor:pointer;font-size:14px;border-bottom:4px solid transparent;color:#6b7280;white-space:nowrap;transition:all 0.15s;">
+          6매법 (교합면&amp;설면)
+        </button>
+      </div>
+
+      <!-- 5매법 영역 -->
+      <div id="pvMethod5Area" style="display:block;">
+        <h3 style="font-size:18px;font-weight:800;color:#0059D7;text-align:center;margin-bottom:20px;">
+          <i class="fas fa-camera-retro" style="margin-right:8px;"></i>5매법 (십자형 배치)
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:20px;max-height:70vh;overflow-y:auto;padding:0 4px;">
+          <!-- 세트 1 -->
+          <div style="background:linear-gradient(135deg,#eff6ff,white);padding:28px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border:2px solid #bfdbfe;">
+            <h4 style="font-size:16px;font-weight:700;text-align:center;color:#374151;margin-bottom:20px;">세트 #1</h4>
+            <div id="pvPhoto5Set1Area"></div>
+          </div>
+          <!-- 세트 2 -->
+          <div style="background:linear-gradient(135deg,#f0fdf4,white);padding:28px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border:2px solid #bbf7d0;">
+            <h4 style="font-size:16px;font-weight:700;text-align:center;color:#374151;margin-bottom:20px;">세트 #2</h4>
+            <div id="pvPhoto5Set2Area"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6매법 영역 -->
+      <div id="pvMethod6Area" style="display:none;">
+        <h3 style="font-size:18px;font-weight:800;color:#0059D7;text-align:center;margin-bottom:20px;">
+          <i class="fas fa-camera-retro" style="margin-right:8px;"></i>6매법 (교합면&amp;설면 - 2×3 그리드)
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:20px;max-height:70vh;overflow-y:auto;padding:0 4px;">
+          <!-- 세트 1 -->
+          <div style="background:linear-gradient(135deg,#faf5ff,white);padding:28px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border:2px solid #e9d5ff;">
+            <h4 style="font-size:16px;font-weight:700;text-align:center;color:#374151;margin-bottom:20px;">세트 #1</h4>
+            <div id="pvPhoto6Set1Area"></div>
+          </div>
+          <!-- 세트 2 -->
+          <div style="background:linear-gradient(135deg,#fff1f2,white);padding:28px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);border:2px solid #fecdd3;">
+            <h4 style="font-size:16px;font-weight:700;text-align:center;color:#374151;margin-bottom:20px;">세트 #2</h4>
+            <div id="pvPhoto6Set2Area"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 -->
+      <div style="margin-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <p style="font-size:13px;color:#6b7280;display:flex;align-items:center;gap:6px;">
+          <i class="fas fa-info-circle"></i>
+          미리보기 모드입니다. 실제 차트에서 업로드 및 자동 저장됩니다.
+        </p>
+        <button onclick="closePhotoModalPv()"
+          style="padding:9px 24px;border-radius:8px;border:1px solid #d1d5db;background:white;color:#374151;font-size:14px;font-weight:600;cursor:pointer;">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Photo 모달 JS (차트웹 동일 구조) ──────────────────────────────
+window.pvCurrentVisit  = 1;
+window.pvCurrentMethod = '5';
+
+function openPhotoModalPv() {
+  window.pvCurrentVisit  = 1;
+  window.pvCurrentMethod = '5';
+  pvSelectVisit(1);
+  pvSelectMethod('5');
+  pvRenderAll();
+  document.getElementById('pvPhotoModal').style.display = 'flex';
+}
+
+function closePhotoModalPv() {
+  document.getElementById('pvPhotoModal').style.display = 'none';
+}
+
+function pvSelectVisit(v) {
+  window.pvCurrentVisit = v;
+  [1,2,3].forEach(n => {
+    const btn = document.getElementById('pvVisitBtn_' + n);
+    if (!btn) return;
+    if (n === v) {
+      btn.style.background = '#3b82f6';
+      btn.style.borderColor = '#3b82f6';
+      btn.style.color = 'white';
+    } else {
+      btn.style.background = 'white';
+      btn.style.borderColor = '#d1d5db';
+      btn.style.color = '#374151';
+    }
+  });
+  pvRenderAll();
+}
+
+function pvSelectMethod(m) {
+  window.pvCurrentMethod = m;
+  ['5','6'].forEach(k => {
+    const btn = document.getElementById('pvMethodBtn_' + k);
+    if (!btn) return;
+    if (k === m) {
+      btn.style.borderBottomColor = '#3b82f6';
+      btn.style.color = '#2563eb';
+    } else {
+      btn.style.borderBottomColor = 'transparent';
+      btn.style.color = '#6b7280';
+    }
+  });
+  const a5 = document.getElementById('pvMethod5Area');
+  const a6 = document.getElementById('pvMethod6Area');
+  if (a5) a5.style.display = m === '5' ? 'block' : 'none';
+  if (a6) a6.style.display = m === '6' ? 'block' : 'none';
+}
+
+function pvRenderAll() {
+  pvRender5Set(window.pvCurrentVisit, 1, 'pvPhoto5Set1Area');
+  pvRender5Set(window.pvCurrentVisit, 2, 'pvPhoto5Set2Area');
+  pvRender6Set(window.pvCurrentVisit, 1, 'pvPhoto6Set1Area');
+  pvRender6Set(window.pvCurrentVisit, 2, 'pvPhoto6Set2Area');
+}
+
+// 5매법 십자형 배치
+function pvRender5Set(visit, setNum, areaId) {
+  const area = document.getElementById(areaId);
+  if (!area) return;
+  area.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <div>${pvSlot(visit,'5',setNum,1)}</div>
+      <div style="display:flex;gap:12px;">
+        ${pvSlot(visit,'5',setNum,2)}
+        ${pvSlot(visit,'5',setNum,3)}
+        ${pvSlot(visit,'5',setNum,4)}
+      </div>
+      <div>${pvSlot(visit,'5',setNum,5)}</div>
+    </div>`;
+}
+
+// 6매법 2×3 그리드
+function pvRender6Set(visit, setNum, areaId) {
+  const area = document.getElementById(areaId);
+  if (!area) return;
+  area.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,auto);gap:12px;margin-bottom:12px;">
+      ${pvSlot(visit,'6',setNum,1)}
+      ${pvSlot(visit,'6',setNum,2)}
+      ${pvSlot(visit,'6',setNum,3)}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,auto);gap:12px;">
+      ${pvSlot(visit,'6',setNum,4)}
+      ${pvSlot(visit,'6',setNum,5)}
+      ${pvSlot(visit,'6',setNum,6)}
+    </div>`;
+}
+
+// 개별 슬롯 렌더
+function pvSlot(visit, template, setNum, slot) {
+  const isMob = window.innerWidth <= 768;
+  const w = template==='5' ? (isMob?'100px':'260px') : (isMob?'88px':'220px');
+  const h = template==='5' ? (isMob?'75px':'195px')  : (isMob?'66px':'165px');
+  const label = template==='5'
+    ? ['','정면','좌측방','정면 교합','우측방','하악 교합'][slot]
+    : ['','정면','좌측방','우측방','상악 교합','하악 교합','설면'][slot];
+  return `
+    <div onclick="alert('미리보기 모드입니다.\\n실제 차트에서 업로드 가능합니다.')"
+         style="width:${w};height:${h};border:2px dashed #9ca3af;border-radius:8px;
+                display:flex;flex-direction:column;align-items:center;justify-content:center;
+                cursor:pointer;background:#fafafa;transition:all 0.15s;gap:4px;"
+         onmouseover="this.style.borderColor='#0059D7';this.style.background='#eff6ff';"
+         onmouseout="this.style.borderColor='#9ca3af';this.style.background='#fafafa';">
+      <i class="fas fa-camera" style="font-size:${isMob?'14px':'22px'};color:#9ca3af;"></i>
+      <span style="font-size:${isMob?'9px':'12px'};color:#9ca3af;font-weight:600;text-align:center;padding:0 4px;">${label || ('사진 '+slot)}</span>
+      ${!isMob?`<span style="font-size:10px;color:#bbb;">클릭하여 업로드</span>`:''}
+    </div>`;
+}
+
+// 모달 바깥 클릭 시 닫기
+document.getElementById('pvPhotoModal').addEventListener('click', function(e) {
+  if (e.target === this) closePhotoModalPv();
+});
+</script>
+</body>
+</html>

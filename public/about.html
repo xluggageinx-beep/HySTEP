@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>About | EZ-STEP</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{
+  --blue:#1E74D4; --blue-light:#5BA3E8; --blue-mid:#1560B8;
+  --blue-dark:#0D3E80; --navy:#0D1B4B; --navy-light:#1A2D6B;
+  --black:#1A1A2E; --gray:#6B7280; --gray-mid:#E5E7EB;
+  --gray-light:#F5F6F8; --white:#FFFFFF;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans KR',sans-serif;color:var(--black);background:var(--white);}
+
+/* 헤더 */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(30,116,212,0.1);padding:0 5%;height:70px;display:flex;align-items:center;justify-content:space-between;}
+.logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-wrap img{height:36px;object-fit:contain;}
+.header-nav{display:flex;align-items:center;gap:8px;}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:all 0.2s;border:none;}
+.nav-btn-ghost{color:var(--navy);background:transparent;}
+.nav-btn-ghost:hover{background:var(--gray-light);}
+.nav-btn-primary{color:var(--white);background:var(--blue);}
+.nav-btn-primary:hover{background:var(--blue-dark);}
+
+/* 페이지 히어로 */
+.page-hero{
+  padding:140px 5% 90px;
+  background: linear-gradient(145deg, #0A1D50 0%, #0F3278 30%, #1560B8 65%, #1E74D4 100%);
+  text-align:center; position:relative; overflow:hidden;
+}
+.page-hero::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image: repeating-linear-gradient(-55deg, transparent, transparent 60px, rgba(255,255,255,0.022) 60px, rgba(255,255,255,0.022) 61px);
+}
+
+.page-hero > *{position:relative;z-index:1;}
+.page-hero h1{font-size:clamp(2rem,4vw,3rem);font-weight:800;color:var(--white);margin-bottom:16px;letter-spacing:-0.5px;}
+.page-hero p{font-size:1rem;color:rgba(255,255,255,0.72);max-width:560px;margin:0 auto;line-height:1.85;}
+
+/* 공통 섹션 */
+section{padding:80px 5%;}
+.inner{max-width:900px;margin:0 auto;}
+.section-label{display:inline-block;background:rgba(30,116,212,0.09);color:var(--blue);padding:5px 14px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:16px;letter-spacing:0.8px;text-transform:uppercase;}
+.section-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--navy);margin-bottom:14px;line-height:1.3;}
+.section-sub{font-size:1rem;color:var(--gray);line-height:1.85;}
+
+/* 스토리 */
+.story-section{background: linear-gradient(180deg, var(--white) 0%, var(--gray-light) 100%);}
+.story-text{font-size:1rem;color:var(--black);line-height:2.1;margin-bottom:20px;}
+.story-text strong{color:var(--blue);}
+.story-quote{
+  border-left:3px solid var(--blue);padding:18px 24px;
+  background:rgba(30,116,212,0.05);border-radius:0 12px 12px 0;
+  font-size:1.05rem;font-style:italic;color:var(--navy);
+  margin:32px 0;line-height:1.85;
+}
+
+/* 팀 */
+.team-section{
+  background: var(--white);
+  position:relative;
+}
+.team-section::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--blue),var(--blue-light),transparent);
+}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:44px;}
+.team-card{
+  background:var(--gray-light); border-radius:16px; padding:32px 24px; text-align:center;
+  border:1px solid var(--gray-mid); transition:all 0.3s;
+}
+.team-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(30,116,212,0.1);background:var(--white);}
+.team-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--blue-mid),var(--blue-light));display:flex;align-items:center;justify-content:center;font-size:22px;color:white;margin:0 auto 16px;}
+.team-card h4{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.team-card span{font-size:12.5px;color:var(--blue);font-weight:600;}
+.team-card p{font-size:13px;color:var(--gray);margin-top:10px;line-height:1.65;}
+
+/* 비전 */
+.vision-section{
+  background: linear-gradient(180deg, var(--gray-light) 0%, #EDF2FA 100%);
+}
+.vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:40px;}
+.vision-card{padding:26px;border-radius:14px;background:var(--white);border:1px solid var(--gray-mid);transition:all 0.3s;}
+.vision-card:hover{border-color:var(--blue-light);box-shadow:0 8px 28px rgba(30,116,212,0.09);}
+.vision-icon{font-size:26px;margin-bottom:12px;}
+.vision-card h4{font-size:0.95rem;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.vision-card p{font-size:13.5px;color:var(--gray);line-height:1.75;}
+
+/* 로드맵 */
+.roadmap-section{
+  background: var(--white);
+}
+.roadmap{margin-top:40px;}
+.roadmap-item{display:flex;gap:20px;padding:22px 0;border-bottom:1px solid var(--gray-mid);}
+.roadmap-item:last-child{border-bottom:none;}
+.roadmap-phase{min-width:76px;padding:6px 12px;border-radius:999px;font-size:11.5px;font-weight:700;text-align:center;height:fit-content;margin-top:2px;letter-spacing:0.3px;}
+.phase-beta{background:rgba(30,116,212,0.09);color:var(--blue);}
+.phase-v1{background:rgba(16,185,129,0.1);color:#059669;}
+.phase-v2{background:rgba(124,58,237,0.1);color:#7C3AED;}
+.roadmap-item h4{font-size:14.5px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.roadmap-item p{font-size:13px;color:var(--gray);line-height:1.75;}
+
+/* CTA / 문의 섹션 */
+.cta-section{
+  background: linear-gradient(145deg, #0A1D50 0%, #0F3278 30%, #1560B8 65%, #1E74D4 100%);
+  text-align:center; padding:100px 5%;
+  position:relative; overflow:hidden;
+}
+.cta-section::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image: repeating-linear-gradient(-55deg,transparent,transparent 80px,rgba(255,255,255,0.02) 80px,rgba(255,255,255,0.02) 81px);
+}
+.cta-section>div{position:relative;z-index:1;}
+.cta-section h2{font-size:clamp(1.7rem,3.5vw,2.5rem);font-weight:800;color:white;margin-bottom:16px;letter-spacing:-0.3px;}
+.cta-section p{color:rgba(255,255,255,0.72);margin-bottom:40px;line-height:1.85;font-size:1rem;}
+.cta-btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-cta-white{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;background:white;color:var(--blue-mid);font-size:14px;font-weight:700;text-decoration:none;transition:all 0.25s;box-shadow:0 6px 24px rgba(0,0,0,0.18);}
+.btn-cta-white:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(0,0,0,0.24);background:var(--gray-light);}
+.btn-cta-outline{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;background:rgba(255,255,255,0.1);color:white;font-size:14px;font-weight:700;text-decoration:none;border:1.5px solid rgba(255,255,255,0.38);transition:all 0.25s;}
+.btn-cta-outline:hover{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.65);}
+
+/* 푸터 */
+footer{
+  background: linear-gradient(180deg, #0A1535 0%, #06101F 100%);
+  color:rgba(255,255,255,0.5);
+  padding:56px 5% 40px; text-align:center;
+  border-top:1px solid rgba(30,116,212,0.2);
+}
+.footer-logo{height:28px;object-fit:contain;margin-bottom:20px;opacity:0.72;}
+footer p{font-size:0.82rem;line-height:1.9;}
+.footer-links{display:flex;gap:24px;justify-content:center;margin:16px 0;flex-wrap:wrap;}
+.footer-links a{color:rgba(255,255,255,0.42);text-decoration:none;font-size:0.82rem;transition:color 0.2s;}
+.footer-links a:hover{color:rgba(255,255,255,0.9);}
+.footer-divider{width:36px;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-light));margin:0 auto 20px;border-radius:999px;}
+
+@media(max-width:600px){.vision-grid{grid-template-columns:1fr;}.header-nav .nav-btn-ghost{display:none;}}
+</style>
+</head>
+<body>
+<header>
+  <a href="/" class="logo-wrap"><img src="/images/logo-ezstep.png" alt="EZ-STEP"/></a>
+  <nav class="header-nav">
+    <a href="/" class="nav-btn nav-btn-ghost"><i class="fa-solid fa-house"></i> 홈</a>
+    <a href="#contact" class="nav-btn nav-btn-ghost"><i class="fa-regular fa-envelope"></i> 문의</a>
+    <a href="/builder" class="nav-btn nav-btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> 차트 만들기</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <h1>About EZ-STEP</h1>
+  <p>보건의료 교육 현장의 불편함에서 시작된 작은 아이디어가, 디지털 실습 교육의 표준이 되기까지의 이야기</p>
+</div>
+
+<!-- 시작 이야기 -->
+<section class="story-section">
+  <div class="inner">
+    <div class="section-label">Our Story</div>
+    <h2 class="section-title">왜 EZ-STEP을 만들었나요?</h2>
+    <p class="story-text">
+      치위생학과 임상실습 현장에서 학생들은 여전히 <strong>수기 차트</strong>를 작성합니다. 손으로 그린 치식, 손으로 계산한 PI 지수, 손으로 쓴 평가 기록들. 매번 반복되는 계산 실수, 분실된 차트, 교수님의 무거운 행정 부담.
+    </p>
+    <p class="story-text">
+      "2026년인데, 왜 아직도 수기 차트를 쓰지?" 라는 단순한 질문에서 EZ-STEP이 시작되었습니다. 단순히 종이를 디지털로 바꾸는 것이 아니라, <strong>보건의료 교육 프로세스 전체를 디지털로 재설계</strong>하는 것이 목표입니다.
+    </p>
+    <div class="story-quote">
+      "수기 차트의 한계를 넘어, 데이터 중심의 보건의료 교육을 선도합니다."
+    </div>
+    <p class="story-text">
+      Hy-STEP은 그 첫 번째 결과물입니다. 치위생학과 전용 베타 버전으로 시작해, 간호학과(N-STEP), 치의학과(D-STEP)으로 확장해 나갈 예정입니다. 언젠가는 <strong>모든 보건의료 계열 학과</strong>가 EZ-STEP을 통해 실습 교육을 진행하게 되는 미래를 꿈꿉니다.
+    </p>
+  </div>
+</section>
+
+<!-- 팀 -->
+<section class="team-section">
+  <div class="inner">
+    <div class="section-label">Team</div>
+    <h2 class="section-title">EZ-STEP을 만드는 사람들</h2>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar"><i class="fa-solid fa-user-tie"></i></div>
+        <h4>이지민</h4>
+        <span>Founder &amp; Developer</span>
+        <p>선문대학교 치위생학과 23학번<br/>EZ-STEP 기획 및 개발 총괄</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><i class="fa-solid fa-robot"></i></div>
+        <h4>AI 개발팀</h4>
+        <span>Tech Partner</span>
+        <p>AI 기반 차트 시스템 설계<br/>및 자동화 파이프라인 구축</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar"><i class="fa-solid fa-user-graduate"></i></div>
+        <h4>베타 테스터</h4>
+        <span>선문대 치위생학과</span>
+        <p>실제 임상실습 현장 피드백<br/>및 시스템 검증 참여</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 비전 -->
+<section class="vision-section">
+  <div class="inner">
+    <div class="section-label">Vision</div>
+    <h2 class="section-title">EZ-STEP의 목표</h2>
+    <div class="vision-grid">
+      <div class="vision-card">
+        <div class="vision-icon">🎯</div>
+        <h4>교육 현장의 디지털 전환</h4>
+        <p>수기 차트를 완전히 대체하는 표준 디지털 실습 교육 플랫폼 구축</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-icon">🏫</div>
+        <h4>학교별 맞춤 시스템</h4>
+        <p>각 학교의 교육 방식과 커리큘럼에 맞춘 독립적인 차트 시스템 제공</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-icon">🤖</div>
+        <h4>AI 기반 교육 지원</h4>
+        <p>AI 어시스턴트를 통한 자기주도 학습과 임상 판단력 향상 지원</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-icon">📊</div>
+        <h4>데이터 기반 교육 혁신</h4>
+        <p>축적된 교육 데이터를 분석하여 더 나은 보건의료 인재 양성에 기여</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 로드맵 -->
+<section class="roadmap-section">
+  <div class="inner">
+    <div class="section-label">Roadmap</div>
+    <h2 class="section-title">앞으로의 계획</h2>
+    <div class="roadmap">
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-beta">Beta</span>
+        <div>
+          <h4>Hy-STEP — 치위생학과 전용 (현재)</h4>
+          <p>섹션 커스텀 디지털 차트, AI 어시스턴트, 관리자 대시보드, 학교별 독립 배포 시스템</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-v1">v1.0</span>
+        <div>
+          <h4>N-STEP — 간호학과 전용</h4>
+          <p>간호 실습 특화 차트, 간호진단 시스템, 간호과정 기록 자동화</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-v1">v1.5</span>
+        <div>
+          <h4>D-STEP — 치의학과 전용</h4>
+          <p>치의학 전문 실습 차트, 종합적 치료계획 수립 시스템</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-v2">v2.0</span>
+        <div>
+          <h4>EZ-STEP Platform — 통합 플랫폼</h4>
+          <p>전 보건의료 계열 통합, 구독형 SaaS 완전 자동화, 데이터 솔루션 서비스</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / 문의 -->
+<section class="cta-section" id="contact">
+  <div style="max-width:620px;margin:0 auto;">
+    <h2>함께 만들어가요</h2>
+    <p>EZ-STEP에 관심이 있으신가요?<br/>문의, 파트너십, 베타 참여 모두 환영합니다.</p>
+    <div class="cta-btn-group">
+      <a href="mailto:ezstep.platform@gmail.com?subject=[EZ-STEP] 문의드립니다" class="btn-cta-white">
+        <i class="fa-regular fa-envelope"></i> 이메일 문의
+      </a>
+      <a href="/builder" class="btn-cta-outline">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> 차트 만들기
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <img src="/images/logo-ezstep.png" alt="EZ-STEP" class="footer-logo"/>
+  <div class="footer-divider"></div>
+  <div class="footer-links">
+    <a href="/">홈</a>
+    <a href="/about">About</a>
+    <a href="/builder">차트 만들기</a>
+    <a href="mailto:ezstep.platform@gmail.com">문의하기</a>
+  </div>
+  <p>© 2026 EZ-STEP. Education Zero-in-on Student Training E-Platform</p>
+</footer>
+</body>
+</html>
