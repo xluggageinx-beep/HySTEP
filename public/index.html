@@ -3,571 +3,1774 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EZ-STEP | 보건의료 통합 실습 교육 플랫폼</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<title>EZ-STEP | 치위생학과 임상실습 디지털 플랫폼</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<!-- Pretendard Variable -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+
 <style>
-  :root {
-    --blue: #1E74D4;
-    --blue-light: #5BA3E8;
-    --blue-mid: #1560B8;
-    --blue-dark: #0D3E80;
-    --navy: #0D1B4B;
-    --navy-light: #1A2D6B;
-    --black: #1A1A2E;
-    --gray: #6B7280;
-    --gray-mid: #E5E7EB;
-    --gray-light: #F5F6F8;
-    --white: #FFFFFF;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Noto Sans KR', sans-serif; color: var(--black); background: var(--white); }
+/* ============================================
+   Design Tokens
+   ============================================ */
+:root {
+  --brand-900: #0A1E4A;
+  --brand-800: #0D2A5E;
+  --brand-700: #123878;
+  --brand-600: #1E5FBF;
+  --brand-500: #1E74D4;
+  --brand-400: #4A96E8;
+  --brand-300: #7EC8FF;
+  --brand-100: #E8F1FE;
+  --brand-50:  #F4F8FF;
 
-  /* ── 헤더 ── */
-  header {
-    position: fixed; top:0; left:0; right:0; z-index:1000;
-    background: rgba(255,255,255,0.97);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(30,116,212,0.1);
-    padding: 0 5%;
-    height: 70px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .logo-wrap { display:flex; align-items:center; gap:10px; text-decoration:none; }
-  .logo-wrap img { height: 36px; object-fit: contain; }
-  .header-nav { display:flex; align-items:center; gap:8px; }
-  .nav-btn {
-    display:flex; align-items:center; gap:6px;
-    padding: 8px 16px; border-radius:8px;
-    font-size:14px; font-weight:500; cursor:pointer;
-    text-decoration:none; transition: all 0.2s;
-    border: none;
-  }
-  .nav-btn-ghost { color:var(--navy); background:transparent; }
-  .nav-btn-ghost:hover { background:var(--gray-light); }
-  .nav-btn-outline {
-    color:var(--blue); background:transparent;
-    border:1.5px solid var(--blue);
-  }
-  .nav-btn-outline:hover { background:var(--blue); color:var(--white); }
-  .nav-btn-primary { color:var(--white); background:var(--blue); }
-  .nav-btn-primary:hover { background:var(--blue-dark); }
+  --accent: #7EC8FF;
+  --hero-grad-from: #0D2A5E;
+  --hero-grad-to:   #1E74D4;
+  --hero-grad-accent: #2E90FF;
 
-  /* ── 히어로 섹션 ── */
-  .hero {
-    min-height: 100vh;
-    background: linear-gradient(160deg, #0D2A5E 0%, #1350A0 35%, #1E74D4 65%, #2986E8 100%);
-    display: flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    text-align:center;
-    padding: 110px 5% 0;
-    position: relative; overflow: hidden;
-  }
-  /* 사선 라인 텍스처 */
-  .hero::before {
-    content:'';
-    position:absolute; inset:0; pointer-events:none;
-    background-image: repeating-linear-gradient(
-      -55deg,
-      transparent,
-      transparent 60px,
-      rgba(255,255,255,0.025) 60px,
-      rgba(255,255,255,0.025) 61px
-    );
-  }
-  /* 하단 페이드아웃 */
-  .hero::after {
-    content:'';
-    position:absolute; bottom:0; left:0; right:0; height:220px;
-    background: linear-gradient(to bottom, transparent, rgba(13,26,62,0.55));
-    pointer-events:none;
-  }
-  .hero > * { position:relative; z-index:2; }
+  --ink-900: #0B1220;
+  --ink-800: #17223A;
+  --ink-700: #2A3654;
+  --ink-500: #5A6785;
+  --ink-400: #7B87A5;
+  --ink-300: #A9B2CB;
+  --ink-200: #D8DEEC;
+  --ink-100: #EBEFF8;
+  --ink-50:  #F5F7FC;
+  --bg:      #F8FAFC;
+  --card:    #FFFFFF;
+  --line:    rgba(11, 18, 32, 0.08);
+  --line-strong: rgba(11, 18, 32, 0.14);
 
-  .hero-badge {
-    display:inline-flex; align-items:center; gap:8px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.28);
-    color: rgba(255,255,255,0.92);
-    padding: 7px 20px; border-radius:999px;
-    font-size:13px; font-weight:500; margin-bottom:32px;
-    letter-spacing:0.4px;
-  }
-  .hero-badge i { color: rgba(255,255,255,0.7); font-size:11px; }
+  --font-sans: "Pretendard Variable", "Pretendard", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  .hero-logo-img {
-    height: 80px; margin-bottom: 28px;
-    object-fit: contain;
-  }
-  .hero h1 {
-    font-size: clamp(2.4rem, 5vw, 4rem);
-    font-weight:800; color: var(--white);
-    line-height:1.18; margin-bottom:22px;
-    letter-spacing:-1.5px;
-  }
-  .hero h1 span {
-    color: transparent;
-    -webkit-text-stroke: 1.5px rgba(255,255,255,0.7);
-  }
-  .hero p {
-    font-size:clamp(0.95rem, 1.8vw, 1.15rem);
-    color: rgba(255,255,255,0.78);
-    max-width:580px; line-height:1.9; margin-bottom:44px;
-  }
-  .hero-cta-group { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-bottom:0; }
-  .btn-hero-main {
-    display:inline-flex; align-items:center; gap:10px;
-    background: var(--white); color: var(--blue-mid);
-    padding: 15px 38px; border-radius:10px;
-    font-size:1rem; font-weight:700;
-    text-decoration:none; transition: all 0.25s;
-    box-shadow: 0 6px 28px rgba(0,0,0,0.2);
-    border: none; cursor: pointer;
-  }
-  .btn-hero-main:hover {
-    background: var(--gray-light);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 36px rgba(0,0,0,0.28);
-  }
-  .btn-hero-sub {
-    display:inline-flex; align-items:center; gap:10px;
-    background: transparent; color: var(--white);
-    padding: 15px 30px; border-radius:10px;
-    font-size:1rem; font-weight:600;
-    text-decoration:none; transition: all 0.25s;
-    border: 1.5px solid rgba(255,255,255,0.45);
-    cursor: pointer;
-  }
-  .btn-hero-sub:hover { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.75); }
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* stats 바 */
-  .hero-stats {
-    display:flex; width:100%; max-width:860px;
-    margin-top:64px;
-    border-top: 1px solid rgba(255,255,255,0.15);
-    position:relative; z-index:2;
-  }
-  .stat-item {
-    flex:1; text-align:center; padding:28px 16px;
-    border-right:1px solid rgba(255,255,255,0.12);
-    position:relative;
-  }
-  .stat-item:last-child { border-right:none; }
-  .stat-num {
-    font-size:1.9rem; font-weight:800; color:var(--white);
-    font-family:'Inter',sans-serif; line-height:1;
-    margin-bottom:6px;
-  }
-  .stat-num span { color:rgba(255,255,255,0.55); font-size:1.2rem; }
-  .stat-label { font-size:0.72rem; color:rgba(255,255,255,0.5); letter-spacing:0.8px; text-transform:uppercase; }
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
 
-  /* ── 섹션 공통 ── */
-  section { padding: 88px 5%; }
-  .section-label {
-    display:inline-block;
-    background: rgba(30,116,212,0.09);
-    color: var(--blue);
-    padding: 5px 14px; border-radius:999px;
-    font-size:12px; font-weight:700; margin-bottom:16px;
-    letter-spacing:0.8px; text-transform:uppercase;
-  }
-  .section-title {
-    font-size: clamp(1.7rem, 3vw, 2.5rem);
-    font-weight:800; color:var(--navy);
-    line-height:1.25; margin-bottom:14px;
-  }
-  .section-sub { font-size:1rem; color:var(--gray); line-height:1.85; max-width:600px; }
+  --shadow-sm: 0 1px 2px rgba(11,18,32,0.04), 0 2px 6px rgba(11,18,32,0.04);
+  --shadow-md: 0 4px 12px rgba(11,18,32,0.06), 0 12px 32px rgba(11,18,32,0.06);
+  --shadow-lg: 0 12px 32px rgba(13,42,94,0.12), 0 24px 60px rgba(13,42,94,0.16);
+}
 
-  /* ── 서비스 소개 ── */
-  .services {
-    background: linear-gradient(180deg, var(--white) 0%, var(--gray-light) 40%, #EDF2FA 100%);
-  }
-  .services-grid {
-    display:grid; grid-template-columns: repeat(3, 1fr);
-    gap:20px; margin-top:52px;
-  }
-  .service-card {
-    background:var(--white); border-radius:16px;
-    padding:32px 26px;
-    border:1px solid var(--gray-mid);
-    transition: all 0.3s ease;
-    position:relative; overflow:hidden;
-  }
-  /* hover: 색반전 효과 (상단 라인 제거) */
-  .service-card:hover {
-    background: var(--navy);
-    border-color: var(--navy);
-    transform: translateY(-5px);
-    box-shadow: 0 20px 56px rgba(13,27,75,0.22);
-  }
-  .service-card:hover h3 { color: var(--white); }
-  .service-card:hover p { color: rgba(255,255,255,0.72); }
-  .service-card:hover .service-tag {
-    background: rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.85);
-  }
-  .service-card:hover .service-icon {
-    background: rgba(255,255,255,0.12);
-  }
-  .service-icon {
-    width:50px; height:50px; border-radius:12px;
-    background: rgba(30,116,212,0.08);
-    display:flex; align-items:center; justify-content:center;
-    font-size:20px; color:var(--blue); margin-bottom:20px;
-    transition: all 0.3s;
-  }
-  .service-card h3 { font-size:1.05rem; font-weight:700; color:var(--navy); margin-bottom:10px; transition:color 0.3s; }
-  .service-card p { font-size:0.875rem; color:var(--gray); line-height:1.75; transition:color 0.3s; }
-  .service-tag {
-    display:inline-block; margin-top:16px;
-    background:rgba(30,116,212,0.07); color:var(--blue);
-    padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:600;
-    transition: all 0.3s;
-  }
+/* ============================================
+   Reset + Base
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-900);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: 0; background: none; }
+img { max-width: 100%; display: block; }
 
-  /* ── How It Works ── */
-  .chart-intro {
-    background: var(--white);
-    position:relative;
-  }
-  .chart-intro::before {
-    content:'';
-    position:absolute; bottom:0; left:0; right:0; height:3px;
-    background: linear-gradient(90deg, transparent, var(--blue-light), var(--blue), transparent);
-  }
-  .steps-visual {
-    display:grid; grid-template-columns: repeat(4,1fr);
-    gap:0; margin-top:52px;
-    border:1px solid var(--gray-mid); border-radius:16px; overflow:hidden;
-  }
-  .step-item {
-    text-align:center; padding:36px 24px;
-    background: var(--white);
-    border-right:1px solid var(--gray-mid);
-    position:relative; transition: background 0.3s;
-  }
-  .step-item:last-child { border-right:none; }
-  .step-item:hover { background: var(--gray-light); }
-  .step-num {
-    width:44px; height:44px; border-radius:50%;
-    background: linear-gradient(135deg, var(--blue-mid), var(--blue-light));
-    color:var(--white);
-    font-size:1.1rem; font-weight:800; font-family:'Inter',sans-serif;
-    display:flex; align-items:center; justify-content:center;
-    margin:0 auto 18px;
-    box-shadow: 0 4px 16px rgba(30,116,212,0.28);
-  }
-  .step-item h4 { font-size:0.9rem; font-weight:700; color:var(--navy); margin-bottom:8px; }
-  .step-item p { font-size:0.82rem; color:var(--gray); line-height:1.65; }
+/* ============================================
+   Container
+   ============================================ */
+.container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 40px);
+}
 
-  /* ── Hy-STEP 소개 ── */
-  .hystep-section {
-    background: linear-gradient(145deg, #0A1D50 0%, #0F3278 30%, #1560B8 65%, #1E74D4 100%);
-    position:relative; overflow:hidden;
-  }
-  .hystep-section::before {
-    content:'';
-    position:absolute; inset:0; pointer-events:none;
-    background-image: repeating-linear-gradient(
-      -55deg, transparent, transparent 70px,
-      rgba(255,255,255,0.018) 70px, rgba(255,255,255,0.018) 71px
-    );
-  }
-  .hystep-inner {
-    display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;
-    position:relative; z-index:1;
-  }
-  .hystep-logo { height:76px; object-fit:contain; margin-bottom:28px; }
-  .hystep-section .section-title { color:var(--white); }
-  .hystep-section .section-sub { color:rgba(255,255,255,0.68); max-width:100%; }
-  .feature-list { list-style:none; margin-top:28px; }
-  .feature-list li {
-    display:flex; align-items:flex-start; gap:12px;
-    padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.07);
-    color:rgba(255,255,255,0.82); font-size:0.92rem; line-height:1.6;
-  }
-  .feature-list li:last-child { border-bottom:none; }
-  .feature-list li i { color:rgba(255,255,255,0.55); margin-top:3px; flex-shrink:0; font-size:13px; }
-  .hystep-visual {
-    background:rgba(255,255,255,0.05);
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:20px; padding:28px;
-  }
-  .mini-chart {
-    background:rgba(0,0,0,0.18); border-radius:12px; padding:16px; margin-bottom:10px;
-  }
-  .mini-chart:last-child { margin-bottom:0; }
-  .mini-chart-title {
-    font-size:10.5px; font-weight:700; color:rgba(255,255,255,0.5);
-    text-transform:uppercase; letter-spacing:1.2px; margin-bottom:12px;
-  }
-  .mini-bar { height:5px; border-radius:999px; background:rgba(255,255,255,0.1); margin-bottom:6px; }
-  .mini-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg, var(--blue-light), #7EC8FF); }
+/* ============================================
+   Buttons
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+}
+.btn-brand {
+  background: #fff;
+  color: var(--brand-800);
+  box-shadow: 0 6px 20px rgba(255,255,255,0.15);
+}
+.btn-brand:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(255,255,255,0.25); }
+.btn-ghost {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.24);
+  backdrop-filter: blur(10px);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.12); }
+.btn-outline {
+  background: #fff;
+  color: var(--ink-900);
+  border: 1px solid var(--line-strong);
+}
+.btn-outline:hover { border-color: var(--ink-900); }
+.btn-primary {
+  background: var(--ink-900);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--brand-800); transform: translateY(-1px); }
+.btn-lg { padding: 15px 26px; font-size: 15px; }
+.btn-sm { padding: 9px 16px; font-size: 14px; }
+.btn .arrow { transition: transform 0.2s var(--ease); }
+.btn:hover .arrow { transform: translateX(3px); }
 
-  /* ── CTA 섹션 ── */
-  .cta-section {
-    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue) 100%);
-    text-align:center; padding:100px 5%;
-    position:relative; overflow:hidden;
-  }
-  .cta-section::before {
-    content:'';
-    position:absolute; inset:0; pointer-events:none;
-    background-image: repeating-linear-gradient(
-      -55deg, transparent, transparent 80px,
-      rgba(255,255,255,0.02) 80px, rgba(255,255,255,0.02) 81px
-    );
-  }
-  .cta-section > div { position:relative; z-index:1; }
-  .cta-section h2 { font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:800; color:var(--white); margin-bottom:18px; letter-spacing:-0.5px; }
-  .cta-section p { color:rgba(255,255,255,0.75); margin-bottom:44px; font-size:1.05rem; line-height:1.8; }
-  .btn-cta-white {
-    display:inline-flex; align-items:center; gap:10px;
-    background:var(--white); color:var(--blue-mid);
-    padding:16px 48px; border-radius:10px;
-    font-size:1.05rem; font-weight:700;
-    text-decoration:none; transition:all 0.25s;
-    box-shadow:0 8px 32px rgba(0,0,0,0.18);
-    border:none; cursor:pointer;
-  }
-  .btn-cta-white:hover { transform:translateY(-2px); box-shadow:0 12px 44px rgba(0,0,0,0.26); background:var(--gray-light); }
+/* ============================================
+   Header
+   ============================================ */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 16px 0;
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease), backdrop-filter 0.3s var(--ease);
+  border-bottom: 1px solid transparent;
+}
+.header.scrolled {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom-color: var(--line);
+}
+.header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-decoration: none;
+}
+.header.scrolled .logo-mark { color: var(--ink-900); }
+.logo-mark .dot {
+  width: 10px; height: 10px; border-radius: 3px;
+  background: linear-gradient(135deg, var(--brand-400), var(--brand-300));
+  box-shadow: 0 0 0 3px rgba(126,200,255,0.18);
+  flex-shrink: 0;
+}
+.logo-mark img {
+  height: 32px;
+  object-fit: contain;
+  display: block;
+}
+.header.scrolled .logo-mark img {
+  filter: none;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-cta { margin-left: 8px; }
 
-  /* ── 푸터 ── */
-  footer {
-    background: linear-gradient(180deg, #0A1535 0%, #06101F 100%);
-    color: rgba(255,255,255,0.5);
-    padding:56px 5% 40px; text-align:center;
-    border-top: 1px solid rgba(30,116,212,0.2);
-  }
-  .footer-logo { height:30px; object-fit:contain; margin-bottom:20px; opacity:0.75; }
-  footer p { font-size:0.82rem; line-height:1.9; }
-  footer .footer-links { display:flex; gap:24px; justify-content:center; margin:18px 0; flex-wrap:wrap; }
-  footer .footer-links a { color:rgba(255,255,255,0.42); text-decoration:none; font-size:0.82rem; transition:color 0.2s; }
-  footer .footer-links a:hover { color:rgba(255,255,255,0.9); }
-  .footer-divider { width:40px; height:2px; background:linear-gradient(90deg,var(--blue),var(--blue-light)); margin:0 auto 20px; border-radius:999px; }
+/* ============================================
+   Hero
+   ============================================ */
+.hero {
+  position: relative;
+  padding: 140px 0 90px;
+  background:
+    radial-gradient(ellipse 900px 500px at 85% 20%, var(--hero-grad-accent) 0%, transparent 55%),
+    radial-gradient(ellipse 700px 400px at 15% 90%, rgba(255,255,255,0.05) 0%, transparent 55%),
+    linear-gradient(160deg, var(--hero-grad-from) 0%, var(--hero-grad-to) 100%);
+  color: #fff;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255,255,255,0.03) 0 1px,
+    transparent 1px 60px
+  );
+  pointer-events: none;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+}
+.hero .container {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: center;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+}
+.hero-badge .pill {
+  padding: 3px 9px;
+  background: var(--accent);
+  color: var(--brand-900);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.hero h1 {
+  margin-top: 22px;
+  font-size: clamp(38px, 5.6vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+.hero h1 .grad {
+  background: linear-gradient(90deg, #fff 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-sub {
+  margin-top: 22px;
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.65;
+  color: rgba(255,255,255,0.78);
+  max-width: 520px;
+}
+.hero-ctas {
+  margin-top: 34px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero-meta {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  flex-wrap: wrap;
+}
+.hero-meta .divider { width: 1px; height: 12px; background: rgba(255,255,255,0.2); }
 
-  /* ── 반응형 ── */
-  @media (max-width:1024px) {
-    .services-grid { grid-template-columns: repeat(2,1fr); }
-  }
-  @media (max-width:768px) {
-    .hystep-inner { grid-template-columns:1fr; gap:44px; }
-    .steps-visual { grid-template-columns:1fr 1fr; border-radius:12px; }
-    .step-item { border-right:none; border-bottom:1px solid var(--gray-mid); }
-    .step-item:nth-child(odd) { border-right:1px solid var(--gray-mid); }
-    .hero-stats { flex-wrap:wrap; }
-    .stat-item { min-width:33%; }
-    .services-grid { grid-template-columns:1fr; }
-  }
-  @media (max-width:480px) {
-    .steps-visual { grid-template-columns:1fr; }
-    .step-item { border-right:none !important; }
-    .header-nav .nav-btn-ghost { display:none; }
-    .hero-stats { border-top: 1px solid rgba(255,255,255,0.15); }
-    .stat-item { min-width:50%; border-bottom:1px solid rgba(255,255,255,0.08); }
-  }
+/* Hero visual — browser frame mockup */
+.hero-visual {
+  position: relative;
+  transform: perspective(1600px) rotateY(-4deg) rotateX(3deg);
+  transform-origin: center;
+  transition: transform 0.5s var(--ease);
+}
+.hero-visual:hover {
+  transform: perspective(1600px) rotateY(-2deg) rotateX(1.5deg) translateY(-4px);
+}
+.hero-visual .halo {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle at 50% 50%, rgba(126,200,255,0.25), transparent 60%);
+  filter: blur(30px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Browser frame */
+.browser-frame {
+  position: relative;
+  z-index: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 30px 80px rgba(13,42,94,0.28), 0 0 0 1px rgba(11,18,32,0.06);
+}
+.browser-titlebar {
+  height: 40px;
+  background: linear-gradient(180deg, #F7F8FB 0%, #EEF1F6 100%);
+  border-bottom: 1px solid rgba(11,18,32,0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+}
+.browser-dots { display: flex; gap: 7px; }
+.browser-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+}
+.browser-dot.red   { background: #FF605C; }
+.browser-dot.yellow{ background: #FFBD44; }
+.browser-dot.green { background: #00CA4E; }
+.browser-urlbar {
+  flex: 1;
+  max-width: 320px;
+  margin: 0 auto;
+  height: 24px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid rgba(11,18,32,0.08);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  color: #5A6785;
+}
+.browser-spacer { width: 46px; }
+.browser-body {
+  height: 420px;
+  background: #F5F7FC;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+}
+
+/* Chart mockup inside browser */
+.cm-sidebar {
+  background: #fff;
+  border-right: 1px solid rgba(11,18,32,0.06);
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cm-sb-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7B87A5;
+  padding: 4px 8px 10px;
+}
+.cm-sb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5A6785;
+  cursor: default;
+}
+.cm-sb-item.active {
+  background: var(--brand-100);
+  color: var(--brand-700);
+  font-weight: 600;
+}
+.cm-sb-num {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  background: #EBEFF8;
+  color: #7B87A5;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+.cm-sb-item.active .cm-sb-num {
+  background: var(--brand-600);
+  color: #fff;
+}
+.cm-main {
+  padding: 18px 20px;
+  overflow: hidden;
+}
+.cm-crumb { font-size: 10.5px; color: #7B87A5; margin-bottom: 3px; }
+.cm-h2 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px; }
+.cm-tabs {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  background: #EBEFF8;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.cm-tab {
+  padding: 4px 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  border-radius: 999px;
+  color: #7B87A5;
+}
+.cm-tab.active {
+  background: #fff;
+  color: #0B1220;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.cm-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.cm-card {
+  background: #fff;
+  border: 1px solid rgba(11,18,32,0.06);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.cm-card-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7B87A5;
+  margin-bottom: 6px;
+}
+.cm-card-val { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #0B1220; }
+.cm-card-unit { font-size: 12px; color: #5A6785; margin-left: 3px; font-weight: 500; }
+.cm-progress { height: 5px; background: #EBEFF8; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+.cm-progress-fill { height: 100%; border-radius: 999px; }
+.cm-goal-row { display: flex; gap: 5px; margin-top: 7px; }
+.cm-goal {
+  flex: 1; padding: 5px 7px;
+  text-align: center; font-size: 10px; font-weight: 700;
+  border-radius: 5px; border: 1px solid transparent;
+}
+.cm-goal.met   { background: rgba(59,189,137,0.14); color: #2B9868; border-color: rgba(59,189,137,0.3); }
+.cm-goal.partial { background: rgba(245,179,66,0.15); color: #B87D14; border-color: rgba(245,179,66,0.35); }
+.cm-goal.unmet { background: rgba(233,100,100,0.14); color: #C9464A; border-color: rgba(233,100,100,0.32); }
+.cm-ai {
+  background: linear-gradient(135deg, #F4F8FF 0%, #E8F1FE 100%);
+  border: 1px solid var(--brand-100);
+  border-radius: 10px;
+  padding: 11px 13px;
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.cm-ai-icon {
+  width: 24px; height: 24px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-400));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 10px;
+  flex-shrink: 0;
+}
+.cm-ai-who { font-size: 9.5px; font-weight: 700; color: var(--brand-700); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+.cm-ai-text { font-size: 11px; line-height: 1.5; color: #2A3654; }
+
+/* ============================================
+   Trust Bar
+   ============================================ */
+.trustbar {
+  padding: 30px 0;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.trustbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.trustbar-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  white-space: nowrap;
+}
+.trustbar-logos {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 4vw, 48px);
+  flex-wrap: wrap;
+}
+.trustbar-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-400);
+  letter-spacing: -0.01em;
+}
+.trustbar-logo svg { opacity: 0.55; }
+
+/* ============================================
+   Section base
+   ============================================ */
+.section { padding: clamp(70px, 10vw, 120px) 0; }
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--brand-100);
+  color: var(--brand-700);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.section-title {
+  margin-top: 18px;
+  font-size: clamp(30px, 3.6vw, 46px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  color: var(--ink-900);
+  max-width: 780px;
+}
+.section-sub {
+  margin-top: 16px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-500);
+  max-width: 620px;
+}
+.section-head-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 56px;
+}
+.section-head-center .section-title,
+.section-head-center .section-sub { max-width: 720px; }
+
+/* ============================================
+   Features Grid
+   ============================================ */
+.features-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: end;
+  margin-bottom: 56px;
+}
+.features-head .aside {
+  color: var(--ink-500);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 420px;
+  justify-self: end;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.feature-card {
+  position: relative;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  transition: all 0.35s var(--ease);
+  overflow: hidden;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+.feature-card:hover {
+  background: var(--ink-900);
+  color: #fff;
+  border-color: var(--ink-900);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.feature-card .icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--brand-100);
+  color: var(--brand-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  font-size: 20px;
+}
+.feature-card:hover .icon { background: rgba(255,255,255,0.12); color: var(--accent); }
+.feature-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+  color: var(--ink-900);
+  transition: color 0.3s var(--ease);
+}
+.feature-card:hover h3 { color: #fff; }
+.feature-card p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-500);
+  transition: color 0.3s var(--ease);
+  flex: 1;
+}
+.feature-card:hover p { color: rgba(255,255,255,0.7); }
+.feature-card .tag {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-600);
+  letter-spacing: 0.02em;
+  transition: color 0.3s var(--ease);
+}
+.feature-card:hover .tag { color: var(--accent); }
+.feature-card .tag-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ============================================
+   Chart Sections List
+   ============================================ */
+.section-list {
+  background: linear-gradient(180deg, #fff 0%, var(--brand-50) 100%);
+}
+.section-list-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 6vw, 80px);
+  align-items: start;
+}
+.section-list-header .section-title { font-size: clamp(30px, 3.4vw, 44px); }
+.badge-list {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.badge-list span {
+  padding: 6px 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-700);
+}
+.section-list-items { border-top: 1px solid var(--line); }
+.section-list-item {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 16px;
+  padding: 20px 4px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.25s var(--ease);
+  border-radius: var(--r-sm);
+}
+.section-list-item:hover { background: rgba(255,255,255,0.6); }
+.section-list-item .num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-600);
+  letter-spacing: 0.02em;
+}
+.section-list-item .info h4 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.section-list-item .info p {
+  font-size: 13.5px;
+  color: var(--ink-500);
+  line-height: 1.55;
+}
+.section-list-item .chev {
+  color: var(--ink-300);
+  transition: transform 0.2s var(--ease), color 0.2s var(--ease);
+}
+.section-list-item:hover .chev { color: var(--brand-600); transform: translateX(3px); }
+
+/* ============================================
+   Add-ons
+   ============================================ */
+.addons { background: #fff; }
+.addons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.addon-card {
+  padding: 26px;
+  border-radius: var(--r-lg);
+  background: var(--ink-50);
+  border: 1px solid var(--line);
+  position: relative;
+  transition: all 0.3s var(--ease);
+}
+.addon-card:hover {
+  background: #fff;
+  border-color: var(--brand-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+.addon-card .badge {
+  position: absolute;
+  top: 22px; right: 22px;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--brand-100);
+  color: var(--brand-700);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.addon-card .glyph {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--brand-600);
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+.addon-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.addon-card p { font-size: 13.5px; line-height: 1.6; color: var(--ink-500); }
+
+/* ============================================
+   Big Preview
+   ============================================ */
+.big-preview {
+  background:
+    radial-gradient(ellipse 800px 400px at 50% 0%, rgba(30,116,212,0.12) 0%, transparent 60%),
+    var(--bg);
+}
+.big-preview-frame {
+  margin-top: 60px;
+  position: relative;
+}
+.big-preview-frame::before {
+  content: "";
+  position: absolute;
+  inset: -20px -40px;
+  background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(30,116,212,0.14), transparent 70%);
+  filter: blur(30px);
+  z-index: -1;
+}
+/* Big preview browser frame */
+.big-preview-frame .browser-frame .browser-body {
+  height: 500px;
+}
+
+/* ============================================
+   How It Works
+   ============================================ */
+.how { background: linear-gradient(180deg, var(--bg) 0%, #fff 100%); }
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  position: relative;
+}
+.how-grid::before {
+  content: "";
+  position: absolute;
+  top: 34px;
+  left: 8%; right: 8%;
+  height: 1px;
+  border-top: 1.5px dashed var(--brand-300);
+  z-index: 0;
+}
+.how-step {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 24px;
+}
+.how-step .num {
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-500));
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(30,116,212,0.28);
+}
+.how-step h4 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }
+.how-step p { font-size: 13.5px; line-height: 1.6; color: var(--ink-500); }
+.how-step .meta {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-400);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ============================================
+   Dark Brand Section
+   ============================================ */
+.brand-dark {
+  background: linear-gradient(160deg, var(--brand-800) 0%, var(--brand-600) 100%);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.brand-dark::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255,255,255,0.025) 0 1px,
+    transparent 1px 60px
+  );
+  pointer-events: none;
+}
+.brand-dark .container { position: relative; z-index: 1; }
+.brand-dark-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+}
+.brand-dark .logo-big {
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 32px;
+  opacity: 0.95;
+  filter: brightness(0) invert(1);
+}
+.brand-dark h2 {
+  font-size: clamp(32px, 3.6vw, 46px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+}
+.brand-dark .desc {
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.72);
+  max-width: 480px;
+}
+.check-list {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+}
+.check-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14.5px;
+  color: rgba(255,255,255,0.9);
+}
+.check-list li .check {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.24);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+/* Chart preview in dark section */
+.chart-preview {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-xl);
+  padding: 24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+}
+.chart-preview .chart-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.chart-preview .chart-card .label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.chart-preview .chart-card .value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.chart-preview .progress {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.chart-preview .progress .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #fff);
+  border-radius: 999px;
+  width: 78%;
+}
+.chart-preview .goal-row {
+  display: flex; gap: 8px; margin-top: 4px;
+}
+.chart-preview .goal {
+  flex: 1; padding: 10px 12px;
+  border-radius: 10px; font-size: 12px; font-weight: 700;
+  text-align: center; border: 1px solid transparent;
+}
+.chart-preview .goal.met   { background: rgba(59,189,137,0.15); color: #86EAB6; border-color: rgba(59,189,137,0.3); }
+.chart-preview .goal.partial { background: rgba(245,179,66,0.15); color: #F7C56E; border-color: rgba(245,179,66,0.3); }
+.chart-preview .goal.unmet { background: rgba(233,100,100,0.15); color: #F49B9B; border-color: rgba(233,100,100,0.3); }
+.chart-preview .ai-card {
+  background: rgba(126,200,255,0.1);
+  border: 1px solid rgba(126,200,255,0.25);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.chart-preview .ai-card .ai-glyph {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--brand-900);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 12px;
+  flex-shrink: 0;
+}
+.chart-preview .ai-card .ai-body { font-size: 13px; line-height: 1.55; color: rgba(255,255,255,0.9); }
+.chart-preview .ai-card .ai-body .who {
+  font-size: 11px; color: var(--accent); font-weight: 700;
+  margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+/* ============================================
+   Final CTA
+   ============================================ */
+.cta-final {
+  background: var(--bg);
+  padding: clamp(70px, 10vw, 110px) 0;
+}
+.cta-card {
+  background:
+    radial-gradient(ellipse 500px 240px at 100% 0%, rgba(126,200,255,0.4) 0%, transparent 60%),
+    linear-gradient(135deg, var(--brand-800) 0%, var(--brand-600) 100%);
+  border-radius: var(--r-xl);
+  padding: clamp(50px, 7vw, 80px);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(13,42,94,0.25);
+}
+.cta-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255,255,255,0.03) 0 1px,
+    transparent 1px 60px
+  );
+  pointer-events: none;
+}
+.cta-card > * { position: relative; z-index: 1; }
+.cta-card h2 {
+  font-size: clamp(30px, 3.8vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  font-weight: 800;
+  max-width: 640px;
+}
+.cta-card p {
+  margin-top: 18px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.75);
+  max-width: 520px;
+}
+.cta-actions {
+  margin-top: 34px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.footer {
+  background: linear-gradient(160deg, #0A1535 0%, #06101F 100%);
+  color: rgba(255,255,255,0.7);
+  padding: 70px 0 40px;
+  font-size: 14px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.footer .brand-block img { height: 30px; object-fit: contain; margin-bottom: 16px; opacity: 0.85; filter: brightness(0) invert(1); }
+.footer .brand-block p { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.55); max-width: 300px; }
+.footer h5 {
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: #fff; margin-bottom: 18px;
+}
+.footer ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer ul a { color: rgba(255,255,255,0.6); font-size: 13.5px; transition: color 0.2s; }
+.footer ul a:hover { color: #fff; }
+.footer ul li { color: rgba(255,255,255,0.45); font-size: 13px; }
+.footer-bottom {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.4);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ============================================
+   Reveal Animation
+   ============================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1024px) {
+  .hero .container { grid-template-columns: 1fr; }
+  .hero-visual { transform: none; display: none; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-head { grid-template-columns: 1fr; }
+  .features-head .aside { justify-self: start; }
+  .addons-grid { grid-template-columns: repeat(2, 1fr); }
+  .how-grid { grid-template-columns: repeat(2, 1fr); }
+  .how-grid::before { display: none; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .section-list-grid { grid-template-columns: 1fr; }
+  .brand-dark-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .hero-visual { display: none; }
+}
+@media (max-width: 640px) {
+  .features-grid,
+  .addons-grid,
+  .how-grid,
+  .footer-grid { grid-template-columns: 1fr; }
+  .nav { display: none; }
+  .nav-mobile-cta { display: flex !important; }
+  .hero { padding: 120px 0 70px; }
+  .hero .container { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<!-- ── 헤더 ── -->
-<header>
-  <a href="/" class="logo-wrap">
-    <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
-  </a>
-  <nav class="header-nav">
-    <a href="/about" class="nav-btn nav-btn-ghost"><i class="fa-regular fa-file-lines"></i> About</a>
-    <a href="/about#contact" class="nav-btn nav-btn-outline">
-      <i class="fa-regular fa-envelope"></i> 문의 메일
+<!-- ── Header ── -->
+<header class="header" id="site-header">
+  <div class="container">
+    <a href="/" class="logo-mark">
+      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
     </a>
-    <a href="/builder" class="nav-btn nav-btn-primary">
-      <i class="fa-solid fa-wand-magic-sparkles"></i> 차트 만들기
-    </a>
-  </nav>
+    <nav class="nav">
+      <a class="btn btn-primary btn-sm nav-cta" href="/builder">
+        차트 만들기
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </nav>
+    <!-- 모바일용 CTA (nav 숨겨질 때 표시) -->
+    <a class="btn btn-primary btn-sm" href="/builder" style="display:none;" id="nav-mobile-cta">차트 만들기</a>
+  </div>
 </header>
 
-<!-- ── 히어로 ── -->
-<section class="hero">
-  <div class="hero-badge"><i class="fa-solid fa-circle"></i> Hy-STEP 치위생학과 교육용 전자차트</div>
-  <img src="/images/logo-hystep.png" alt="Hy-STEP" class="hero-logo-img"/>
-  <h1>보건의료 교육의<br/><span>디지털 혁신</span></h1>
-  <p>수기 차트의 한계를 넘어, 데이터 중심의 보건의료 실습 교육을 선도합니다.<br/>학교마다 맞춤형 디지털 차트 시스템을 지금 바로 구성해보세요.</p>
-  <div class="hero-cta-group">
-    <a href="/builder" class="btn-hero-main">
-      <i class="fa-solid fa-wand-magic-sparkles"></i> 우리 학교 차트 만들기
-    </a>
-    <a href="/about" class="btn-hero-sub">
-      <i class="fa-regular fa-circle-play"></i> 서비스 소개 보기
-    </a>
-  </div>
-  <div class="hero-stats">
-    <div class="stat-item">
-      <div class="stat-num">9<span>개</span></div>
-      <div class="stat-label">차트 섹션</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">100<span>%</span></div>
-      <div class="stat-label">디지털 전환</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">AI<span>+</span></div>
-      <div class="stat-label">어시스턴트 내장</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">맞<span>춤형</span></div>
-      <div class="stat-label">학교별 독립 운영</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">패<span>키지</span></div>
-      <div class="stat-label">기능별 선택 구매</div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 서비스 소개 ── -->
-<section class="services">
-  <div style="max-width:1100px; margin:0 auto;">
-    <div class="section-label">Core Features</div>
-    <h2 class="section-title">EZ-STEP이 제공하는<br/>핵심 기능</h2>
-    <p class="section-sub">치위생학과 실습 교육에 필요한 모든 것을 디지털로 구현했습니다.</p>
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon"><i class="fa-solid fa-file-medical"></i></div>
-        <h3>학생용 디지털 차트</h3>
-        <p>치과병력부터 목표 달성도 평가까지, 핵심 섹션으로 구성된 완전한 디지털 임상 차트 시스템</p>
-        <span class="service-tag">9 Sections</span>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fa-solid fa-chart-line"></i></div>
-        <h3>관리자 대시보드</h3>
-        <p>교수자가 학생 실습 진행 상황을 실시간으로 모니터링하고 차트를 일괄 관리할 수 있는 통합 대시보드</p>
-        <span class="service-tag">실시간 모니터링</span>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fa-solid fa-robot"></i></div>
-        <h3>AI 채팅 어시스턴트</h3>
-        <p>Google Gemini 연동 AI가 입력된 환자 데이터를 기반으로 실시간 임상 가이드를 제공합니다</p>
-        <span class="service-tag">Gemini AI</span>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fa-solid fa-calculator"></i></div>
-        <h3>데이터 자동 계산</h3>
-        <p>PI-O'Leary index, Calculus rate 등 복잡한 임상 지표를 실시간 자동 연산하여 학생들의 계산 오류를 원천 차단합니다</p>
-        <span class="service-tag">자동 연산</span>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fa-solid fa-camera"></i></div>
-        <h3>멀티미디어 사진 업로드</h3>
-        <p>구강 내외 사진, 방사선 사진 등 시각적 자료를 첨부해 더욱 완성도 높은 케이스 분석과 시각자료 기반 대상자 교육 가능</p>
-        <span class="service-tag">사진 첨부</span>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fa-solid fa-calendar-check"></i></div>
-        <h3>예약 시스템 연동</h3>
-        <p>대상자 예약부터 차트 작성까지 원스톱으로 연결되는 통합 예약 관리 시스템</p>
-        <span class="service-tag">추후 지원 예정</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 이용 순서 ── -->
-<section class="chart-intro">
-  <div style="max-width:1100px; margin:0 auto; text-align:center;">
-    <div class="section-label">How It Works</div>
-    <h2 class="section-title">우리 학교 전용 차트 만들기, 간단하게 견적 확인</h2>
-    <p class="section-sub" style="margin:0 auto;">4단계로 우리 학교만의 맞춤형 차트 시스템을 구성하고 미리 볼 수 있습니다.</p>
-    <div class="steps-visual">
-      <div class="step-item">
-        <div class="step-num">1</div>
-        <h4>기본 정보 입력</h4>
-        <p>학교명과 학년을 선택해 기본 정보를 설정합니다</p>
-      </div>
-      <div class="step-item">
-        <div class="step-num">2</div>
-        <h4>차트 섹션 선택</h4>
-        <p>필요한 섹션과 세부 항목을 자유롭게 선택합니다</p>
-      </div>
-      <div class="step-item">
-        <div class="step-num">3</div>
-        <h4>부가기능 선택</h4>
-        <p>AI, 대시보드 등 필요한 부가기능 패키지를 추가합니다</p>
-      </div>
-      <div class="step-item">
-        <div class="step-num">4</div>
-        <h4>미리보기 &amp; 신청</h4>
-        <p>완성된 차트를 미리보고 차트 생성을 신청합니다</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Hy-STEP 소개 ── -->
-<section class="hystep-section">
-  <div style="max-width:1100px; margin:0 auto;" class="hystep-inner">
+<!-- ── Hero ── -->
+<section class="hero" id="top">
+  <div class="container">
+    <!-- Left: text -->
     <div>
-      <img src="/images/logo-hystep.png" alt="Hy-STEP" class="hystep-logo"/>
-      <h2 class="section-title">치위생학과 전용<br/>디지털 차트</h2>
-      <p class="section-sub">Dental Hygiene-Student Training E-Platform<br/>치위생 임상 실습의 표준을 새롭게 정의합니다.</p>
-      <ul class="feature-list">
-        <li><i class="fa-solid fa-check"></i> 치과병력 ~ 목표달성도까지 구분된 섹션 커스텀 지원</li>
-        <li><i class="fa-solid fa-check"></i> O'Leary PI, Calculus rate 실시간 자동 계산</li>
-        <li><i class="fa-solid fa-check"></i> 전악 치식 기호 입력 지원 및 index 연동</li>
-        <li><i class="fa-solid fa-check"></i> Google Gemini AI 임상 어시스턴트 내장</li>
-        <li><i class="fa-solid fa-check"></i> 학교별 독립 데이터베이스 운영</li>
-        <li><i class="fa-solid fa-check"></i> 예약시스템 연동, 대상자 예약부터 차트작성까지</li>
-      </ul>
+      <div class="hero-badge reveal">
+        <span class="pill">NEW</span>
+        치위생학과 임상실습 디지털 플랫폼
+      </div>
+      <h1 class="reveal">
+        수기 차트의 시대는 끝났습니다.<br/>
+        임상실습, <span class="grad">한 번의 클릭</span>으로.
+      </h1>
+      <p class="hero-sub reveal">
+        EZ-STEP은 치위생학과 학생·교수를 위한 웹 기반 임상 차트 시스템입니다.
+        9개 섹션의 표준 흐름과 회차별 데이터 기록, AI 임상 가이드까지 —
+        학교마다 맞춤형으로 구성해 드립니다.
+      </p>
+      <div class="hero-ctas reveal">
+        <a class="btn btn-brand btn-lg" href="/builder">
+          우리 학교 차트 만들기
+          <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="/preview">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          차트 미리보기
+        </a>
+      </div>
+      <div class="hero-meta reveal">
+        <span>✓ 학교 단위 구독</span>
+        <span class="divider"></span>
+        <span>✓ 커스텀 섹션 설계</span>
+        <span class="divider"></span>
+        <span>✓ 데이터 백업 · 보안</span>
+      </div>
     </div>
-    <div class="hystep-visual">
-      <div class="mini-chart">
-        <div class="mini-chart-title">Section 4 · PI 측정</div>
-        <div class="mini-bar"><div class="mini-bar-fill" style="width:72%"></div></div>
-        <div class="mini-bar"><div class="mini-bar-fill" style="width:45%"></div></div>
-        <div class="mini-bar"><div class="mini-bar-fill" style="width:88%"></div></div>
-        <div style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:10px; font-family:'Inter',sans-serif;">O'Leary Index: 68.2%</div>
-      </div>
-      <div class="mini-chart">
-        <div class="mini-chart-title">Section 9 · 목표 달성도</div>
-        <div style="display:flex; gap:5px; flex-wrap:wrap;">
-          <span style="background:rgba(16,185,129,0.25); color:#6EE7B7; padding:4px 10px; border-radius:999px; font-size:11px; border:1px solid rgba(16,185,129,0.3);">목표1 Met</span>
-          <span style="background:rgba(251,191,36,0.2); color:#FCD34D; padding:4px 10px; border-radius:999px; font-size:11px; border:1px solid rgba(251,191,36,0.3);">목표2 Partial Met</span>
-          <span style="background:rgba(16,185,129,0.25); color:#6EE7B7; padding:4px 10px; border-radius:999px; font-size:11px; border:1px solid rgba(16,185,129,0.3);">목표3 Met</span>
-          <span style="background:rgba(239,68,68,0.22); color:#FCA5A5; padding:4px 10px; border-radius:999px; font-size:11px; border:1px solid rgba(239,68,68,0.3);">목표4 Unmet</span>
+
+    <!-- Right: browser frame mockup -->
+    <div class="hero-visual reveal">
+      <div class="halo"></div>
+      <div class="browser-frame">
+        <div class="browser-titlebar">
+          <div class="browser-dots">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+          </div>
+          <div class="browser-urlbar">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#7B87A5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+            ezstep.clinic/chart
+          </div>
+          <div class="browser-spacer"></div>
         </div>
-      </div>
-      <div class="mini-chart">
-        <div class="mini-chart-title">AI 어시스턴트</div>
-        <div style="font-size:12px; color:rgba(255,255,255,0.62); line-height:1.7;">
-          "섹션1 문진 내용을 기반으로<br/>대상자 치위생관리 목표를 추천해줘"
+        <div class="browser-body">
+          <!-- Sidebar -->
+          <div class="cm-sidebar">
+            <div class="cm-sb-title">대상자 · 김OO (24세)</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">1</span> 문진</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">2</span> 치주검사</div>
+            <div class="cm-sb-item active"><span class="cm-sb-num">3</span> PI 측정</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">4</span> 진단</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">5</span> 목표 설정</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">6</span> 교육</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">7</span> 처치</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">8</span> 치위생평가</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">9</span> 달성도평가</div>
+          </div>
+          <!-- Main -->
+          <div class="cm-main">
+            <div class="cm-crumb">Section 03 · 2회차</div>
+            <div class="cm-h2">PI 측정 및 O'Leary Index</div>
+            <div class="cm-tabs">
+              <div class="cm-tab">1회차</div>
+              <div class="cm-tab active">2회차</div>
+              <div class="cm-tab">3회차</div>
+            </div>
+            <div class="cm-cards">
+              <div class="cm-card">
+                <div class="cm-card-label">O'Leary Index</div>
+                <div><span class="cm-card-val">58.2</span><span class="cm-card-unit">%</span></div>
+                <div class="cm-progress">
+                  <div class="cm-progress-fill" style="width:58.2%;background:linear-gradient(90deg,var(--brand-500),var(--brand-300))"></div>
+                </div>
+              </div>
+              <div class="cm-card">
+                <div class="cm-card-label">Calculus Rate</div>
+                <div><span class="cm-card-val">32.4</span><span class="cm-card-unit">%</span></div>
+                <div class="cm-progress">
+                  <div class="cm-progress-fill" style="width:32.4%;background:linear-gradient(90deg,#F5B342,#FBD989)"></div>
+                </div>
+              </div>
+            </div>
+            <div class="cm-card">
+              <div class="cm-card-label">Section 05 · 목표 달성도</div>
+              <div class="cm-goal-row">
+                <div class="cm-goal met">목표1 Met</div>
+                <div class="cm-goal partial">목표2 Partial</div>
+                <div class="cm-goal unmet">목표3 Unmet</div>
+              </div>
+            </div>
+            <div class="cm-ai">
+              <div class="cm-ai-icon">AI</div>
+              <div>
+                <div class="cm-ai-who">Gemini 어시스턴트</div>
+                <div class="cm-ai-text">PI가 개선 중입니다. 하악 좌측 구치부의 인접면 세정을 집중 지도하세요.</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CTA ── -->
-<section class="cta-section">
-  <div style="max-width:680px; margin:0 auto;">
-    <h2>지금 바로 우리 학교<br/>차트를 만들어보세요</h2>
-    <p>우리 학교 전용 치위생 임상 실습 디지털 차트 시스템이 완성됩니다.<br/>베타 기간 동안 특별 혜택을 제공합니다.</p>
-    <a href="/builder" class="btn-cta-white">
-      <i class="fa-solid fa-wand-magic-sparkles"></i> 차트 빌더 시작하기
-    </a>
+<!-- ── Trust Bar ── -->
+<div class="trustbar">
+  <div class="container">
+    <div class="trustbar-label">함께 도입한 파트너</div>
+    <div class="trustbar-logos">
+      <div class="trustbar-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
+        대학 A
+      </div>
+      <div class="trustbar-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
+        치위생학과 B
+      </div>
+      <div class="trustbar-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
+        보건계열대학 C
+      </div>
+      <div class="trustbar-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
+        전문학교 D
+      </div>
+      <div class="trustbar-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
+        의료교육원 E
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Features ── -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="features-head">
+      <div>
+        <span class="section-eyebrow reveal">Core Features</span>
+        <h2 class="section-title reveal">
+          임상실습 워크플로우를<br/>통째로 디지털화합니다.
+        </h2>
+      </div>
+      <p class="aside reveal">
+        수기 차트에서는 놓치기 쉬웠던 데이터 일관성, 회차별 추적, 지표 자동 계산까지.
+        치위생 임상실습이 필요로 하는 모든 것을 한 시스템에서 해결합니다.
+      </p>
+    </div>
+    <div class="features-grid">
+      <!-- 1 -->
+      <div class="feature-card reveal" style="transition-delay:0ms">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+        </div>
+        <h3>학생용 디지털 차트</h3>
+        <p>문진부터 목표 달성도 평가까지, 9개 섹션으로 구성된 완전한 임상실습 차트를 웹에서 사용합니다.</p>
+        <div class="tag"><span class="tag-dot"></span>9 Sections</div>
+      </div>
+      <!-- 2 -->
+      <div class="feature-card reveal" style="transition-delay:40ms">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3>관리자 대시보드</h3>
+        <p>교수님이 학생 실습 진행 상황과 회차별 데이터를 학급 단위로 한눈에 관리할 수 있는 관리자 뷰.</p>
+        <div class="tag"><span class="tag-dot"></span>실시간</div>
+      </div>
+      <!-- 3 -->
+      <div class="feature-card reveal" style="transition-delay:80ms">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <h3>AI 채팅 어시스턴트</h3>
+        <p>Google Gemini 연동으로 학생이 입력한 환자 데이터에 대한 실시간 임상 가이드를 제공합니다.</p>
+        <div class="tag"><span class="tag-dot"></span>Gemini</div>
+      </div>
+      <!-- 4 -->
+      <div class="feature-card reveal" style="transition-delay:120ms">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h8M12 8v8"/></svg>
+        </div>
+        <h3>데이터 자동 계산</h3>
+        <p>PI · O'Leary index · Calculus rate 등 필수 임상 지표를 실시간 자동 연산하여 계산 오류를 원천 차단.</p>
+        <div class="tag"><span class="tag-dot"></span>자동 연산</div>
+      </div>
+      <!-- 5 -->
+      <div class="feature-card reveal" style="transition-delay:160ms">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <h3>멀티미디어 사진 업로드</h3>
+        <p>구강 내외 사진, 방사선 사진 등 시각적 자료를 회차별로 첨부해 더욱 완성도 높은 임상 기록을 남깁니다.</p>
+        <div class="tag"><span class="tag-dot"></span>5매·6매법</div>
+      </div>
+      <!-- 6 -->
+      <div class="feature-card reveal" style="transition-delay:200ms">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <h3>예약 시스템 연동</h3>
+        <p>대상자 예약부터 회차 지정까지 캘린더와 연결된 통합 스케줄링. 실습 흐름을 놓치지 않습니다.</p>
+        <div class="tag"><span class="tag-dot"></span>통합 관리</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ── 푸터 ── -->
-<footer>
-  <img src="/images/logo-ezstep.png" alt="EZ-STEP" class="footer-logo"/>
-  <div class="footer-divider"></div>
-  <div class="footer-links">
-    <a href="/about">About EZ-STEP</a>
-    <a href="/builder">차트 만들기</a>
-    <a href="/about#contact">문의하기</a>
+<!-- ── Chart Sections ── -->
+<section class="section section-list" id="sections">
+  <div class="container">
+    <div class="section-list-grid">
+      <div class="section-list-header">
+        <span class="section-eyebrow reveal">Chart Structure</span>
+        <h2 class="section-title reveal">
+          한 학기 임상실습을,<br/>9개 섹션에 담았습니다.
+        </h2>
+        <p class="section-sub reveal">
+          치위생학회 표준 흐름을 참고해 설계한 기본 골격입니다.
+          학교별 요구에 따라 섹션을 추가·재구성할 수 있습니다.
+        </p>
+        <div class="badge-list reveal">
+          <span>회차별 기록 (1~3회차)</span>
+          <span>지표 자동 연산</span>
+          <span>대상자 통합 관리</span>
+        </div>
+      </div>
+      <div class="section-list-items">
+        <div class="section-list-item reveal" style="transition-delay:0ms">
+          <div class="num">SEC 01</div>
+          <div class="info"><h4>문진</h4><p>기본 인적사항, 병력, 구강 위생 습관 등 초기 상담 데이터 입력.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:30ms">
+          <div class="num">SEC 02</div>
+          <div class="info"><h4>치주검사</h4><p>Probing depth, BOP, 부착치은 등 치주 상태의 전방위 기록.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:60ms">
+          <div class="num">SEC 03</div>
+          <div class="info"><h4>PI 측정</h4><p>O'Leary index 기반 플라그 지표 회차별 자동 계산.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:90ms">
+          <div class="num">SEC 04</div>
+          <div class="info"><h4>진단</h4><p>수집된 데이터를 기반으로 한 임상 진단 소견 정리.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:120ms">
+          <div class="num">SEC 05</div>
+          <div class="info"><h4>목표 설정</h4><p>단·중·장기 목표를 회차별로 명시하고 성과를 추적합니다.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:150ms">
+          <div class="num">SEC 06</div>
+          <div class="info"><h4>교육</h4><p>대상자에게 제공한 구강 위생 교육 항목과 반응 기록.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:180ms">
+          <div class="num">SEC 07</div>
+          <div class="info"><h4>처치</h4><p>스케일링, 치면세마 등 실제 시행 처치의 상세 기록.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:210ms">
+          <div class="num">SEC 08</div>
+          <div class="info"><h4>치위생평가</h4><p>처치 후 변화된 치주·PI 지표의 재측정 및 비교.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="section-list-item reveal" style="transition-delay:240ms">
+          <div class="num">SEC 09</div>
+          <div class="info"><h4>달성도평가</h4><p>설정 목표별 Met · Partial Met · Unmet 자동 판정 및 리포트.</p></div>
+          <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+    </div>
   </div>
-  <p>© 2026 EZ-STEP. Education Zero-in-on Student Training E-Platform<br/>보건의료 통합 실습 교육 플랫폼</p>
+</section>
+
+<!-- ── Add-ons ── -->
+<section class="section addons">
+  <div class="container">
+    <div class="section-head-center">
+      <span class="section-eyebrow reveal">Add-ons</span>
+      <h2 class="section-title reveal">필요한 기능만 골라, 학교에 맞게.</h2>
+      <p class="section-sub reveal">
+        부가기능은 애드온으로 제공됩니다. 기본 차트에 원하는 기능만 선택해 도입하세요.
+      </p>
+    </div>
+    <div class="addons-grid">
+      <div class="addon-card reveal" style="transition-delay:0ms">
+        <span class="badge">PHOTO</span>
+        <div class="glyph">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <h4>사진 업로드</h4>
+        <p>5매법·6매법 세트를 회차별로 관리. 시각 자료 기반 진행 확인.</p>
+      </div>
+      <div class="addon-card reveal" style="transition-delay:40ms">
+        <span class="badge">AI</span>
+        <div class="glyph">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
+        <h4>AI 어시스턴트</h4>
+        <p>Gemini 기반 임상 가이드. 학생 질문에 실시간으로 응답합니다.</p>
+      </div>
+      <div class="addon-card reveal" style="transition-delay:80ms">
+        <span class="badge">FACULTY</span>
+        <div class="glyph">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <h4>교수평가 · 서명</h4>
+        <p>섹션별 평가·서명 등록. 학생-교수 사이의 피드백 루프를 마감합니다.</p>
+      </div>
+      <div class="addon-card reveal" style="transition-delay:120ms">
+        <span class="badge">ADMIN</span>
+        <div class="glyph">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h4>대시보드 · 설문</h4>
+        <p>학급 현황과 실습 성과를 한 화면에서. 만족도 설문 자동 배포.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Big Preview ── -->
+<section class="section big-preview" id="preview">
+  <div class="container">
+    <div class="section-head-center">
+      <span class="section-eyebrow reveal">Live Preview</span>
+      <h2 class="section-title reveal">실제 차트 화면을 그대로 살펴보세요.</h2>
+      <p class="section-sub reveal">
+        학생이 실습 시간에 마주하는 화면입니다. 데이터 자동 계산·회차 전환·AI 가이드까지 실제와 동일하게 구현되어 있습니다.
+      </p>
+    </div>
+    <div class="big-preview-frame reveal">
+      <div class="browser-frame">
+        <div class="browser-titlebar">
+          <div class="browser-dots">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+          </div>
+          <div class="browser-urlbar">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#7B87A5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+            ezstep.clinic/chart/sec03
+          </div>
+          <div class="browser-spacer"></div>
+        </div>
+        <div class="browser-body" style="height:500px">
+          <div class="cm-sidebar">
+            <div class="cm-sb-title">대상자 · 김OO (24세)</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">1</span> 문진</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">2</span> 치주검사</div>
+            <div class="cm-sb-item active"><span class="cm-sb-num">3</span> PI 측정</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">4</span> 진단</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">5</span> 목표 설정</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">6</span> 교육</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">7</span> 처치</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">8</span> 치위생평가</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">9</span> 달성도평가</div>
+          </div>
+          <div class="cm-main">
+            <div class="cm-crumb">Section 03 · 2회차</div>
+            <div class="cm-h2">PI 측정 및 O'Leary Index</div>
+            <div class="cm-tabs">
+              <div class="cm-tab">1회차</div>
+              <div class="cm-tab active">2회차</div>
+              <div class="cm-tab">3회차</div>
+            </div>
+            <div class="cm-cards">
+              <div class="cm-card">
+                <div class="cm-card-label">O'Leary Index</div>
+                <div><span class="cm-card-val">58.2</span><span class="cm-card-unit">%</span></div>
+                <div class="cm-progress">
+                  <div class="cm-progress-fill" style="width:58.2%;background:linear-gradient(90deg,var(--brand-500),var(--brand-300))"></div>
+                </div>
+              </div>
+              <div class="cm-card">
+                <div class="cm-card-label">Calculus Rate</div>
+                <div><span class="cm-card-val">32.4</span><span class="cm-card-unit">%</span></div>
+                <div class="cm-progress">
+                  <div class="cm-progress-fill" style="width:32.4%;background:linear-gradient(90deg,#F5B342,#FBD989)"></div>
+                </div>
+              </div>
+            </div>
+            <div class="cm-card">
+              <div class="cm-card-label">Section 05 · 목표 달성도</div>
+              <div class="cm-goal-row">
+                <div class="cm-goal met">목표1 Met</div>
+                <div class="cm-goal partial">목표2 Partial</div>
+                <div class="cm-goal unmet">목표3 Unmet</div>
+              </div>
+            </div>
+            <div class="cm-ai">
+              <div class="cm-ai-icon">AI</div>
+              <div>
+                <div class="cm-ai-who">Gemini 어시스턴트</div>
+                <div class="cm-ai-text">PI가 개선 중입니다. 하악 좌측 구치부의 인접면 세정을 집중 지도하세요.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How It Works ── -->
+<section class="section how" id="how">
+  <div class="container">
+    <div class="section-head-center">
+      <span class="section-eyebrow reveal">How it works</span>
+      <h2 class="section-title reveal">우리 학교 전용 차트, 4단계로 완성.</h2>
+      <p class="section-sub reveal">
+        표준화된 도입 프로세스로 학교마다 맞춤형 차트 시스템을 빠르게 구축합니다.
+      </p>
+    </div>
+    <div class="how-grid">
+      <div class="how-step reveal" style="transition-delay:0ms">
+        <div class="num">01</div>
+        <h4>기본 정보 입력</h4>
+        <p>학교명·담당자 정보와 예상 사용자 수를 입력합니다.</p>
+        <div class="meta"><span>Step 1</span><span>5분 이내</span></div>
+      </div>
+      <div class="how-step reveal" style="transition-delay:60ms">
+        <div class="num">02</div>
+        <h4>차트 섹션 선택</h4>
+        <p>기본 9개 섹션 중 필요한 항목만 골라 구성합니다.</p>
+        <div class="meta"><span>Step 2</span><span>커스텀 가능</span></div>
+      </div>
+      <div class="how-step reveal" style="transition-delay:120ms">
+        <div class="num">03</div>
+        <h4>부가기능 선택</h4>
+        <p>AI·대시보드·사진 업로드 등 애드온을 조합합니다.</p>
+        <div class="meta"><span>Step 3</span><span>학교별 맞춤</span></div>
+      </div>
+      <div class="how-step reveal" style="transition-delay:180ms">
+        <div class="num">04</div>
+        <h4>미리보기 &amp; 신청</h4>
+        <p>완성된 차트를 미리 체험하고 견적 요청을 발송합니다.</p>
+        <div class="meta"><span>Step 4</span><span>이메일 회신</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Dark Brand Section ── -->
+<section class="section brand-dark">
+  <div class="container">
+    <div class="brand-dark-grid">
+      <div class="reveal">
+        <img src="/images/logo-hystep.png" alt="Hy-STEP" class="logo-big"/>
+        <h2>
+          치위생학과 전용<br/>
+          디지털 차트 플랫폼
+        </h2>
+        <p class="desc">
+          Dental Hygiene · Student Training E-Platform.<br/>
+          치위생 임상실습의 표준을 새롭게 정의합니다.
+        </p>
+        <ul class="check-list">
+          <li><span class="check">✓</span> 치과병력 · 목표달성도까지 9개 섹션 커스텀 지원</li>
+          <li><span class="check">✓</span> O'Leary PI · Calculus rate 실시간 자동 계산</li>
+          <li><span class="check">✓</span> 전악 치식 기호 입력 지원 및 index 연동</li>
+          <li><span class="check">✓</span> Google Gemini AI 임상 어시스턴트 내장</li>
+          <li><span class="check">✓</span> 학교 독립 데이터베이스 운영 &amp; 백업</li>
+          <li><span class="check">✓</span> 예약시스템 연동, 대상자 예약부터 차트작성까지</li>
+        </ul>
+      </div>
+      <div class="chart-preview reveal">
+        <div class="chart-card">
+          <div class="label">Section 03 · PI 측정</div>
+          <div class="value">O'Leary Index · 58.2%</div>
+          <div class="progress"><div class="fill"></div></div>
+        </div>
+        <div class="chart-card">
+          <div class="label">Section 05 · 목표 달성도</div>
+          <div class="goal-row">
+            <div class="goal met">목표1 Met</div>
+            <div class="goal partial">목표2 Partial</div>
+            <div class="goal unmet">목표3 Unmet</div>
+          </div>
+        </div>
+        <div class="ai-card">
+          <div class="ai-glyph">AI</div>
+          <div class="ai-body">
+            <div class="who">Gemini 어시스턴트</div>
+            "PI가 개선 중입니다. 하악 좌측 구치부의 인접면 세정을 집중 지도하세요."
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Final CTA ── -->
+<section class="cta-final" id="cta">
+  <div class="container">
+    <div class="cta-card reveal">
+      <h2>지금 바로 우리 학교<br/>차트를 만들어보세요.</h2>
+      <p>
+        학교 전용 치위생 임상실습 디지털 차트 시스템이 완성됩니다.
+        베타 기간 동안 특별 혜택을 제공합니다.
+      </p>
+      <div class="cta-actions">
+        <a class="btn btn-brand btn-lg" href="/builder">
+          차트 빌더 시작하기
+          <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="mailto:dlwlalsdentalchart@gmail.com">문의하기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="brand-block">
+        <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+        <p>
+          Dental Hygiene · Student Training E-Platform.<br/>
+          치위생 임상실습의 표준을 새롭게 정의합니다.
+        </p>
+      </div>
+      <div>
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#features">서비스 기능</a></li>
+          <li><a href="#sections">차트 구성</a></li>
+          <li><a href="#preview">미리보기</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul>
+          <li><a href="/about">About EZ-STEP</a></li>
+          <li><a href="#how">도입 절차</a></li>
+          <li><a href="mailto:dlwlalsdentalchart@gmail.com">문의하기</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <ul>
+          <li>dlwlalsdentalchart@gmail.com</li>
+          <li>학교 단위 구독 · 견적 문의</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 EZ-STEP · Dental Hygiene Student Training E-Platform</div>
+      <div>보건의료 임상 실습 교육 플랫폼</div>
+    </div>
+  </div>
 </footer>
 
+<script>
+/* ── Header Scroll State ── */
+(function() {
+  var header = document.getElementById('site-header');
+  function onScroll() {
+    if (window.scrollY > 40) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Scroll Reveal (IntersectionObserver) ── */
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  // Already visible at mount
+  els.forEach(function(el) {
+    var r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight && r.bottom > 0) {
+      el.classList.add('in');
+    }
+  });
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(function(el) {
+    if (!el.classList.contains('in')) io.observe(el);
+  });
+  // Fallback
+  setTimeout(function() {
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el) {
+      el.classList.add('in');
+    });
+  }, 2000);
+})();
+
+/* ── Mobile nav CTA visibility ── */
+(function() {
+  var mq = window.matchMedia('(max-width: 640px)');
+  var mobileCta = document.getElementById('nav-mobile-cta');
+  function check(e) {
+    mobileCta.style.display = e.matches ? 'inline-flex' : 'none';
+  }
+  mq.addEventListener('change', check);
+  check(mq);
+})();
+</script>
 </body>
 </html>
