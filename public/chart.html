@@ -1,0 +1,5429 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Hy-STEP · 치위생 전자 차트</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+/* ============ Hy-STEP Chart — Design System Styles ============ */
+:root {
+  --primary: #2A6FDB;
+  --primary-600: #2360C4;
+  --primary-50: #EEF4FE;
+  --primary-100: #D9E6FB;
+
+  --ink-900: #0F172A;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748B;
+  --ink-400: #94A3B8;
+  --ink-300: #CBD5E1;
+
+  --surface: #FFFFFF;
+  --surface-50: #F8FAFC;
+  --surface-100: #F1F5F9;
+  --border: #E5E9F0;
+  --border-strong: #D6DCE5;
+
+  --ok: #10B981;
+  --ok-50: #ECFDF5;
+  --warn: #F59E0B;
+  --warn-50: #FFFBEB;
+  --danger: #EF4444;
+  --danger-50: #FEF2F2;
+  --info: #6366F1;
+  --info-50: #EEF2FF;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15,23,42,0.04);
+
+  --sidebar-w: 264px;
+  --header-h: 64px;
+
+  /* density */
+  --pad-card: 24px;
+  --pad-section: 32px;
+  --gap-card: 20px;
+  --font-scale: 1;
+}
+
+[data-density="compact"] {
+  --pad-card: 16px;
+  --pad-section: 20px;
+  --gap-card: 12px;
+  --font-scale: 0.94;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--ink-900);
+  background: var(--surface-50);
+  font-size: calc(14px * var(--font-scale));
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }
+
+/* ============ Layout Shell ============ */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: var(--header-h) 1fr;
+  min-height: 100vh;
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  grid-row: 1 / 3;
+  grid-column: 1;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.sidebar-brand {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-brand img {
+  height: 34px;
+  width: auto;
+  display: block;
+}
+.sidebar-brand .brand-sub {
+  font-size: 10.5px;
+  color: var(--ink-400);
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+}
+
+.mini-patient {
+  padding: 14px 16px;
+  margin: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #FBFCFE 0%, #F5F8FD 100%);
+}
+.mini-patient .row1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.mini-patient .name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink-900);
+}
+.mini-patient .visit {
+  font-size: 11px;
+  color: var(--primary);
+  background: var(--primary-50);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.mini-patient .row1 .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.mini-patient .meta {
+  font-size: 11.5px;
+  color: var(--ink-500);
+  margin-top: 4px;
+}
+
+.progress-mini {
+  margin-top: 10px;
+}
+.progress-mini .label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-500);
+  margin-bottom: 4px;
+}
+.progress-mini .label b { color: var(--ink-900); font-weight: 600; }
+.bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--surface-100);
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 8px 20px;
+}
+.nav-heading {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 12px 12px 6px;
+}
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--ink-700);
+  font-size: 13.5px;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+.nav-item:hover { background: var(--surface-100); }
+.nav-item.active {
+  background: var(--primary-50);
+  color: var(--primary);
+  font-weight: 600;
+}
+.nav-item .idx {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--ink-400);
+  width: 18px;
+}
+.nav-item.active .idx { color: var(--primary); }
+.nav-item .name { flex: 1; }
+.nav-item .pct {
+  font-size: 11px;
+  color: var(--ink-400);
+  font-variant-numeric: tabular-nums;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--ink-300);
+}
+.status-dot.done  { background: var(--ok); }
+.status-dot.wip   { background: var(--warn); }
+.status-dot.empty { background: var(--ink-300); }
+.status-dot.review { background: var(--info); }
+
+/* ============ Sign-status Dot (교수 서명 상태) ============ */
+.sign-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid transparent;
+  box-sizing: border-box;
+}
+.sign-dot.signed {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+.sign-dot.pending {
+  background: #94A3B8;
+  border-color: #94A3B8;
+}
+.sign-dot.unsent {
+  background: #fff;
+  border-color: var(--ink-300);
+}
+.sign-dot.placeholder {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Sign-status mini legend inside sidebar */
+.sign-legend {
+  margin: 12px 12px 4px;
+  padding: 10px 12px;
+  background: var(--surface-50);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.sign-legend .sl-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.sign-legend .sl-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--ink-600);
+  padding: 3px 0;
+}
+
+/* Download buttons block */
+.nav-download {
+  margin: 14px 12px 4px;
+  padding: 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #FBFCFE, #F5F8FD);
+}
+.nav-download-l {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-700);
+  margin-bottom: 8px;
+}
+.nav-download-row {
+  display: flex; gap: 6px;
+}
+.nav-download-row .btn {
+  flex: 1; justify-content: center;
+}
+.nav-download-hint {
+  font-size: 10px;
+  color: var(--ink-400);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2A6FDB, #6366F1);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: 12px; font-weight: 700;
+}
+.sidebar-footer .who { font-size: 12.5px; }
+.sidebar-footer .who b { display: block; color: var(--ink-900); font-weight: 600; }
+.sidebar-footer .who span { color: var(--ink-400); font-size: 11px; white-space: nowrap; }
+
+/* ---- Header ---- */
+.header {
+  grid-column: 2;
+  grid-row: 1;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-500);
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+.crumbs > span { white-space: nowrap; }
+.crumbs .sep { color: var(--ink-300); }
+.crumbs .current { color: var(--ink-900); font-weight: 600; }
+.crumbs .time {
+  margin-left: 10px;
+  color: var(--primary);
+  background: var(--primary-50);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-700);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.12s;
+}
+.btn:hover { background: var(--surface-100); }
+.btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.btn.primary:hover { background: var(--primary-600); }
+.btn.ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-600);
+}
+.btn.ghost:hover { background: var(--surface-100); }
+.btn.icon { padding: 8px; }
+.btn.sm { padding: 5px 10px; font-size: 12px; }
+.btn.photo {
+  background: #E7F7EE;
+  border-color: #B7EBCB;
+  color: #067A46;
+}
+.btn.photo:hover { background: #D6F0DE; }
+
+/* ---- Main ---- */
+.main {
+  grid-column: 2;
+  grid-row: 2;
+  overflow-y: auto;
+}
+.main-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--pad-section) 40px 80px;
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-900);
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.page-sub {
+  color: var(--ink-500);
+  font-size: 13.5px;
+  margin: 0 0 24px;
+}
+
+/* ============ Cards ============ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--pad-card);
+  box-shadow: var(--shadow-xs);
+}
+.card + .card { margin-top: var(--gap-card); }
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-900);
+  letter-spacing: -0.005em;
+  margin: 0;
+}
+.card-sub {
+  font-size: 12px;
+  color: var(--ink-500);
+  margin-top: 2px;
+}
+.card-eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* ============ Patient Info Panel ============ */
+.patient-panel {
+  background: linear-gradient(135deg, #F7FAFE 0%, #FFFFFF 60%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.patient-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.patient-head .p-avatar {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2A6FDB, #6366F1);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: 18px; font-weight: 700;
+}
+.patient-head .p-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.patient-head .p-tags {
+  display: flex; gap: 6px; margin-top: 4px;
+}
+.tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-100);
+  color: var(--ink-600);
+  font-weight: 500;
+}
+.tag.blue { background: var(--primary-50); color: var(--primary); }
+.tag.green { background: var(--ok-50); color: var(--ok); }
+.tag.warn { background: var(--warn-50); color: #B45309; }
+
+.patient-edit {
+  position: absolute; top: 18px; right: 18px;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.6);
+  color: var(--ink-500);
+  display: grid; place-items: center;
+  transition: all 0.15s;
+}
+.patient-edit:hover { background: #fff; color: var(--primary); }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px 32px;
+}
+.info-grid .cell .l {
+  font-size: 11px;
+  color: var(--ink-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.info-grid .cell .v {
+  font-size: 14px;
+  color: var(--ink-900);
+  font-weight: 600;
+}
+.info-grid .cell .v .sub {
+  color: var(--ink-500);
+  font-weight: 400;
+  margin-left: 4px;
+  font-size: 12px;
+}
+.info-grid.locked .cell.locked .l::after {
+  content: '🔒';
+  margin-left: 4px;
+  font-size: 9px;
+  opacity: 0.5;
+}
+
+/* Systemic strip — dashboard banner replacing O'Leary KPI */
+.systemic-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 22px;
+  background: linear-gradient(90deg, #FEF2F2 0%, #FFFFFF 60%);
+  border: 1px solid #FDE2E2;
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius);
+  margin-bottom: 4px;
+}
+.systemic-strip.clean {
+  background: var(--surface);
+  border-color: var(--border);
+  border-left-color: var(--ink-300);
+}
+.systemic-strip .ss-eyebrow {
+  font-size: 11px; font-weight: 600;
+  color: var(--ink-500);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.systemic-strip .ss-title {
+  font-size: 20px; font-weight: 700; letter-spacing: -0.01em;
+  color: var(--ink-900);
+  display: flex; align-items: baseline; gap: 6px;
+  flex-wrap: wrap;
+}
+.systemic-strip .ss-title .disease { white-space: nowrap; }
+.systemic-strip .ss-title .disease { color: var(--danger); }
+.systemic-strip .ss-title .disease.none { color: var(--ink-900); font-weight: 500; }
+.systemic-strip .ss-title .sep { color: var(--ink-400); font-weight: 500; margin-right: 4px; }
+.systemic-strip .ss-r {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+}
+.systemic-strip .ss-hint { font-size: 12px; color: var(--ink-500); }
+
+/* Compact pre-consultation box */
+.pre-consult-compact {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--surface-50);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.pre-consult-compact .pcc-fields {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+  min-width: 0;
+}
+.pre-consult-compact .pcc-fields > div { min-width: 0; }
+.pre-consult-compact .pcc-l {
+  font-size: 10.5px; color: var(--ink-500); text-transform: uppercase;
+  letter-spacing: 0.06em; font-weight: 600; margin-bottom: 3px;
+}
+.pre-consult-compact .pcc-v {
+  font-size: 12px; color: var(--ink-900); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pre-consult-compact .pcc-v.link {
+  font-family: ui-monospace, monospace;
+  color: var(--primary); font-size: 11.5px;
+}
+.pre-consult-compact .pcc-v.ok { color: var(--ok); font-weight: 600; }
+.pre-consult-compact .pcc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ============ Overview grid (dashboard) ============ */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-card);
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.kpi .l { font-size: 11.5px; color: var(--ink-500); }
+.kpi .v { font-size: 24px; font-weight: 700; color: var(--ink-900); margin-top: 4px; letter-spacing: -0.02em; }
+.kpi.systemic .v { font-size: 20px; line-height: 1.25; }
+.kpi.systemic.warn { background: linear-gradient(180deg, #FEF7F7 0%, #FFFFFF 100%); border-color: #FBD5D5; }
+.kpi .v small { font-size: 12px; font-weight: 500; color: var(--ink-400); margin-left: 4px; }
+.kpi .delta { font-size: 11.5px; margin-top: 4px; color: var(--ok); }
+.kpi.warn .delta { color: var(--warn); }
+
+.section-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-card);
+  margin-top: var(--gap-card);
+}
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.section-card:hover {
+  border-color: var(--primary-100);
+  box-shadow: 0 4px 12px rgba(42, 111, 219, 0.06);
+  transform: translateY(-1px);
+}
+.section-card .sc-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 8px;
+}
+.section-card .sc-head > div:first-child { min-width: 0; flex: 1; }
+.section-card .sc-idx {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-400);
+  letter-spacing: 0.06em;
+}
+.section-card .sc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-900);
+  margin-top: 2px;
+}
+.section-card .sc-en {
+  font-size: 11.5px;
+  color: var(--ink-400);
+  font-style: italic;
+  margin-top: 2px;
+}
+.sc-status-pill {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sc-status-pill.done   { background: var(--ok-50); color: #047857; }
+.sc-status-pill.wip    { background: var(--warn-50); color: #B45309; }
+.sc-status-pill.empty  { background: var(--surface-100); color: var(--ink-500); }
+.sc-status-pill.review { background: var(--info-50); color: #4338CA; }
+.sc-progress { margin-top: auto; }
+.sc-progress .row {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--ink-500); margin-bottom: 5px;
+}
+.sc-progress .row b { color: var(--ink-900); font-weight: 600; }
+
+/* ============ Section Doc styles ============ */
+.doc-lead {
+  padding: 14px 16px;
+  border-left: 3px solid var(--primary);
+  background: var(--primary-50);
+  border-radius: 0 8px 8px 0;
+  color: var(--ink-700);
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+.doc-lead b { color: var(--primary); }
+
+.doc-h {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 28px 0 10px;
+}
+.doc-hint {
+  font-size: 11.5px;
+  color: var(--ink-400);
+  margin-top: 6px;
+}
+
+/* ============ Form controls ============ */
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-700);
+  margin-bottom: 6px;
+  display: block;
+}
+.field-label .req { color: var(--danger); margin-left: 2px; }
+
+/* Editable large number for vitals (BP / glucose) */
+.vital-input {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--ink-900);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px dashed transparent;
+  padding: 0 2px 2px;
+  width: 76px;
+  text-align: left;
+  outline: none;
+  font-family: inherit;
+  -moz-appearance: textfield;
+  transition: border-color 0.12s, background 0.12s;
+}
+.vital-input::-webkit-outer-spin-button,
+.vital-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.vital-input:hover { border-bottom-color: var(--ink-300); }
+.vital-input:focus {
+  border-bottom-color: var(--primary);
+  background: rgba(42, 111, 219, 0.04);
+  border-radius: 4px 4px 0 0;
+}
+
+.input, .textarea, .select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-900);
+  font-size: 13px;
+  transition: all 0.12s;
+  outline: none;
+}
+.input:focus, .textarea:focus, .select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(42, 111, 219, 0.12);
+}
+.textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+.input::placeholder, .textarea::placeholder { color: var(--ink-400); }
+
+/* Radio & Checkbox group */
+.radio-group, .check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.radio-chip, .check-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-700);
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.12s;
+  user-select: none;
+}
+.radio-chip:hover, .check-chip:hover { background: var(--surface-100); }
+.radio-chip.active, .check-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+.radio-chip .dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 1.5px solid var(--ink-300);
+  display: inline-grid; place-items: center;
+}
+.radio-chip.active .dot { border-color: #fff; }
+.radio-chip.active .dot::after {
+  content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%;
+}
+.check-chip .box {
+  width: 12px; height: 12px; border-radius: 3px;
+  border: 1.5px solid var(--ink-300);
+}
+.check-chip.active .box {
+  background: #fff; border-color: #fff;
+  position: relative;
+}
+.check-chip.active .box::after {
+  content: '✓'; position: absolute;
+  inset: 0; color: var(--primary);
+  font-size: 10px; font-weight: 900;
+  display: grid; place-items: center;
+  line-height: 1;
+}
+
+/* Scale (Dental Anxiety) */
+.scale-row {
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.scale-row:last-child { border-bottom: none; }
+.scale-row .q { font-size: 13px; color: var(--ink-700); }
+.scale-opts {
+  display: flex;
+  gap: 4px;
+}
+.scale-opt {
+  flex: 1;
+  padding: 8px 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 11px;
+  color: var(--ink-500);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.scale-opt:hover { border-color: var(--primary); color: var(--primary); }
+.scale-opt.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+.scale-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 4px 12px;
+  background: var(--primary-50);
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+  min-width: 48px;
+  text-align: center;
+}
+
+/* ============ Table ============ */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12.5px;
+}
+.table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--surface-50);
+  color: var(--ink-500);
+  font-weight: 600;
+  font-size: 11.5px;
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-700);
+  vertical-align: middle;
+}
+.table tbody tr.disabled { color: var(--ink-400); background: #FBFCFD; }
+.table tbody tr.disabled td { color: var(--ink-400); }
+.table .col-check {
+  width: 40px; text-align: center;
+}
+
+/* checkbox atom */
+.chk {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--ink-300);
+  border-radius: 4px;
+  display: inline-grid; place-items: center;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.12s;
+}
+.chk:hover { border-color: var(--primary); }
+.chk.on {
+  background: var(--primary); border-color: var(--primary);
+}
+.chk.on::after {
+  content: '✓'; color: #fff; font-size: 11px; font-weight: 800; line-height: 1;
+}
+
+/* ============ Toggle chip card (intraoral) ============ */
+.toggle-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: var(--surface-50);
+}
+.toggle-card .tc-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-900);
+  margin-bottom: 4px;
+}
+.toggle-card .tc-en {
+  font-size: 11px;
+  color: var(--ink-400);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+.toggle-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 10px;
+}
+.toggle-chips .chip {
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  font-size: 11.5px;
+  color: var(--ink-600);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.toggle-chips .chip:hover { border-color: var(--primary); color: var(--primary); }
+.toggle-chips .chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ============ New Tooth Chart (2-row grid layout) ============ */
+.tooth-chart-new {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 16px;
+}
+.tooth-row {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 4px;
+}
+.occlusal-line {
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary) 15%, var(--primary) 85%, transparent 100%);
+  border-radius: 3px;
+  margin: 10px 0;
+  opacity: 0.5;
+}
+.tooth-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: 6px;
+  transition: background 0.12s;
+}
+.tooth-cell:not(.no-hover):hover { background: var(--surface-50); }
+.tooth-cell .tooth-num {
+  font-size: 11px;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.tooth-cell .tooth-body {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 40/52;
+  max-width: 42px;
+}
+
+/* Combined chart (PD/BOP/Mob/SW) */
+.combined-chart {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 14px;
+  overflow-x: auto;
+}
+.combined-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 8px 4px 14px;
+  font-size: 11.5px;
+  color: var(--ink-600);
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 10px;
+}
+.combined-legend > span {
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.combi-row {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+  min-width: 780px;
+}
+.combi-col {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+.strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  height: 18px;
+}
+.strip .cell {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: grid; place-items: center;
+  font-size: 9.5px;
+  color: var(--ink-500);
+  min-height: 16px;
+}
+.strip.strip-bop .cell { background: #FBFBFC; }
+.strip .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #DC2626;
+}
+.pd-num {
+  color: var(--ink-700);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+}
+.pd-num.warn { color: #DC2626; }
+.mob-sw {
+  display: flex; gap: 3px; justify-content: center;
+  min-height: 16px;
+}
+.mob-sw.top { min-height: 16px; }
+.badge-mob, .badge-sw {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+.badge-mob { background: #FEE2E2; color: #B91C1C; }
+.badge-sw  { background: #FEF3C7; color: #92400E; }
+
+.cal-strip { display: grid; place-items: center; height: 26px; }
+.combined-legend .bop-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #DC2626;
+}
+
+/* Chart tabs — bigger, matches reference */
+.chart-tabs {
+  display: flex; gap: 6px; margin-bottom: 12px;
+}
+.chart-tab {
+  flex: 1;
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-600);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.chart-tab:hover { background: var(--surface-50); }
+.chart-tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.chart-tabs.round { max-width: 480px; }
+
+/* ============ Notation grid — legend chips at top of chart ============ */
+.notation-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.notation-chip {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 11.5px;
+  color: var(--ink-700);
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.notation-chip:hover { border-color: var(--primary); }
+.notation-chip.selected { background: var(--primary-50); border-color: var(--primary); }
+.notation-chip .code { font-weight: 700; color: var(--ink-900); font-size: 12px; }
+.notation-chip .desc { font-size: 10.5px; color: var(--ink-500); }
+
+/* Legacy tooth diagram — keep but marked deprecated */
+.tooth-chart {
+  background: #FFFBEA;
+  border: 1px solid #F5E7B4;
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  position: relative;
+}
+.tooth-chart .arch-label {
+  position: absolute;
+  left: 20px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #92400E;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tooth-chart .arch-label.maxilla { top: 24px; }
+.tooth-chart .arch-label.mandible { bottom: 24px; }
+.tooth-svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 720px;
+  width: 100%;
+  height: auto;
+}
+.tooth-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+  font-size: 11.5px;
+  color: var(--ink-600);
+}
+.tooth-legend .item {
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.tooth-legend .swatch {
+  width: 10px; height: 10px; border-radius: 3px;
+  border: 1px solid var(--border-strong);
+}
+
+/* ============ PI Chart — big X grid ============ */
+.pi-chart {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.pi-arch-heading {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-700);
+  margin: 6px 0 8px;
+  letter-spacing: 0.02em;
+}
+.pi-row {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 4px;
+  align-items: start;
+}
+.pi-tooth {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  min-width: 0;
+}
+.pi-tooth .n {
+  font-size: 11px;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+}
+.pi-x {
+  width: 100%;
+  max-width: 60px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  display: block;
+}
+.pi-x rect { fill: #fff; stroke: #D6DCE5; }
+.pi-x line { stroke: #D6DCE5; stroke-width: 1; }
+.pi-x .quad { fill: transparent; transition: fill 0.12s; cursor: pointer; }
+.pi-x .quad.on { fill: #DC2626; }
+.pi-tooth.disabled .pi-x rect { fill: #F8FAFC; }
+.pi-tooth.disabled .pi-x line { stroke: #94A3B8; }
+.pi-tooth.disabled { opacity: 0.55; pointer-events: none; }
+
+.pi-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--primary-50);
+  border-radius: 12px;
+}
+.pi-summary .item {
+  text-align: center;
+}
+.pi-summary .l {
+  font-size: 11.5px;
+  color: var(--ink-500);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.pi-summary .v {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.pi-summary .item.hero .v { color: var(--primary); font-size: 28px; }
+.pi-summary .item.hero .l { color: var(--primary); font-weight: 600; }
+.pi-summary .item.mod .v { color: var(--ok); font-size: 28px; }
+.pi-summary .item.mod .l { color: var(--ok); font-weight: 600; }
+
+.pi-graph {
+  display: flex; align-items: end;
+  gap: 8px;
+  height: 60px;
+  margin-top: 14px;
+  padding: 0 10px;
+}
+.pi-graph .col {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+}
+.pi-graph .bar-v {
+  width: 100%;
+  background: linear-gradient(180deg, var(--primary), #60A5FA);
+  border-radius: 3px 3px 0 0;
+  transition: height 0.3s;
+  min-height: 3px;
+}
+.pi-graph .col .l { font-size: 10px; color: var(--ink-500); }
+
+/* Legacy PI block */
+.pi-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* Focus Teeth block */
+.focus-teeth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.tooth-picker {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  padding: 12px;
+  background: var(--surface-50);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.tooth-block {
+  padding: 6px 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: #fff;
+  text-align: center;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  color: var(--ink-600);
+}
+.tooth-block:hover { border-color: var(--primary); }
+.tooth-block.selected {
+  background: var(--primary); color: #fff;
+  border-color: var(--primary); font-weight: 700;
+}
+.tooth-block.disabled {
+  background: #F1F5F9; color: var(--ink-300);
+  text-decoration: line-through; cursor: not-allowed;
+}
+
+/* Oleary index big number */
+.oleary-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.oleary-item {
+  background: var(--surface-50);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.oleary-item .l { font-size: 11px; color: var(--ink-500); margin-bottom: 6px; }
+.oleary-item .v { font-size: 22px; font-weight: 700; color: var(--ink-900); font-variant-numeric: tabular-nums; }
+.oleary-item.hero { background: var(--primary-50); border-color: var(--primary-100); }
+.oleary-item.hero .v { color: var(--primary); font-size: 30px; }
+.oleary-item.hero .l { color: var(--primary); font-weight: 600; }
+
+/* ============ Round tabs (visits) ============ */
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-100);
+  border-radius: 10px;
+}
+.tab {
+  padding: 7px 18px;
+  border-radius: 7px;
+  background: transparent;
+  border: none;
+  color: var(--ink-600);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.tab.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(42, 111, 219, 0.3);
+}
+
+/* ============ Rich text toolbar ============ */
+.rich-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--surface-50);
+  border: 1px solid var(--border);
+  border-radius: 10px 10px 0 0;
+  border-bottom: none;
+}
+.rich-toolbar .grp { display: flex; gap: 2px; }
+.rich-toolbar .sep {
+  width: 1px; height: 20px; background: var(--border);
+  margin: 0 6px;
+}
+.rt-btn {
+  min-width: 28px; height: 28px;
+  border-radius: 6px;
+  background: transparent; border: none;
+  color: var(--ink-600);
+  font-size: 12.5px;
+  padding: 0 8px;
+  cursor: pointer;
+  display: inline-grid; place-items: center;
+}
+.rt-btn:hover { background: var(--surface-100); color: var(--ink-900); }
+.rt-btn.b { font-weight: 800; }
+.rt-btn.i { font-style: italic; }
+.rt-btn.u { text-decoration: underline; }
+.rt-color, .rt-hl {
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+.rt-editor {
+  min-height: 220px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 0 0 10px 10px;
+  background: var(--surface);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink-900);
+}
+.rt-editor h3 { margin: 0 0 6px; font-size: 16px; font-weight: 700; color: var(--ink-900); }
+.rt-editor h4 { margin: 12px 0 6px; font-size: 14px; font-weight: 600; color: var(--ink-700); }
+.rt-editor p { margin: 6px 0; }
+.rt-editor mark.hl-y { background: #FEF3C7; padding: 1px 2px; }
+.rt-editor mark.hl-g { background: #D1FAE5; padding: 1px 2px; }
+.rt-editor mark.hl-b { background: #DBEAFE; padding: 1px 2px; }
+.rt-editor mark.hl-p { background: #FCE7F3; padding: 1px 2px; }
+
+/* ============ Plan Table (Section 5) ============ */
+.plan-table {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.plan-section {
+  background: var(--surface);
+}
+.plan-section + .plan-section {
+  border-top: 8px solid var(--surface-100);
+}
+.plan-section-title {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px;
+  background: var(--primary-50);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.plan-section-title .idx {
+  font-size: 16px;
+  font-weight: 900;
+}
+.plan-section-title em {
+  font-style: normal;
+  color: var(--ink-500);
+  font-weight: 500;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.plan-row {
+  display: grid;
+  grid-template-columns: 96px 1.2fr 1fr;
+  border-bottom: 1px solid var(--border);
+  min-height: 100px;
+}
+.plan-row:last-child { border-bottom: none; }
+.plan-row .plan-cat {
+  padding: 16px 14px;
+  background: var(--surface-50);
+  border-right: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-900);
+  display: flex; align-items: flex-start;
+}
+.plan-row .plan-items {
+  padding: 14px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  gap: 12px;
+}
+.plan-item {
+  display: flex; flex-direction: column;
+  gap: 0;
+}
+.plan-check {
+  display: inline-flex; align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink-900);
+  font-weight: 500;
+}
+.plan-details {
+  padding: 14px;
+  background: #FBFCFE;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.plan-details-label {
+  font-size: 11px;
+  color: var(--ink-500);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ============ Goal item card (plan) ============ */
+.goal-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  background: var(--surface);
+  position: relative;
+}
+.goal-item + .goal-item { margin-top: 12px; }
+.goal-item .g-num {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-50);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+}
+.goal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+.goal-grid .full { grid-column: 1 / -1; }
+.goal-item .tooth-tags {
+  display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;
+}
+.tooth-tag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-100);
+  color: var(--ink-700);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.goal-item .g-del {
+  position: absolute; top: 14px; right: 14px;
+  border: none; background: transparent;
+  color: var(--ink-400); cursor: pointer;
+  padding: 4px 8px; border-radius: 6px;
+  font-size: 12px;
+}
+.goal-item .g-del:hover { background: var(--danger-50); color: var(--danger); }
+
+/* ============ Met / Partial / Unmet toggle ============ */
+.mpu {
+  display: inline-flex;
+  gap: 6px;
+}
+.mpu-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-500);
+  cursor: pointer;
+}
+.mpu-btn.active.met      { background: var(--ok);     border-color: var(--ok);     color: #fff; }
+.mpu-btn.active.partial  { background: var(--warn);   border-color: var(--warn);   color: #fff; }
+.mpu-btn.active.unmet    { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+/* ============ Professor Panel (read-only) ============ */
+.prof-panel {
+  margin-top: 24px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  background: #FAFBFD;
+}
+.prof-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.prof-head .badge { white-space: nowrap; }
+.prof-head .t { white-space: nowrap; }
+.prof-head .badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #4338CA;
+  background: var(--info-50);
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+.prof-head .t { font-size: 13px; font-weight: 700; color: var(--ink-900); }
+.prof-body {
+  font-size: 13px;
+  color: var(--ink-700);
+  line-height: 1.65;
+  padding: 4px 0 14px;
+}
+.prof-signature {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.prof-signature .meta { font-size: 11.5px; color: var(--ink-500); }
+.prof-signature .meta b { color: var(--ink-900); font-weight: 600; }
+.sig-image {
+  height: 44px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  display: inline-grid; place-items: center;
+  font-family: 'Homemade Apple', 'Snell Roundhand', cursive;
+  font-size: 20px;
+  color: var(--ink-900);
+}
+
+/* ============ Photo Modal ============ */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  display: grid; place-items: center;
+  z-index: 100;
+  padding: 40px;
+}
+.modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 88vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+}
+.modal-head {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+}
+.modal-head h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.modal-head .close {
+  margin-left: auto;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff; color: var(--ink-500);
+  cursor: pointer;
+}
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+.photo-set-card {
+  border-radius: 14px;
+  padding: 20px;
+  color: #fff;
+  position: relative;
+}
+.photo-set-card.g1 { background: linear-gradient(135deg, #2A6FDB, #6366F1); }
+.photo-set-card.g2 { background: linear-gradient(135deg, #10B981, #059669); }
+.photo-set-card.g3 { background: linear-gradient(135deg, #8B5CF6, #EC4899); }
+.photo-set-card.g4 { background: linear-gradient(135deg, #EC4899, #F43F5E); }
+.photo-set-card .st { font-size: 11.5px; opacity: 0.8; letter-spacing: 0.06em; text-transform: uppercase; }
+.photo-set-card .stt { font-size: 15px; font-weight: 700; margin-top: 2px; margin-bottom: 14px; }
+.slot {
+  background: rgba(255,255,255,0.14);
+  border: 1.5px dashed rgba(255,255,255,0.4);
+  border-radius: 10px;
+  aspect-ratio: 4/3;
+  display: grid; place-items: center;
+  color: rgba(255,255,255,0.75);
+  font-size: 11px;
+  transition: all 0.12s;
+}
+.slot:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.6); }
+.slot .icn { font-size: 20px; opacity: 0.8; margin-bottom: 4px; }
+
+.slot-5 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+}
+.slot-5 > .slot:nth-child(1) { grid-column: 2; grid-row: 1; }
+.slot-5 > .slot:nth-child(2) { grid-column: 1; grid-row: 2; }
+.slot-5 > .slot:nth-child(3) { grid-column: 2; grid-row: 2; }
+.slot-5 > .slot:nth-child(4) { grid-column: 3; grid-row: 2; }
+.slot-5 > .slot:nth-child(5) { grid-column: 2; grid-row: 3; }
+
+.slot-6 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+}
+
+/* ============ System doc labels ============ */
+.doc-note {
+  font-size: 11.5px;
+  color: var(--ink-500);
+  margin-top: 6px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border-strong);
+}
+
+/* small helpers */
+.row { display: flex; align-items: center; gap: 12px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; } .mt-16 { margin-top: 16px; }
+.spacer-16 { height: 16px; }
+
+/* Confetti hint */
+.confetti-note {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #FEF3C7, #FCE7F3);
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+/* ============ Section badge ============ */
+.sec-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+.sec-hero .num {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), #6366F1);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: 20px; font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.sec-hero .name-ko { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+.sec-hero .name-en { font-size: 12px; color: var(--ink-400); font-style: italic; margin-top: 2px; }
+.sec-hero .meta {
+  margin-left: auto; display: flex; gap: 10px; align-items: center;
+  flex-shrink: 0;
+}
+.sec-hero .meta > span { white-space: nowrap; }
+
+/* scrollbar */
+.nav-scroll::-webkit-scrollbar,
+.main::-webkit-scrollbar { width: 6px; }
+.nav-scroll::-webkit-scrollbar-thumb,
+.main::-webkit-scrollbar-thumb { background: var(--ink-300); border-radius: 3px; }
+.nav-scroll::-webkit-scrollbar-track,
+.main::-webkit-scrollbar-track { background: transparent; }
+
+/* ============ Sticky Section Header ============ */
+.sec-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px 12px;
+  margin: -8px 0 22px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+.sec-sticky .ss-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.sec-sticky .ss-num {
+  width: 46px; height: 46px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), #6366F1);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: 18px; font-weight: 800;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.sec-sticky .ss-title { min-width: 0; }
+.sec-sticky .ss-ko {
+  font-size: 18px; font-weight: 700; margin: 0;
+  letter-spacing: -0.01em;
+  color: var(--ink-900);
+}
+.sec-sticky .ss-en {
+  font-size: 11.5px;
+  color: var(--ink-400);
+  font-style: italic;
+  margin-top: 2px;
+}
+.sec-sticky .ss-review {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--surface-100);
+  border-radius: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.ss-review-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--ink-600);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.ss-review-btn:hover { background: rgba(255, 255, 255, 0.6); }
+.ss-review-btn.active { color: #fff; font-weight: 600; }
+.ss-review-btn.empty.active     { background: var(--ink-500); }
+.ss-review-btn.wip.active       { background: var(--warn); }
+.ss-review-btn.requested.active { background: var(--info); }
+.ss-review-btn.done.active      { background: var(--ok); }
+
+.sec-sticky .ss-progress {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+.sec-sticky .ss-pct {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.sec-sticky .ss-pct small { font-size: 11px; font-weight: 500; color: var(--ink-400); }
+.sec-sticky .ss-bar {
+  width: 100px;
+  height: 4px;
+  background: var(--surface-100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sec-sticky .ss-bar > span {
+  display: block; height: 100%;
+  background: var(--ink-400);
+  border-radius: 999px;
+}
+
+/* Sub-section quick-jump chips */
+.sec-sticky .ss-subs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+.sec-sticky .ss-subs-l {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: 4px;
+}
+.ss-sub-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-600);
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.ss-sub-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-50);
+}
+.ss-sub-chip .ss-sub-idx {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--surface-100);
+  color: var(--ink-500);
+  font-weight: 700;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+.ss-sub-chip:hover .ss-sub-idx {
+  background: var(--primary);
+  color: #fff;
+}
+.sec-sticky .ss-hint {
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--ink-500);
+}
+
+/* ============ Combined Chart v2 — 10-row perio layout ============ */
+.combined-chart-v2 {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 14px;
+  overflow-x: auto;
+}
+.combi-grid {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 8px;
+}
+.combi-row-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+  padding-top: 4px;
+}
+.combi-row-labels .row-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  height: 22px;
+}
+.combi-row-labels .row-label.big {
+  font-size: 12px;
+  color: var(--ink-900);
+  font-weight: 700;
+  height: 44px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.combi-cols {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+  min-width: 800px;
+}
+.combi-col-new {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  min-width: 0;
+}
+
+.strip-pd-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  height: 22px;
+}
+.pd-cell {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  min-height: 20px;
+  transition: background 0.12s;
+}
+.pd-cell:hover { background: var(--surface-50); border-color: var(--ink-300); }
+.pd-cell .pd-empty { color: var(--ink-300); font-size: 10px; }
+.pd-cell .pd-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-700);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.pd-cell .pd-num.warn { color: #DC2626; }
+
+.pd-pop {
+  position: absolute;
+  z-index: 30;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.15);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  min-width: 140px;
+}
+.pd-opt {
+  padding: 6px 4px;
+  border: none;
+  background: var(--surface-50);
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-700);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: all 0.1s;
+}
+.pd-opt:hover { background: var(--primary-50); color: var(--primary); }
+.pd-opt.warn { color: #DC2626; }
+.pd-opt.active { background: var(--primary); color: #fff; }
+.pd-opt.clear { background: var(--danger-50); color: var(--danger); }
+
+.bop-cell {
+  background: #FBFBFC;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  min-height: 20px;
+  height: 22px;
+  transition: background 0.12s;
+}
+.bop-cell:hover { background: #FEF2F2; border-color: #FDA4AF; }
+.bop-red-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #DC2626;
+  display: inline-block;
+}
+.bop-red-dot.inline { width: 6px; height: 6px; }
+
+.mobsw-cell {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  min-height: 20px;
+  height: 22px;
+  transition: background 0.12s;
+}
+.mobsw-cell:hover { background: var(--surface-50); border-color: var(--ink-300); }
+.mobsw-cell .mobsw-empty { color: var(--ink-300); font-size: 10px; }
+.mobsw-badge {
+  font-size: 9.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.mobsw-badge.m { background: #FEE2E2; color: #B91C1C; }
+.mobsw-badge.s { background: #FEF3C7; color: #92400E; }
+.mobsw-pop {
+  position: absolute;
+  z-index: 30;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.15);
+  display: flex;
+  gap: 3px;
+  min-width: 180px;
+}
+.mobsw-opt {
+  padding: 5px 8px;
+  border: none;
+  background: var(--surface-50);
+  border-radius: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.1s;
+}
+.mobsw-opt.m { color: #B91C1C; }
+.mobsw-opt.s { color: #92400E; }
+.mobsw-opt.active.m { background: #FEE2E2; }
+.mobsw-opt.active.s { background: #FEF3C7; }
+.mobsw-opt.clear { background: var(--danger-50); color: var(--danger); flex: 0.4; }
+
+.tooth-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 2px 0;
+  min-height: 44px;
+}
+.tooth-slot .tooth-body {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 40/44;
+  max-width: 36px;
+}
+.tooth-num-upper, .tooth-num-lower {
+  font-size: 10px;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* ============ PI red dot updates ============ */
+.pi-x .quad-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+.pi-x .quad-hit:hover {
+  fill: rgba(220, 38, 38, 0.08);
+}
+.pi-red-dot {
+  fill: #DC2626;
+  pointer-events: none;
+}
+
+/* ============ O'Leary Trend — line chart ============ */
+.trend-wrap {
+  width: 100%;
+  height: 260px;
+  margin-top: 4px;
+}
+.trend-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.trend-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.trend-ylabel, .trend-xlabel, .trend-xdate {
+  font-size: 10.5px;
+  fill: var(--ink-500);
+  font-family: inherit;
+}
+.trend-ylabel { text-anchor: end; }
+.trend-xlabel { font-weight: 600; fill: var(--ink-700); font-size: 11px; }
+.trend-xdate { fill: var(--ink-400); font-size: 10px; }
+.trend-target {
+  stroke: var(--ok);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3;
+}
+.trend-target-label {
+  font-size: 10.5px;
+  fill: var(--ok);
+  font-weight: 700;
+  font-family: inherit;
+}
+.trend-area {
+  fill: url(#trend-grad);
+  fill: rgba(42, 111, 219, 0.10);
+}
+.trend-line {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.trend-line.proj {
+  stroke: var(--ink-400);
+  stroke-dasharray: 4 4;
+  stroke-width: 2;
+}
+.trend-dot.actual {
+  fill: #fff;
+  stroke: var(--primary);
+  stroke-width: 2.5;
+}
+.trend-dot.planned {
+  fill: #fff;
+  stroke: var(--ink-400);
+  stroke-width: 2;
+  stroke-dasharray: 2 2;
+}
+.trend-value {
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--primary);
+  font-variant-numeric: tabular-nums;
+  font-family: inherit;
+}
+.trend-value.planned { fill: var(--ink-500); }
+
+.trend-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding: 10px 4px 0;
+  font-size: 11px;
+  color: var(--ink-500);
+}
+.trend-legend .tl-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+.trend-legend .tl-swatch.actual { background: var(--primary); }
+.trend-legend .tl-swatch.planned { background: transparent; border-top: 2.5px dashed var(--ink-400); height: 0; }
+.trend-legend .tl-swatch.target  { background: transparent; border-top: 2px dashed var(--ok); height: 0; }
+
+.trend-delta {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.trend-delta.good { background: var(--ok-50); color: #047857; }
+.trend-delta.bad  { background: var(--danger-50); color: var(--danger); }
+.trend-delta .trend-delta-sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ink-500);
+}
+
+/* ============ Etc input (Section 1 "기타") ============ */
+.etc-input {
+  margin-top: 10px;
+  animation: etcSlide 0.25s ease-out;
+}
+@keyframes etcSlide {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ Professor inquiry textarea (Section 2 bottom) ============ */
+.textarea.prof-inquiry {
+  background: linear-gradient(180deg, #FFF9E6, #FFFDF5);
+  border-color: #FDE68A;
+  font-size: 13px;
+}
+.textarea.prof-inquiry:focus {
+  border-color: var(--warn);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.14);
+}
+
+/* ============ Confetti Overlay (Section 8 all-Met) ============ */
+.confetti-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 200;
+}
+.confetti-message {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 22px;
+  background: #fff;
+  border: 1px solid var(--ok);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #047857;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+  animation: msgPop 0.5s ease-out;
+  white-space: nowrap;
+}
+@keyframes msgPop {
+  from { opacity: 0; transform: translate(-50%, -20px) scale(0.9); }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  display: inline-block;
+  animation: confettiFall linear forwards;
+}
+.confetti-piece.circle { border-radius: 50%; }
+.confetti-piece.square { border-radius: 2px; }
+@keyframes confettiFall {
+  0%   { transform: translate(0, -20px) rotate(0deg); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translate(var(--drift, 0), 105vh) rotate(var(--rot, 720deg)); opacity: 0; }
+}
+
+/* Sidebar nav-item spacing fix now that sign-dot is 10px */
+.nav-item { gap: 8px; }
+.nav-item .sign-dot { margin-right: 2px; }
+
+
+/* Additional styles for features added in chart.html */
+body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; }
+
+/* Btn styles referenced in JSX */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--ink-700); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.12s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--surface-100); }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
+.btn.primary:hover { background: var(--primary-600); }
+.btn.photo { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 600; }
+.btn.photo:hover { background: #059669; }
+.btn.sm { padding: 5px 10px; font-size: 11.5px; border-radius: 6px; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+/* Card styles */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--pad-card);
+  margin-bottom: var(--gap-card);
+}
+.card-eyebrow {
+  font-size: 10.5px; font-weight: 700; color: var(--ink-400);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
+}
+.card-title {
+  font-size: 16px; font-weight: 700; color: var(--ink-900); letter-spacing: -0.01em;
+}
+
+/* Sub-section wrapper */
+.sub-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--pad-card);
+  margin-bottom: var(--gap-card);
+}
+.sub-section-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 16px;
+}
+.sub-section-head .left { display: flex; flex-direction: column; gap: 2px; }
+.sub-section-head .badge {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  color: var(--primary); background: var(--primary-50);
+  padding: 2px 8px; border-radius: 999px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.sub-section-head .title { font-size: 15px; font-weight: 700; color: var(--ink-900); }
+.sub-section-head .sub { font-size: 12px; color: var(--ink-500); margin-top: 2px; }
+
+/* Progress bar helper */
+.progress-bar {
+  height: 4px; background: var(--surface-100); border-radius: 999px; overflow: hidden;
+}
+.progress-bar > span {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, var(--primary), #6366F1);
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+/* Combi-row-labels height fix */
+.combi-row-labels .row-label { min-height: 22px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+
+<!-- 1. header.jsx: Icon + Header (must be first) -->
+<script type="text/babel">
+/* Top header with breadcrumbs and action buttons */
+
+const Icon = ({ name, size = 16 }) => {
+  const paths = {
+    save: <path d="M17 21v-8H7v8M7 3v5h8m4-5H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4Z" />,
+    camera: <><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></>,
+    list: <><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>,
+    edit: <><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></>,
+    check: <polyline points="20 6 9 17 4 12"/>,
+    plus: <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    trash: <><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></>,
+    link: <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>,
+    qr: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 20h3"/></>,
+    close: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
+    chevron: <polyline points="9 18 15 12 9 6" />,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {paths[name]}
+    </svg>
+  );
+};
+
+const Header = ({ current, onOpenPhoto }) => {
+  const sectionOnly = window.SECTIONS.filter(s => s.id !== 'dashboard');
+  const section = window.SECTIONS.find(s => s.id === current);
+  const secIdx = section ? sectionOnly.findIndex(s => s.id === section.id) : -1;
+  return (
+    <header className="header">
+      <div className="crumbs">
+        <span>대상자 차트</span>
+        <span className="sep">›</span>
+        <span>김민서</span>
+        <span className="sep">›</span>
+        <span className="current">{section ? (secIdx >= 0 ? `Section ${secIdx + 1}. ${section.name}` : section.name) : '대시보드'}</span>
+        <span className="time">2회차 · 2026.07.20 14:30</span>
+      </div>
+      <div className="header-actions">
+        <button className="btn">
+          <Icon name="list" size={14} />
+          <span>목록으로</span>
+        </button>
+        <button className="btn photo" onClick={onOpenPhoto}>
+          <Icon name="camera" size={14} />
+          <span>Photo</span>
+        </button>
+        <button className="btn primary" onClick={() => window.__saveChart && window.__saveChart()}>
+          <Icon name="save" size={14} />
+          <span>저장하기</span>
+        </button>
+      </div>
+    </header>
+  );
+};
+
+Object.assign(window, { Header, Icon });
+
+</script>
+
+<!-- 2. shared.jsx: PatientPanel, SectionStickyHeader, SubSection, etc. -->
+<script type="text/babel">
+/* Shared UI atoms: patient panel, professor read-only panel, radio, checkbox groups, etc. */
+
+const PatientPanel = () => {
+  const info = [
+    { l: '이름',      v: '김민서', b: true },
+    { l: '전화번호',   v: '010-****-8821', locked: true },
+    { l: '생년월일',   v: '1997.03.14', sub: '(만 28세)' },
+    { l: '성별',      v: '여성' },
+    { l: '주소',      v: '서울특별시 성북구 안암로 145' },
+    { l: '직업',      v: '대학원생' },
+    { l: '내원 경로',  v: '지인 소개' },
+    { l: '방문이유',   v: '스케일링·잇몸 관리 상담' },
+  ];
+  return (
+    <div className="patient-panel">
+      <button className="patient-edit" title="대상자 정보 수정" onClick={() => window.__openPatientEdit && window.__openPatientEdit()}>
+        <Icon name="edit" size={14} />
+      </button>
+      <div className="patient-head">
+        <div className="p-avatar">김</div>
+        <div>
+          <div className="p-name">김민서</div>
+          <div className="p-tags">
+            <span className="tag blue">2회차 내원</span>
+            <span className="tag">Chart #A-20260720-14</span>
+            <span className="tag green">사전문진 완료</span>
+          </div>
+        </div>
+      </div>
+      <div className="info-grid">
+        {info.map((c, i) => (
+          <div key={i} className="cell">
+            <div className="l">{c.l} {c.locked && <span title="편집 잠금">🔒</span>}</div>
+            <div className="v">{c.v} {c.sub && <span className="sub">{c.sub}</span>}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* Legacy — used only on non-section pages (Components / Photo) */
+const SectionHero = ({ num, ko, en, right }) => (
+  <div className="sec-hero">
+    <div className="num">{num}</div>
+    <div>
+      <h1 className="name-ko">{ko}</h1>
+      <div className="name-en">{en}</div>
+    </div>
+    {right && <div className="meta">{right}</div>}
+  </div>
+);
+
+/* NEW: Sticky section header with:
+   - section number auto-derived from sidebar order
+   - review status (미작성 / 작성중 / 평가요청 / 평가완료)
+   - progress %
+   - quick-jump chips to subsections
+*/
+const REVIEW_STATES = [
+  { k: 'empty',     label: '미작성' },
+  { k: 'wip',       label: '작성 중' },
+  { k: 'requested', label: '평가 요청' },
+  { k: 'done',      label: '평가 완료' },
+];
+
+const SectionStickyHeader = ({ sectionId, ko, en, progress = 0, subsections = [], defaultReviewState = 'empty', hint }) => {
+  // Look up section index from sidebar SECTIONS array (data-driven, re-orderable)
+  const sectionOnly = (window.SECTIONS || []).filter(s => s.id !== 'dashboard');
+  const idx = sectionOnly.findIndex(s => s.id === sectionId);
+  const num = idx >= 0 ? String(idx + 1).padStart(2, '0') : '00';
+
+  // Persist review state per section
+  const storageKey = `hy-step:review:${sectionId}`;
+  const [review, setReview] = React.useState(() => localStorage.getItem(storageKey) || defaultReviewState);
+  React.useEffect(() => { localStorage.setItem(storageKey, review); }, [review, storageKey]);
+
+  const jump = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const scroller = document.querySelector('.main');
+    if (scroller) {
+      // sticky header sits ~120px tall; leave gap
+      const rect = el.getBoundingClientRect();
+      const top = scroller.scrollTop + rect.top - 140;
+      scroller.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="sec-sticky">
+      <div className="ss-row">
+        <div className="ss-num">{num}</div>
+        <div className="ss-title">
+          <h1 className="ss-ko">{ko}</h1>
+          <div className="ss-en">{en}</div>
+        </div>
+        <div className="ss-review">
+          {REVIEW_STATES.map(s => (
+            <button key={s.k}
+              className={`ss-review-btn ${s.k} ${review === s.k ? 'active' : ''}`}
+              onClick={() => setReview(s.k)}
+              title={`상태를 "${s.label}"으로 변경`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+        <div className="ss-progress">
+          <div className="ss-pct">{progress}<small>%</small></div>
+          <div className="ss-bar"><span style={{ width: progress + '%' }} /></div>
+        </div>
+      </div>
+      {subsections.length > 0 && (
+        <div className="ss-subs">
+          <span className="ss-subs-l">소분류 바로가기</span>
+          {subsections.map((s, i) => (
+            <button key={s.id} className="ss-sub-chip" onClick={() => jump(s.id)}>
+              <span className="ss-sub-idx">{idx + 1}-{i + 1}</span>
+              <span>{s.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {hint && <div className="ss-hint">{hint}</div>}
+    </div>
+  );
+};
+
+const RadioGroup = ({ options, value, onChange, name }) => (
+  <div className="radio-group">
+    {options.map(o => (
+      <button key={o} type="button"
+        className={`radio-chip ${value === o ? 'active' : ''}`}
+        onClick={() => onChange && onChange(o)}
+      >
+        <span className="dot" />
+        {o}
+      </button>
+    ))}
+  </div>
+);
+
+const CheckGroup = ({ options, value = [], onChange }) => (
+  <div className="check-group">
+    {options.map(o => {
+      const on = value.includes(o);
+      return (
+        <button key={o} type="button"
+          className={`check-chip ${on ? 'active' : ''}`}
+          onClick={() => {
+            const next = on ? value.filter(v => v !== o) : [...value, o];
+            onChange && onChange(next);
+          }}
+        >
+          <span className="box" />
+          {o}
+        </button>
+      );
+    })}
+  </div>
+);
+
+const ProfPanel = ({ content, prof = '박서연 교수', date = '2026.07.20', sig = 'S.Y. Park' }) => (
+  <div className="prof-panel">
+    <div className="prof-head">
+      <span className="badge">교수 평가</span>
+      <span className="t">Read-only · 관리자 등록 시 표시</span>
+    </div>
+    <div className="prof-body">
+      {content || '대상자의 협조도와 문진 응답이 성실하며, 예후 관찰이 필요한 부위에 대한 기록이 명확합니다. 다음 내원 시 추가로 확인해야 할 항목을 계획에 반영해 주세요.'}
+    </div>
+    <div className="prof-signature">
+      <div className="meta">평가자 <b>{prof}</b> · {date}</div>
+      <div className="sig-image">{sig}</div>
+    </div>
+  </div>
+);
+
+const StatusPill = ({ status }) => {
+  const map = {
+    done: { label: '완료', cls: 'done' },
+    wip: { label: '진행 중', cls: 'wip' },
+    empty: { label: '미시작', cls: 'empty' },
+    review: { label: '검토중', cls: 'review' },
+  };
+  const s = map[status] || map.empty;
+  return <span className={`sc-status-pill ${s.cls}`}><span className={`status-dot ${s.cls}`} />{s.label}</span>;
+};
+
+/* SubSection wrapper — puts a stable id + eyebrow label on a card,
+   and lets the sticky header scroll to it. */
+const SubSection = ({ id, label, title, sub, children, right }) => (
+  <div className="card" id={id}>
+    <div className="card-head">
+      <div>
+        <div className="card-eyebrow">{label}</div>
+        <div className="card-title">{title}</div>
+        {sub && <div className="card-sub">{sub}</div>}
+      </div>
+      {right}
+    </div>
+    {children}
+  </div>
+);
+
+Object.assign(window, { PatientPanel, SectionHero, SectionStickyHeader, RadioGroup, CheckGroup, ProfPanel, StatusPill, SubSection, REVIEW_STATES });
+
+</script>
+
+<!-- 3. Config parsing + sidebar.jsx: SECTIONS array + Sidebar component -->
+<script type="text/babel">
+
+/* ========= Config Parsing (from builder URL query) ========= */
+const _configRaw = new URLSearchParams(location.search).get('config');
+const _config = _configRaw ? JSON.parse(decodeURIComponent(_configRaw)) : null;
+const _selectedSections = _config && Array.isArray(_config.sections) ? _config.sections : null;
+/* When _selectedSections is set, only those sections are shown;
+   their display numbers are derived from array order automatically
+   because SECTIONS array is filtered before window assignment. */
+
+/* Sidebar — data-driven section list. Section index (1..N) is derived from array order
+   so sections can be re-mixed later without hardcoded numbers.
+   Sign status dots: 
+     - green  = 서명 업로드 완료
+     - white  = 서명 요청 전 (미업로드)
+     - gray   = 서명 요청 후 · 대기 중
+*/
+
+const SECTIONS = [
+  { id: 'dashboard', name: '대시보드',            en: 'Overview',                progress: 62, signStatus: null,     status: 'wip' },
+  { id: 's1',        name: '초진 및 대상자 사정', en: 'Initial Interview',       progress: 100, signStatus: 'signed', status: 'done' },
+  { id: 's2',        name: '임상 검사',           en: 'Clinical Examination',    progress: 85, signStatus: 'pending', status: 'wip' },
+  { id: 's3',        name: '구강위생 지수',       en: 'Oral Hygiene Index',      progress: 66, signStatus: 'pending', status: 'wip' },
+  { id: 's4',        name: '치위생 진단',         en: 'DH Diagnosis',            progress: 40, signStatus: 'unsent', status: 'wip' },
+  { id: 's5',        name: '치위생 계획',         en: 'DH Care Plan',            progress: 20, signStatus: 'unsent', status: 'wip' },
+  { id: 's6',        name: '수행 기록',           en: 'Intervention Record',     progress: 0,  signStatus: 'unsent', status: 'empty' },
+  { id: 's7',        name: '치위생 평가',         en: 'DH Evaluation',           progress: 0,  signStatus: 'unsent', status: 'empty' },
+  { id: 's8',        name: '추적 관리 및 권고',   en: 'Follow-up',               progress: 0,  signStatus: 'unsent', status: 'empty' },
+];
+
+const SignDot = ({ status }) => {
+  // status: 'signed' (green) | 'pending' (gray) | 'unsent' (white outlined)
+  const map = {
+    signed:  { title: '교수 서명 업로드 완료' },
+    pending: { title: '서명 요청 후 · 대기 중' },
+    unsent:  { title: '서명 요청 전' },
+  };
+  if (!status) return <span className="sign-dot placeholder" />;
+  return <span className={`sign-dot ${status}`} title={map[status]?.title} />;
+};
+
+const Sidebar = ({ current, onChange }) => {
+  const SECTIONS = window.SECTIONS;
+  const sectionOnly = SECTIONS.filter(s => s.id !== 'dashboard');
+  const overall = Math.round(sectionOnly.reduce((a, s) => a + s.progress, 0) / sectionOnly.length);
+
+  const handleDownload = (format) => {
+    // Trigger the print flow (browser save-as-PDF for pdf; naive HTML dump for html)
+    if (format === 'pdf') {
+      window.print();
+    } else {
+      // simple html snapshot download
+      const html = '<!doctype html><meta charset="utf-8"><title>Hy-STEP Chart Export</title>' + document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'hy-step-chart.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  };
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <img src="assets/hy-step-logo.png" alt="Hy-STEP" />
+      </div>
+
+      <div className="mini-patient">
+        <div className="row1">
+          <span className="name">김민서</span>
+          <span className="visit">2차 내원</span>
+        </div>
+        <div className="meta">여성 · 만 28세</div>
+        <div className="progress-mini">
+          <div className="label"><span>전체 진행률</span><b>{overall}%</b></div>
+          <div className="bar"><span style={{ width: overall + '%' }} /></div>
+        </div>
+      </div>
+
+      <nav className="nav-scroll">
+        <div className="nav-heading">Chart Sections</div>
+        {SECTIONS.map((s, i) => {
+          const isSection = s.id !== 'dashboard';
+          // Auto-derive display index from array position (dashboard skipped)
+          const idxLabel = isSection ? String(sectionOnly.findIndex(x => x.id === s.id) + 1) : '';
+          return (
+            <button
+              key={s.id}
+              className={`nav-item ${current === s.id ? 'active' : ''}`}
+              onClick={() => onChange(s.id)}
+              title={isSection ? `Section ${idxLabel} · 교수 서명: ${s.signStatus === 'signed' ? '완료' : s.signStatus === 'pending' ? '대기' : '요청 전'}` : ''}
+            >
+              {isSection ? <SignDot status={s.signStatus} /> : <span className="sign-dot placeholder" />}
+              <span className="idx">{idxLabel}</span>
+              <span className="name">{s.name}</span>
+              <span className="pct">{s.id === 'dashboard' ? '' : `${s.progress}%`}</span>
+            </button>
+          );
+        })}
+
+        {/* Download buttons */}
+        <div className="nav-download">
+          <div className="nav-download-l">차트 파일 다운로드</div>
+          <div className="nav-download-row">
+            <button className="btn sm" onClick={() => handleDownload('pdf')}>
+              <Icon name="save" size={12} /> PDF
+            </button>
+            <button className="btn sm" onClick={() => handleDownload('html')}>
+              <Icon name="save" size={12} /> HTML
+            </button>
+          </div>
+          <div className="nav-download-hint">
+            대상자 정보 · 섹션 1-8 · 교수 평가 전체 포함
+          </div>
+        </div>
+
+        {/* Sign-status legend */}
+        <div className="sign-legend">
+          <div className="sl-title">교수 서명 상태</div>
+          <div className="sl-row"><SignDot status="signed" /><span>업로드 완료</span></div>
+          <div className="sl-row"><SignDot status="pending" /><span>요청 후 대기</span></div>
+          <div className="sl-row"><SignDot status="unsent" /><span>요청 전</span></div>
+        </div>
+
+        <div className="nav-heading" style={{ marginTop: 12 }}>Design System</div>
+        <button className={`nav-item ${current === 'components' ? 'active' : ''}`} onClick={() => onChange('components')}>
+          <span className="sign-dot placeholder" />
+          <span className="idx"></span>
+          <span className="name">공용 컴포넌트</span>
+          <span className="pct"></span>
+        </button>
+        <button className={`nav-item ${current === 'photo' ? 'active' : ''}`} onClick={() => onChange('photo')}>
+          <span className="sign-dot placeholder" />
+          <span className="idx"></span>
+          <span className="name">Photo 모달</span>
+          <span className="pct"></span>
+        </button>
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="avatar">JM</div>
+        <div className="who">
+          <b>이지민</b>
+          <span>2023560031</span>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+Object.assign(window, { Sidebar, SECTIONS, SignDot });
+
+</script>
+
+<!-- 4. tooth-diagram.jsx: ToothIconDiagram, ToothCard, ToothChart2Row, ToothDiagram, ToothPicker -->
+<script type="text/babel">
+/* Tooth Chart — 2-row grid layout (16 upper, 16 lower).
+   Each tooth is a soft rounded shape (incisor / premolar / molar silhouette),
+   NO outline, muted fills. Chart symbols (Ex, G.I, C, Cw, P.Cr etc) overlay
+   directly on the tooth image. Individual missing/status marks are shown as
+   simple annotations. */
+
+/* Chart symbol data — sample state matching the reference image */
+const DEFAULT_TOOTH_STATE = {
+  18: { sym: 'Ex' },      // extraction
+  17: { sym: 'G.I' },
+  16: { sym: 'G.I' },
+  11: { sym: 'C', red: true },
+  21: { sym: 'C', red: true },
+  22: { sym: 'C', red: true },
+  23: { sym: 'Cw' },
+  25: { sym: 'C ck', red: true },
+  26: { sym: 'P.Cr' },
+  27: { sym: 'P.Cr' },
+  28: { sym: 'Ex' },
+  48: { sym: 'Ex' },
+  47: { sym: 'G.IC' },
+  46: { sym: 'G.IFx', arc: true },
+  42: { sym: 'Fx Cw' },
+  41: { sym: 'Cw' },
+  31: { sym: 'Cw' },
+  32: { sym: 'Cw' },
+  36: { sym: 'G.I R.F' },
+  37: { arc: true },
+  38: { sym: 'Ex' },
+};
+
+const toothType = (num) => {
+  const last = num % 10;
+  if (last >= 6) return 'molar';
+  if (last >= 4) return 'premolar';
+  if (last === 3) return 'canine';
+  return 'incisor';
+};
+
+/* Soft tooth silhouette — no outline, muted fill.
+   Each type has its own shape. Rendered inside a 44x52 SVG. */
+const ToothIconDiagram = ({ num, isUpper, state = {} }) => {
+  const type = toothType(num);
+  const baseFill = '#F2E9DA'; // warm off-white
+  const shadowFill = '#E6D8BC';
+
+  // We draw the tooth in a natural orientation for the arch:
+  // Upper teeth: crown at bottom (occlusal down), roots at top
+  // Lower teeth: crown at top (occlusal up), roots at bottom
+  // For visual clarity in a grid we actually orient BOTH so their
+  // crown (biting surface) faces the midline (upper→down, lower→up),
+  // but roots are hidden by the card — we just draw the crown shape.
+
+  let path;
+  if (type === 'molar') {
+    // wide crown with subtle cusp indents
+    path = isUpper
+      ? 'M 6,4 C 4,14 4,32 8,42 C 14,50 30,50 36,42 C 40,32 40,14 38,4 C 34,2 30,6 30,3 C 26,6 22,3 22,3 C 22,6 18,3 14,3 C 14,6 10,2 6,4 Z'
+      : 'M 6,48 C 4,38 4,20 8,10 C 14,2 30,2 36,10 C 40,20 40,38 38,48 C 34,50 30,46 30,49 C 26,46 22,49 22,49 C 22,46 18,49 14,49 C 14,46 10,50 6,48 Z';
+  } else if (type === 'premolar') {
+    path = isUpper
+      ? 'M 10,4 C 6,14 6,32 10,42 C 15,49 29,49 34,42 C 38,32 38,14 34,4 C 30,2 26,6 22,3 C 18,6 14,2 10,4 Z'
+      : 'M 10,48 C 6,38 6,20 10,10 C 15,3 29,3 34,10 C 38,20 38,38 34,48 C 30,50 26,46 22,49 C 18,46 14,50 10,48 Z';
+  } else if (type === 'canine') {
+    path = isUpper
+      ? 'M 22,3 C 14,4 10,10 10,20 C 10,32 12,42 15,46 C 20,50 28,50 30,46 C 32,42 34,32 34,20 C 34,10 30,4 22,3 Z'
+      : 'M 22,49 C 14,48 10,42 10,32 C 10,20 12,10 15,6 C 20,2 28,2 30,6 C 32,10 34,20 34,32 C 34,42 30,48 22,49 Z';
+  } else {
+    // incisor — flat rectangular crown
+    path = isUpper
+      ? 'M 10,4 C 8,10 8,32 10,42 C 12,48 32,48 34,42 C 36,32 36,10 34,4 C 32,2 12,2 10,4 Z'
+      : 'M 10,48 C 8,42 8,20 10,10 C 12,4 32,4 34,10 C 36,20 36,42 34,48 C 32,50 12,50 10,48 Z';
+  }
+
+  const isExtraction = state.sym === 'Ex';
+
+  return (
+    <svg viewBox="0 0 44 52" width="44" height="52" style={{ display: 'block' }}>
+      {/* soft drop-shadow-like layer */}
+      <path d={path} fill={shadowFill} transform="translate(0.5, 1)" opacity="0.45" />
+      <path d={path} fill={isExtraction ? '#EEEEEE' : baseFill} />
+      {/* cusp / anatomical line hint for molar/premolar */}
+      {(type === 'molar' || type === 'premolar') && (
+        <line
+          x1="22" y1={isUpper ? 8 : 44} x2="22" y2={isUpper ? 40 : 12}
+          stroke="#D9C7A2" strokeWidth="0.7" opacity="0.7"
+        />
+      )}
+      {/* Extraction — diagonal cross */}
+      {isExtraction && (
+        <>
+          <line x1="8" y1="8" x2="36" y2="44" stroke="#C4A489" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="36" y1="8" x2="8" y2="44" stroke="#C4A489" strokeWidth="1.8" strokeLinecap="round" />
+        </>
+      )}
+      {/* Arc annotation (like a small curve under the tooth — recession/mobility marker) */}
+      {state.arc && (
+        <path d="M 12 46 Q 22 52 32 46" fill="none" stroke="#C4A489" strokeWidth="1.4" strokeLinecap="round" />
+      )}
+    </svg>
+  );
+};
+
+/* One tooth card — combines the tooth icon and its charting symbol */
+const ToothCard = ({ num, isUpper, state = {}, small = false }) => {
+  const sym = state.sym;
+  const symColor = state.red ? '#DC2626' : '#2A6FDB';
+
+  return (
+    <div className={`tc ${small ? 'small' : ''}`}>
+      <div className="tc-num" style={{ order: isUpper ? -1 : 2 }}>{num}</div>
+      <div className="tc-body">
+        <ToothIconDiagram num={num} isUpper={isUpper} state={state} />
+        {sym && (
+          <div className="tc-sym" style={{ color: symColor }}>{sym}</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* Full tooth chart — 2 rows of 16 teeth each, with a midline gap between quadrants */
+const ToothChart2Row = ({ state = DEFAULT_TOOTH_STATE, small = false }) => {
+  const upper = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+  const lower = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+  return (
+    <div className={`tooth-chart-2row ${small ? 'small' : ''}`}>
+      <div className="tc-row upper">
+        {upper.map((n, i) => (
+          <React.Fragment key={n}>
+            {i === 8 && <div className="tc-midline" />}
+            <ToothCard num={n} isUpper={true} state={state[n] || {}} small={small} />
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="tc-occlusal" />
+      <div className="tc-row lower">
+        {lower.map((n, i) => (
+          <React.Fragment key={n}>
+            {i === 8 && <div className="tc-midline" />}
+            <ToothCard num={n} isUpper={false} state={state[n] || {}} small={small} />
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* Legacy wrapper: still exposed as ToothDiagram for existing callers */
+const ToothDiagram = ({ selectedTeeth = [], onToggle }) => {
+  // Section 2 usage — same 2-row chart with default charting state
+  return <ToothChart2Row state={DEFAULT_TOOTH_STATE} />;
+};
+
+const ToothPicker = ({ selected = [], disabled = [], onToggle }) => {
+  const rows = [
+    [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28],
+    [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38],
+  ];
+  // Accept both Array and Set for disabled/selected
+  const has = (col, n) => col instanceof Set ? col.has(n) : Array.isArray(col) && col.includes(n);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 12, background: '#F8FAFC', borderRadius: 8, border: '1px solid #E5E9F0' }}>
+      {rows.map((row, i) => (
+        <div key={i} style={{ display: 'grid', gridTemplateColumns: 'repeat(16, 1fr)', gap: 4 }}>
+          {row.map(n => {
+            const isDisabled = has(disabled, n);
+            const isSelected = has(selected, n);
+            return (
+              <button
+                key={n}
+                className={`tooth-block ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                onClick={() => !isDisabled && onToggle && onToggle(n)}
+                disabled={isDisabled}
+              >{n}</button>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+Object.assign(window, { ToothDiagram, ToothPicker, ToothChart2Row, ToothCard, ToothIconDiagram, DEFAULT_TOOTH_STATE });
+
+</script>
+
+<!-- 5. tooth-chart-new.jsx: ToothIcon (new), NotationChart, CombinedChart, CalculusChart -->
+<script type="text/babel">
+/* New Tooth Chart:
+   - 2-row layout (upper row, lower row), no arch
+   - Each tooth is a soft-filled shape (incisor/premolar/molar), no outline
+   - Chart notation glyphs overlay the tooth
+   - Per-tooth annotation cells above/below for PD/BOP/Mob/SW/Cal
+*/
+
+const TEETH_UPPER = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+const TEETH_LOWER = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+
+const toothCategory = (n) => {
+  const last = n % 10;
+  if (last >= 6) return 'molar';
+  if (last >= 4) return 'premolar';
+  if (last === 3) return 'canine';
+  return 'incisor';
+};
+
+/* Simple tooth silhouette. Filled soft color, no outline.
+   viewBox 40 x 52. Crown occupies upper half, root(s) lower half.
+   `flip` = true → root points up (for upper arch teeth so roots are near gum line at top of image)
+   Actually we use SAME visual shape (crown up) for both rows because it's a
+   diagrammatic 2-row layout, not anatomical arch. */
+const ToothIcon = ({ category, missing, selected, className, style }) => {
+  const bodyFill = missing ? '#F1F5F9' : selected ? '#DBEAFE' : '#F4EFE1'; // warm ivory
+  const rootFill = missing ? '#E2E8F0' : selected ? '#BFDBFE' : '#E8DFC6';
+
+  let crown, root;
+  if (category === 'molar') {
+    crown = <path d="M 6,20 C 6,10 12,4 20,4 C 28,4 34,10 34,20 L 34,26 C 30,30 26,26 22,30 C 20,26 18,30 14,26 C 10,30 6,26 6,20 Z" fill={bodyFill} />;
+    root = <path d="M 8,24 L 6,44 M 20,24 L 20,46 M 32,24 L 34,44" stroke={rootFill} strokeWidth="6" fill="none" strokeLinecap="round" />;
+  } else if (category === 'premolar') {
+    crown = <path d="M 10,20 C 10,10 14,5 20,5 C 26,5 30,10 30,20 L 30,26 C 26,30 22,26 20,30 C 18,26 14,30 10,26 Z" fill={bodyFill} />;
+    root = <path d="M 13,24 L 11,46 M 27,24 L 29,46" stroke={rootFill} strokeWidth="5" fill="none" strokeLinecap="round" />;
+  } else if (category === 'canine') {
+    crown = <path d="M 12,26 L 12,17 C 12,9 15,4 20,3 C 25,4 28,9 28,17 L 28,26 C 25,30 22,26 20,30 C 18,26 15,30 12,26 Z" fill={bodyFill} />;
+    root = <path d="M 20,24 L 20,48" stroke={rootFill} strokeWidth="5" fill="none" strokeLinecap="round" />;
+  } else {
+    // incisor
+    crown = <path d="M 12,26 L 12,10 C 12,6 15,3 20,3 C 25,3 28,6 28,10 L 28,26 C 25,30 22,26 20,30 C 18,26 15,30 12,26 Z" fill={bodyFill} />;
+    root = <path d="M 20,24 L 20,48" stroke={rootFill} strokeWidth="4" fill="none" strokeLinecap="round" />;
+  }
+
+  return (
+    <svg viewBox="0 0 40 52" className={className} style={style} width="100%" height="100%">
+      {root}
+      {crown}
+      {missing && <line x1="6" y1="6" x2="34" y2="46" stroke="#94A3B8" strokeWidth="1.6" />}
+    </svg>
+  );
+};
+
+/* ============ Notation glyphs overlay ============ */
+// Displays the "chart notation" symbols directly ON the tooth
+const NotationOverlay = ({ code, isUpper }) => {
+  if (!code) return null;
+  const map = {
+    'Ex':    { text: 'Ex',    color: '#0F172A', style: 'text' },
+    'C':     { text: 'C',     color: '#DC2626', style: 'text' },
+    'Cw':    { text: 'Cw',    color: '#2A6FDB', style: 'text' },
+    'C ck':  { text: 'C ck',  color: '#DC2626', style: 'text' },
+    'G.I':   { text: 'G.I',   color: '#2A6FDB', style: 'text' },
+    'G.IC':  { text: 'G.IC',  color: '#2A6FDB', style: 'text' },
+    'G.IFx': { text: 'G.IFx', color: '#2A6FDB', style: 'text' },
+    'P.Cr':  { text: 'P.Cr',  color: '#2A6FDB', style: 'text' },
+    'G.IR.F':{ text: 'G.IR.F',color: '#2A6FDB', style: 'text' },
+    'Fx':    { text: 'Fx',    color: '#DC2626', style: 'text' },
+    'Fx Cw': { text: 'Fx Cw', color: '#DC2626', style: 'text' },
+  };
+  const conf = map[code];
+  if (!conf) return null;
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      display: 'grid', placeItems: 'center',
+      pointerEvents: 'none',
+      fontSize: 10.5, fontWeight: 700, color: conf.color,
+      fontFamily: 'Pretendard, sans-serif',
+      textShadow: '0 0 3px rgba(255,253,246,0.9), 0 0 3px rgba(255,253,246,0.9)',
+    }}>{conf.text}</div>
+  );
+};
+
+/* ============ Chart Tab (notation only) ============ */
+const NotationChart = ({ notationMap = {}, missingSet = new Set(), onCellClick }) => {
+  const renderRow = (teeth, isUpper) => (
+    <div className="tooth-row">
+      {teeth.map(n => {
+        const cat = toothCategory(n);
+        const missing = missingSet.has(n);
+        const code = notationMap[n];
+        return (
+          <div key={n} className="tooth-cell" onClick={() => onCellClick && onCellClick(n)}>
+            <div className="tooth-num">{n}</div>
+            <div className="tooth-body">
+              <ToothIcon category={cat} missing={missing} />
+              <NotationOverlay code={code} isUpper={isUpper} />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+  return (
+    <div className="tooth-chart-new">
+      {renderRow(TEETH_UPPER, true)}
+      <div className="occlusal-line" />
+      {renderRow(TEETH_LOWER, false)}
+    </div>
+  );
+};
+
+/* ============ Combined PD/BOP/Mob/SW Chart (NEW 10-row layout) ============
+   Row structure (per-tooth spans 3 sub-cells for PD, 1 cell for BOP):
+     1: BOP 상악 (한 칸)                    click → red dot toggle
+     2: PD 상악 Buccal (3 칸 · MB/B/DB)     click → number select popover (0-9)
+     3: 상악 치아 아이콘 (with notation)
+     4: Mob / Sw 상악                        optional select
+     5: PD 상악 Lingual (3 칸 · ML/L/DL)
+     -- occlusal separator --
+     6: PD 하악 Lingual (3 칸)
+     7: Mob / Sw 하악
+     8: 하악 치아 아이콘 (상하 반전)
+     9: PD 하악 Buccal (3 칸)
+     10: BOP 하악 (한 칸)
+   All entries are OPTIONAL (Mob/Sw/BOP/PD 필수 아님).
+*/
+
+const PDCell = ({ value, onChange }) => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="pd-cell" onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}>
+      {value != null && value !== '' ? (
+        <span className={Number(value) >= 4 ? 'pd-num warn' : 'pd-num'}>{value}</span>
+      ) : (
+        <span className="pd-empty">·</span>
+      )}
+      {open && (
+        <div className="pd-pop" onClick={e => e.stopPropagation()}>
+          {[1,2,3,4,5,6,7,8,9].map(n => (
+            <button key={n}
+              className={`pd-opt ${n >= 4 ? 'warn' : ''} ${Number(value) === n ? 'active' : ''}`}
+              onClick={() => { onChange(n); setOpen(false); }}
+            >{n}</button>
+          ))}
+          <button className="pd-opt clear" onClick={() => { onChange(null); setOpen(false); }}>×</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const BOPCell = ({ value, onClick }) => (
+  <div className="bop-cell" onClick={onClick}>
+    {value ? <span className="bop-red-dot" /> : null}
+  </div>
+);
+
+const MobSwCell = ({ value, onChange }) => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="mobsw-cell" onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}>
+      {value ? <span className={`mobsw-badge ${value.startsWith('M') ? 'm' : 's'}`}>{value}</span> : <span className="mobsw-empty">·</span>}
+      {open && (
+        <div className="mobsw-pop" onClick={e => e.stopPropagation()}>
+          {['M1','M2','M3'].map(v => (
+            <button key={v} className={`mobsw-opt m ${value === v ? 'active' : ''}`} onClick={() => { onChange(v); setOpen(false); }}>{v}</button>
+          ))}
+          {['Sw'].map(v => (
+            <button key={v} className={`mobsw-opt s ${value === v ? 'active' : ''}`} onClick={() => { onChange(v); setOpen(false); }}>{v}</button>
+          ))}
+          <button className="mobsw-opt clear" onClick={() => { onChange(null); setOpen(false); }}>×</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const CombinedChart = ({ notationMap = {}, missingSet = new Set() }) => {
+  // State per tooth. All optional.
+  const [pd, setPd] = React.useState({
+    // format: { toothNum: { buccal: [n,n,n], lingual: [n,n,n] } }
+    16: { buccal: [3, 4, 3], lingual: [3, 3, 3] },
+    26: { buccal: [5, 4, 5], lingual: [3, 3, 4] },
+    27: { buccal: [5, 4, 4], lingual: [3, 3, 3] },
+    46: { buccal: [3, 4, 3], lingual: [3, 3, 4] },
+  });
+  const [bop, setBop] = React.useState({ 16: 1, 26: 1, 27: 1, 46: 1, 12: 1, 22: 1, 41: 1 });
+  const [mobsw, setMobsw] = React.useState({ 13: 'M1', 26: 'Sw', 27: 'Sw', 42: 'M2' });
+
+  const setPdVal = (n, surface, i, v) => {
+    setPd(prev => {
+      const t = prev[n] || { buccal: [null,null,null], lingual: [null,null,null] };
+      const arr = [...(t[surface] || [null,null,null])];
+      arr[i] = v;
+      return { ...prev, [n]: { ...t, [surface]: arr } };
+    });
+  };
+  const toggleBop = (n) => setBop(prev => ({ ...prev, [n]: prev[n] ? 0 : 1 }));
+  const setMobSw = (n, v) => setMobsw(prev => ({ ...prev, [n]: v }));
+
+  const renderPDStrip = (n, surface) => {
+    const arr = (pd[n] && pd[n][surface]) || [null, null, null];
+    return (
+      <div className="strip strip-pd-3">
+        {[0,1,2].map(i => (
+          <PDCell key={i} value={arr[i]} onChange={v => setPdVal(n, surface, i, v)} />
+        ))}
+      </div>
+    );
+  };
+
+  const renderTooth = (n, flipped) => {
+    const cat = toothCategory(n);
+    const missing = missingSet.has(n);
+    const code = notationMap[n];
+    return (
+      <div className="tooth-body" style={flipped ? { transform: 'scaleY(-1)' } : undefined}>
+        <ToothIcon category={cat} missing={missing} />
+        {code && (
+          <div style={flipped ? { transform: 'scaleY(-1)', position: 'absolute', inset: 0 } : { position: 'absolute', inset: 0 }}>
+            <NotationOverlay code={code} isUpper={!flipped} />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const upperColumn = (n) => (
+    <div key={n} className="combi-col-new">
+      {/* 1: BOP upper */}
+      <BOPCell value={bop[n]} onClick={() => toggleBop(n)} />
+      {/* 2: PD upper Buccal */}
+      {renderPDStrip(n, 'buccal')}
+      {/* 3: Upper tooth */}
+      <div className="tooth-slot upper">
+        <div className="tooth-num-upper">{n}</div>
+        {renderTooth(n, false)}
+      </div>
+      {/* 4: Mob/Sw upper */}
+      <MobSwCell value={mobsw[n]} onChange={v => setMobSw(n, v)} />
+      {/* 5: PD upper Lingual */}
+      {renderPDStrip(n, 'lingual')}
+    </div>
+  );
+
+  const lowerColumn = (n) => (
+    <div key={n} className="combi-col-new">
+      {/* 6: PD lower Lingual */}
+      {renderPDStrip(n, 'lingual')}
+      {/* 7: Mob/Sw lower */}
+      <MobSwCell value={mobsw[n]} onChange={v => setMobSw(n, v)} />
+      {/* 8: Lower tooth — flipped */}
+      <div className="tooth-slot lower">
+        {renderTooth(n, true)}
+        <div className="tooth-num-lower">{n}</div>
+      </div>
+      {/* 9: PD lower Buccal */}
+      {renderPDStrip(n, 'buccal')}
+      {/* 10: BOP lower */}
+      <BOPCell value={bop[n]} onClick={() => toggleBop(n)} />
+    </div>
+  );
+
+  return (
+    <div className="combined-chart-v2">
+      <div className="combined-legend">
+        <span><span className="bop-red-dot inline" /> BOP (셀 클릭)</span>
+        <span><span className="pd-num">3</span> PD 정상</span>
+        <span><span className="pd-num warn">4</span> PD ≥ 4mm</span>
+        <span><span className="mobsw-badge m">M1</span> Mobility</span>
+        <span><span className="mobsw-badge s">Sw</span> Swelling</span>
+        <span style={{ marginLeft: 'auto', color: 'var(--ink-400)' }}>Mob·Sw·BOP·PD 모두 선택 입력</span>
+      </div>
+
+      {/* Upper arch — row labels on the left */}
+      <div className="combi-grid">
+        <div className="combi-row-labels">
+          <div className="row-label">BOP</div>
+          <div className="row-label">PD Buccal</div>
+          <div className="row-label big">상악</div>
+          <div className="row-label">Mob / Sw</div>
+          <div className="row-label">PD Lingual</div>
+        </div>
+        <div className="combi-cols">
+          {TEETH_UPPER.map(upperColumn)}
+        </div>
+      </div>
+
+      <div className="occlusal-line" />
+
+      <div className="combi-grid">
+        <div className="combi-row-labels">
+          <div className="row-label">PD Lingual</div>
+          <div className="row-label">Mob / Sw</div>
+          <div className="row-label big">하악</div>
+          <div className="row-label">PD Buccal</div>
+          <div className="row-label">BOP</div>
+        </div>
+        <div className="combi-cols">
+          {TEETH_LOWER.map(lowerColumn)}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ============ Calculus Chart (X-shaped 4 surface per tooth) ============ */
+const CalculusChart = ({ notationMap = {}, missingSet = new Set() }) => {
+  // Sample calculus dots per tooth. Each tooth has 4 surfaces (F=facial, L=lingual, M=mesial, D=distal).
+  // We render an X-shaped 4-triangle grid ABOVE and BELOW each tooth for supra/sub distinction.
+  const supra = {
+    13: [1,0,0,0], 12: [1,1,0,0], 11: [1,0,1,0], 21: [1,1,0,0], 22: [1,0,0,0],
+    26: [0,1,0,0], 27: [0,1,0,0],
+  };
+  const sub = {
+    43: [0,0,1,0], 42: [1,1,0,0], 41: [1,1,1,0], 31: [1,1,1,0], 32: [1,0,1,0], 33: [1,0,0,0],
+  };
+
+  // A 4-triangle X block: facial (top), lingual (bottom), mesial (left), distal (right)
+  const XBlock = ({ arr }) => (
+    <svg viewBox="0 0 24 24" width="24" height="24">
+      <rect x="1" y="1" width="22" height="22" fill="#fff" stroke="#E5E9F0" />
+      <line x1="1" y1="1" x2="23" y2="23" stroke="#E5E9F0" strokeWidth="0.8" />
+      <line x1="23" y1="1" x2="1" y2="23" stroke="#E5E9F0" strokeWidth="0.8" />
+      {arr && arr[0] ? <circle cx="12" cy="5" r="1.8" fill="#DC2626" /> : null}
+      {arr && arr[1] ? <circle cx="12" cy="19" r="1.8" fill="#DC2626" /> : null}
+      {arr && arr[2] ? <circle cx="5" cy="12" r="1.8" fill="#DC2626" /> : null}
+      {arr && arr[3] ? <circle cx="19" cy="12" r="1.8" fill="#DC2626" /> : null}
+    </svg>
+  );
+
+  const renderCol = (n, isUpper) => {
+    const cat = toothCategory(n);
+    const missing = missingSet.has(n);
+    const code = notationMap[n];
+    return (
+      <div key={n} className="combi-col">
+        {isUpper ? (
+          <>
+            <div className="cal-strip"><XBlock arr={supra[n]} /></div>
+            <div className="tooth-cell no-hover">
+              <div className="tooth-num">{n}</div>
+              <div className="tooth-body">
+                <ToothIcon category={cat} missing={missing} />
+                <NotationOverlay code={code} />
+              </div>
+            </div>
+            <div className="cal-strip"><XBlock arr={sub[n]} /></div>
+          </>
+        ) : (
+          <>
+            <div className="cal-strip"><XBlock arr={sub[n]} /></div>
+            <div className="tooth-cell no-hover">
+              <div className="tooth-body">
+                <ToothIcon category={cat} missing={missing} />
+                <NotationOverlay code={code} />
+              </div>
+              <div className="tooth-num">{n}</div>
+            </div>
+            <div className="cal-strip"><XBlock arr={supra[n]} /></div>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  // Count calculus rate
+  let totalSurfaces = 0, dottedSurfaces = 0;
+  [...Object.values(supra), ...Object.values(sub)].forEach(arr => {
+    arr.forEach(v => { totalSurfaces++; if (v) dottedSurfaces++; });
+  });
+  const rate = 19.64;
+
+  return (
+    <div>
+      <div className="combined-chart">
+        <div className="combi-row">
+          {TEETH_UPPER.map(n => renderCol(n, true))}
+        </div>
+        <div className="occlusal-line" />
+        <div className="combi-row">
+          {TEETH_LOWER.map(n => renderCol(n, false))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 18, padding: 16, background: 'var(--surface-50)', borderRadius: 10, border: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700 }}>치석 평가 (Calculus Assessment)</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-500)' }}>Calculus 수 / (총 치아 수 × 6) × 100</div>
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--primary)', fontVariantNumeric: 'tabular-nums' }}>
+            {rate.toFixed(2)}<span style={{ fontSize: 14 }}>%</span>
+          </div>
+        </div>
+        <div className="grid-2" style={{ gap: 16 }}>
+          <div>
+            <label className="field-label">치석 양 (Calculus Amount)</label>
+            <div className="radio-group">
+              <button className="radio-chip active" style={{ background: '#22C55E', borderColor: '#22C55E' }}><span className="dot" />Simple</button>
+              <button className="radio-chip">Moderate</button>
+              <button className="radio-chip">Heavy</button>
+            </div>
+          </div>
+          <div>
+            <label className="field-label">치석 위치 (Calculus Location)</label>
+            <div className="radio-group">
+              <button className="radio-chip">Sub.</button>
+              <button className="radio-chip">Supra.</button>
+              <button className="radio-chip active">Both</button>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <label className="field-label">치석 평가 소견 (Calculus Narrative)</label>
+          <textarea className="textarea" style={{ minHeight: 44 }} defaultValue="전치부 순면 치석 2/3 이상(총생) - shy" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, {
+  ToothIcon, NotationChart, CombinedChart, CalculusChart,
+  toothCategory, TEETH_UPPER, TEETH_LOWER
+});
+
+</script>
+
+<!-- 6. pi-chart.jsx: PIChart, PITrend -->
+<script type="text/babel">
+/* PI Chart — X-shape 4 quadrants per tooth, big grid.
+   Reference: last attached image with 상악(Maxilla) row and 하악(Mandible) row.
+*/
+
+const PIChart = ({ data = {}, missingSet = new Set(), onToggle }) => {
+  // data: { toothNum: [F, L, M, D] as 0/1 } — 4 quadrants per tooth
+  const renderTooth = (n) => {
+    const missing = missingSet.has(n);
+    const arr = data[n] || [0, 0, 0, 0];
+    const toggle = (i) => {
+      if (missing) return;
+      const next = [...arr]; next[i] = next[i] ? 0 : 1;
+      onToggle && onToggle(n, next);
+    };
+    return (
+      <div key={n} className={`pi-tooth ${missing ? 'disabled' : ''}`}>
+        <div className="n">{n}</div>
+        <svg viewBox="0 0 40 40" className="pi-x">
+          <rect x="1" y="1" width="38" height="38" />
+          <line x1="1" y1="1" x2="39" y2="39" />
+          <line x1="39" y1="1" x2="1" y2="39" />
+          {/* Click regions (transparent) — reveal a red dot at that quadrant's centroid */}
+          <path d="M 1,1 L 39,1 L 20,20 Z" className="quad-hit" onClick={() => toggle(0)} />
+          <path d="M 1,39 L 39,39 L 20,20 Z" className="quad-hit" onClick={() => toggle(1)} />
+          <path d="M 1,1 L 1,39 L 20,20 Z" className="quad-hit" onClick={() => toggle(2)} />
+          <path d="M 39,1 L 39,39 L 20,20 Z" className="quad-hit" onClick={() => toggle(3)} />
+          {/* Red dots at quadrant centroids */}
+          {arr[0] ? <circle cx="20" cy="8"  r="3" className="pi-red-dot" /> : null}
+          {arr[1] ? <circle cx="20" cy="32" r="3" className="pi-red-dot" /> : null}
+          {arr[2] ? <circle cx="8"  cy="20" r="3" className="pi-red-dot" /> : null}
+          {arr[3] ? <circle cx="32" cy="20" r="3" className="pi-red-dot" /> : null}
+        </svg>
+      </div>
+    );
+  };
+
+  // Summary calcs
+  const activeTeeth = [...TEETH_UPPER, ...TEETH_LOWER].filter(n => !missingSet.has(n));
+  const totalSurfaces = activeTeeth.length * 4;
+  let dotted = 0;
+  activeTeeth.forEach(n => {
+    const arr = data[n] || [0,0,0,0];
+    arr.forEach(v => { if (v) dotted++; });
+  });
+  const oleary = totalSurfaces > 0 ? (dotted / totalSurfaces * 100) : 0;
+  // Modified O'Leary — for demo, count only teeth where at least 1 surface is dotted
+  const modDotted = activeTeeth.filter(n => (data[n] || []).some(v => v)).length;
+  const modTotal = activeTeeth.length;
+  const modOleary = modTotal > 0 ? (modDotted / modTotal * 100) : 0;
+
+  return (
+    <div>
+      <div className="pi-chart">
+        <div className="pi-arch-heading">상악 (Maxilla)</div>
+        <div className="pi-row">
+          {TEETH_UPPER.map(renderTooth)}
+        </div>
+        <div className="pi-arch-heading" style={{ marginTop: 18 }}>하악 (Mandible)</div>
+        <div className="pi-row">
+          {TEETH_LOWER.map(renderTooth)}
+        </div>
+      </div>
+
+      <div className="pi-summary">
+        <div className="item">
+          <div className="l">착색 치면 수</div>
+          <div className="v">{dotted}</div>
+        </div>
+        <div className="item">
+          <div className="l">전체 치면 수</div>
+          <div className="v">{totalSurfaces}</div>
+        </div>
+        <div className="item hero">
+          <div className="l">O'Leary Index</div>
+          <div className="v">{oleary.toFixed(2)}<span style={{ fontSize: 16 }}>%</span></div>
+        </div>
+        <div className="item mod">
+          <div className="l">Modified O'Leary Index</div>
+          <div className="v">{modOleary.toFixed(2)}<span style={{ fontSize: 16 }}>%</span></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* Multi-visit trend — line chart with area fill, grid, target line, delta chips */
+const PITrend = ({
+  points = [
+    { label: '1회차', v: 58.93, date: '07.06' },
+    { label: '2회차', v: 24.10, date: '07.20' },
+    { label: '3회차', v: null, date: '08.03', planned: true, target: 15 },
+    { label: '4회차', v: null, date: '08.24', planned: true, target: 10 },
+  ],
+  target = 20,
+}) => {
+  const W = 640, H = 220;
+  const padL = 40, padR = 20, padT = 20, padB = 40;
+  const iw = W - padL - padR;
+  const ih = H - padT - padB;
+  const maxY = 70;
+  const yTicks = [0, 20, 40, 60];
+
+  const xAt = (i) => padL + (points.length === 1 ? iw / 2 : (i / (points.length - 1)) * iw);
+  const yAt = (v) => padT + ih - (v / maxY) * ih;
+
+  const actual = points.map((p, i) => ({ ...p, i })).filter(p => p.v != null);
+  const linePath = actual.map((p, k) => `${k === 0 ? 'M' : 'L'} ${xAt(p.i).toFixed(1)},${yAt(p.v).toFixed(1)}`).join(' ');
+  const areaPath = actual.length >= 2
+    ? `${linePath} L ${xAt(actual[actual.length - 1].i).toFixed(1)},${yAt(0)} L ${xAt(actual[0].i).toFixed(1)},${yAt(0)} Z`
+    : '';
+
+  // Projected (dashed) line from last actual point to future planned points
+  const lastActual = actual[actual.length - 1];
+  const plannedFuture = points.map((p, i) => ({ ...p, i })).filter(p => p.i > (lastActual?.i ?? -1) && (p.target != null));
+  const projPath = lastActual && plannedFuture.length
+    ? `M ${xAt(lastActual.i)},${yAt(lastActual.v)} ` + plannedFuture.map(p => `L ${xAt(p.i)},${yAt(p.target)}`).join(' ')
+    : '';
+
+  const latestDelta = actual.length >= 2 ? actual[actual.length - 1].v - actual[actual.length - 2].v : null;
+
+  return (
+    <div className="card" style={{ margin: 0 }}>
+      <div className="card-head">
+        <div>
+          <div className="card-title">O'Leary Index 회차별 추이</div>
+          <div className="card-sub">회차가 진행될수록 감소하는 것이 목표입니다. 목표선(20%) 이하 유지 필요.</div>
+        </div>
+        {latestDelta != null && (
+          <div className={`trend-delta ${latestDelta < 0 ? 'good' : 'bad'}`}>
+            {latestDelta < 0 ? '▼' : '▲'} {Math.abs(latestDelta).toFixed(1)}%p
+            <span className="trend-delta-sub">직전 회차 대비</span>
+          </div>
+        )}
+      </div>
+
+      <div className="trend-wrap">
+        <svg viewBox={`0 0 ${W} ${H}`} className="trend-svg" preserveAspectRatio="none">
+          {/* horizontal grid + Y ticks */}
+          {yTicks.map(t => (
+            <g key={t}>
+              <line x1={padL} y1={yAt(t)} x2={W - padR} y2={yAt(t)} className="trend-grid" />
+              <text x={padL - 8} y={yAt(t) + 4} className="trend-ylabel">{t}%</text>
+            </g>
+          ))}
+
+          {/* target line */}
+          <line x1={padL} y1={yAt(target)} x2={W - padR} y2={yAt(target)} className="trend-target" />
+          <text x={W - padR} y={yAt(target) - 6} className="trend-target-label" textAnchor="end">
+            목표 {target}%
+          </text>
+
+          {/* area under actual */}
+          {areaPath && <path d={areaPath} className="trend-area" />}
+          {/* actual line */}
+          {linePath && <path d={linePath} className="trend-line" />}
+          {/* projected line */}
+          {projPath && <path d={projPath} className="trend-line proj" />}
+
+          {/* points */}
+          {points.map((p, i) => {
+            const cx = xAt(i);
+            const isActual = p.v != null;
+            const val = isActual ? p.v : p.target;
+            if (val == null) return null;
+            return (
+              <g key={i}>
+                <circle cx={cx} cy={yAt(val)} r={isActual ? 5 : 4}
+                  className={`trend-dot ${isActual ? 'actual' : 'planned'}`} />
+                <text x={cx} y={yAt(val) - 12} className={`trend-value ${isActual ? '' : 'planned'}`} textAnchor="middle">
+                  {val.toFixed(1)}%
+                </text>
+                <text x={cx} y={H - padB + 16} className="trend-xlabel" textAnchor="middle">{p.label}</text>
+                <text x={cx} y={H - padB + 30} className="trend-xdate" textAnchor="middle">{p.date}</text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="trend-legend">
+        <span><span className="tl-swatch actual" /> 실측</span>
+        <span><span className="tl-swatch planned" /> 목표(예정)</span>
+        <span><span className="tl-swatch target" /> 관리 목표선</span>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { PIChart, PITrend });
+
+</script>
+
+<!-- 7. dashboard.jsx: Dashboard -->
+<script type="text/babel">
+/* Dashboard — KPI 4장 + 섹션 진행 카드 + 최근활동/우측 위젯 */
+
+const SYSTEMIC_CONDITIONS = ['당뇨', '고혈압']; // 있는 질병만. 없으면 []
+
+const SystemicKPI = () => {
+  const hasAny = SYSTEMIC_CONDITIONS.length > 0;
+  return (
+    <div className={`kpi systemic ${hasAny ? 'warn' : ''}`}>
+      <div className="l">전신 병력</div>
+      <div className="v systemic-list">
+        {hasAny ? (
+          SYSTEMIC_CONDITIONS.map((c, i) => (
+            <React.Fragment key={c}>
+              <span style={{ color: '#DC2626' }}>{c}</span>
+              {i < SYSTEMIC_CONDITIONS.length - 1 && <span style={{ color: 'var(--ink-400)', margin: '0 4px' }}>,</span>}
+            </React.Fragment>
+          ))
+        ) : (
+          <span style={{ color: 'var(--ink-900)' }}>—</span>
+        )}
+      </div>
+      <div className="delta" style={{ color: 'var(--ink-500)' }}>
+        {hasAny ? `${SYSTEMIC_CONDITIONS.length}건 · 약물 복용 중` : '해당 없음'}
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = ({ onOpenSection }) => {
+  return (
+    <div>
+      <PatientPanel />
+
+      {/* KPI row */}
+      <div className="overview-grid">
+        <div className="kpi">
+          <div className="l">전체 진행률</div>
+          <div className="v">39<small>%</small></div>
+          <div className="delta">▲ 12% (지난 내원 대비)</div>
+        </div>
+        <SystemicKPI />
+        <div className="kpi warn">
+          <div className="l">DAS 총점</div>
+          <div className="v">14<small>/25</small></div>
+          <div className="delta">중등도 불안</div>
+        </div>
+        <div className="kpi">
+          <div className="l">완료된 섹션</div>
+          <div className="v">3<small>/8</small></div>
+          <div className="delta">1개 검토 대기</div>
+        </div>
+      </div>
+
+      {/* Section overview */}
+      <div style={{ marginTop: 28 }}>
+        <div className="card-title">섹션 진행 현황</div>
+        <div className="card-sub">카드를 클릭해 해당 섹션으로 이동합니다.</div>
+      </div>
+
+      <div className="section-cards" style={{ marginTop: 14 }}>
+        {window.SECTIONS.filter(s => s.id !== 'dashboard').map((s, i) => (
+          <button key={s.id} className="section-card" onClick={() => onOpenSection(s.id)}>
+            <div className="sc-head">
+              <div>
+                <div className="sc-idx">SECTION {i + 1}</div>
+                <div className="sc-title">{s.name}</div>
+                <div className="sc-en">{s.en}</div>
+              </div>
+              <StatusPill status={s.status} />
+            </div>
+            <div className="sc-progress">
+              <div className="bar"><span style={{ width: s.progress + '%' }} /></div>
+              <div className="row" style={{ marginTop: 6 }}>
+                <span></span><b>{s.progress}%</b>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Two-column: recent activity + review queue */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 'var(--gap-card)', marginTop: 28 }}>
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">최근 활동</div>
+              <div className="card-sub">이 차트에서 최근 저장된 변경 사항</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { s: 'Section 3', t: '1회차 PI 측정 완료 · O\'Leary 42%', d: '2026.07.20 14:12', c: '#2A6FDB' },
+              { s: 'Section 2', t: '전신질환 · 고혈압 항목 활성화', d: '2026.07.20 13:58', c: '#10B981' },
+              { s: 'Section 1', t: '사전문진 링크 생성 (KakaoTalk 전송)', d: '2026.07.20 13:42', c: '#8B5CF6' },
+              { s: 'Section 1', t: 'Dental Anxiety Scale · 총점 14', d: '2026.07.13', c: '#F59E0B' },
+            ].map((a, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingBottom: 12, borderBottom: i < 3 ? '1px solid var(--border)' : 'none' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: a.c, marginTop: 8, flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12.5, color: 'var(--ink-500)' }}>{a.s}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-900)', marginTop: 2 }}>{a.t}</div>
+                </div>
+                <div style={{ fontSize: 11.5, color: 'var(--ink-400)', whiteSpace: 'nowrap' }}>{a.d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">교수 검토 대기</div>
+              <div className="card-sub">평가자에게 승인 요청된 섹션</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              { s: 'Section 1. 초진 및 대상자 사정', st: 'review' },
+              { s: 'Section 3. 구강위생 지수 (1회차)', st: 'wip' },
+            ].map((r, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 10, background: 'var(--surface-50)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                <span className={`status-dot ${r.st}`} />
+                <div style={{ flex: 1, fontSize: 12.5, color: 'var(--ink-700)' }}>{r.s}</div>
+                <button className="btn sm">보기</button>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 18, padding: 14, background: 'var(--primary-50)', borderRadius: 10 }}>
+            <div style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600 }}>다음 내원 예정</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink-900)', marginTop: 4 }}>2026.08.03 (월) · 3회차</div>
+            <div style={{ fontSize: 11.5, color: 'var(--ink-500)', marginTop: 3 }}>담당자: 이지민 · 오전 10:30</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { Dashboard });
+
+</script>
+
+<!-- 8. sections-1-4.jsx: Section1, Section2, Section3, Section4 -->
+<script type="text/babel">
+/* Section 1-4 representative components */
+
+/* ============= Section 1 — Initial Interview ============= */
+const Section1 = () => {
+  const [dentalVisit, setDentalVisit] = React.useState('예');
+  const [ortho, setOrtho] = React.useState('교정장치');
+  const [brushTimes, setBrushTimes] = React.useState(['아침식사 후', '저녁식사 후']);
+  const [brushDur, setBrushDur] = React.useState('1-2분');
+  const [smoke, setSmoke] = React.useState('비흡연');
+  const [tools, setTools] = React.useState(['치실', '구강양치액(가글)']);
+  const [toolsEtc, setToolsEtc] = React.useState('');
+  const [symptoms, setSymptoms] = React.useState(['잇몸 출혈', '구취']);
+  const [symptomsEtc, setSymptomsEtc] = React.useState('');
+
+  const anxietyQs = [
+    '치과 예약이 있을 때',
+    '치과 대기실에 앉아 있을 때',
+    '치료용 의자에 앉을 때',
+    '치아 스케일링을 받을 때',
+    '치아를 삭제(드릴)받을 때',
+  ];
+  const anxietyLabels = ['전혀 없음', '약간', '보통', '강함', '매우 강함'];
+  const [anxiety, setAnxiety] = React.useState([2, 3, 3, 4, 5]);
+  const anxietyTotal = anxiety.reduce((a, b) => a + b, 0);
+
+  // Systemic disease list (moved here from Section 2)
+  const [diseases, setDiseases] = React.useState([
+    { name: '당뇨',        checked: true,  diag: '2022.03', tx: '예', med: '예', memo: 'HbA1c 6.8' },
+    { name: '고혈압',       checked: true,  diag: '2020.11', tx: '예', med: '예', memo: '' },
+    { name: '심혈관계 질환', checked: false, sub: '심근경색 / 협심증 / 심내막염' },
+    { name: '호흡기 질환',   checked: false, sub: '폐렴 / 천식 / 만성 기관지염' },
+    { name: '골 질환',      checked: false, sub: '골다공증 / 관절염 / 류마티스' },
+    { name: '간염',        checked: false, sub: 'A형 / B형 / C형' },
+    { name: '성병',        checked: false, sub: '' },
+    { name: '임신',        checked: false, sub: '초기 / 중기 / 후기' },
+    { name: '기타 질환',    checked: false, sub: '' },
+  ]);
+
+  const [meds, setMeds] = React.useState([
+    { name: '메트포르민 500mg', systemic: '경미한 위장 불편감 가능', oral: '구강 건조, 금속성 미각 보고됨' },
+    { name: '암로디핀 5mg', systemic: '말초 부종, 안면 홍조', oral: '치은 비대(약물성 치은비대증) 가능성' },
+  ]);
+
+  const toolOptions = ['치실', '치간칫솔', '구강양치액(가글)', '워터픽', '없음', '기타'];
+  const symptomOptions = ['치아 파절', '치통', '잇몸 출혈', '혀/뺨 통증', '구취', '구강 악습관', '구강건조', '기타'];
+
+  const subsections = [
+    { id: 's1-sub-1', label: '사전문진 링크' },
+    { id: 's1-sub-2', label: '치과 방문 경험' },
+    { id: 's1-sub-3', label: '건강행태 · 칫솔질' },
+    { id: 's1-sub-4', label: '증상 및 불편감' },
+    { id: 's1-sub-5', label: '구강불안도 (DAS)' },
+    { id: 's1-sub-6', label: '전신질환 병력' },
+    { id: 's1-sub-7', label: '전신질환 치과 주의사항' },
+    { id: 's1-sub-8', label: '복용 약물 및 부작용' },
+  ];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s1" ko="초진 및 대상자 사정" en="Initial Interview & Patient History"
+        progress={100} subsections={subsections} defaultReviewState="done"
+        hint="최종 저장 2026.07.20 14:12" />
+
+      <div className="doc-lead">
+        대상자의 병력·건강행태·구강불안도 등을 문진하고, 사전문진 링크를 통해 대상자가 직접 응답할 수 있습니다.
+      </div>
+
+      {/* 사전문진 링크 관리 — 슬림 스트립 */}
+      <SubSection id="s1-sub-1" label="사전문진" title="사전문진 링크 관리"
+        sub="발급된 링크를 통해 대상자가 직접 응답한 후 자동 반영됩니다.">
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+          padding: '10px 14px',
+          background: 'var(--surface-50)', border: '1px solid var(--border)',
+          borderRadius: 10,
+        }}>
+          <div style={{
+            fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 12,
+            color: 'var(--ink-700)', background: 'var(--surface)',
+            padding: '6px 10px', borderRadius: 6, border: '1px solid var(--border)',
+            flex: 1, minWidth: 220,
+          }}>
+            hy-step.dh.ac.kr/pre/A-20260720-14-x7f92
+          </div>
+          <div style={{ display: 'flex', gap: 14, fontSize: 11.5, color: 'var(--ink-500)' }}>
+            <span>발급 <b style={{ color: 'var(--ink-900)', fontWeight: 600 }}>07.20</b></span>
+            <span>응답 <b style={{ color: 'var(--ok)', fontWeight: 700 }}>완료</b></span>
+            <span>만료 <b style={{ color: 'var(--ink-900)', fontWeight: 600 }}>07.27</b></span>
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button className="btn sm">링크 생성</button>
+            <button className="btn ghost sm">링크 만료</button>
+          </div>
+        </div>
+      </SubSection>
+
+      {/* 치과 방문 경험 */}
+      <SubSection id="s1-sub-2" label="Q1" title="치과 방문 경험">
+        <label className="field-label">최근 1년 내 치과 방문 여부</label>
+        <RadioGroup options={['예', '아니오']} value={dentalVisit} onChange={setDentalVisit} />
+        {dentalVisit === '예' && (
+          <div style={{ marginTop: 12 }}>
+            <label className="field-label">진료 내용</label>
+            <textarea className="textarea" placeholder="진료받은 내용을 입력하세요" defaultValue="스케일링 및 좌측 상악 6번 인레이 치료" />
+          </div>
+        )}
+        <div style={{ marginTop: 18 }}>
+          <label className="field-label">현재 교정 여부</label>
+          <RadioGroup options={['교정장치', '유지장치', '아니오']} value={ortho} onChange={setOrtho} />
+          {(ortho === '교정장치' || ortho === '유지장치') && (
+            <div className="grid-3" style={{ marginTop: 12 }}>
+              <div>
+                <label className="field-label">교정 기간</label>
+                <input className="input" defaultValue="1년 8개월째" />
+              </div>
+              <div>
+                <label className="field-label">교정 이유</label>
+                <input className="input" defaultValue="전치부 총생 개선" />
+              </div>
+              <div>
+                <label className="field-label">발치 여부</label>
+                <RadioGroup options={['예', '아니오']} value="예" onChange={() => {}} />
+              </div>
+            </div>
+          )}
+        </div>
+      </SubSection>
+
+      {/* 건강행태 · 칫솔질 */}
+      <SubSection id="s1-sub-3" label="Q2" title="건강행태 · 칫솔질 습관">
+        <label className="field-label">칫솔질 시간대 (복수 선택)</label>
+        <CheckGroup
+          options={['아침식사 전', '아침식사 후', '점심식사 후', '저녁식사 후', '간식 후', '하지 않음']}
+          value={brushTimes}
+          onChange={setBrushTimes}
+        />
+        <div className="grid-3" style={{ marginTop: 16 }}>
+          <div>
+            <label className="field-label">1회 칫솔질 시간</label>
+            <RadioGroup options={['1분 미만', '1-2분', '3분 이상']} value={brushDur} onChange={setBrushDur} />
+          </div>
+          <div>
+            <label className="field-label">칫솔 교환 주기</label>
+            <RadioGroup options={['1개월', '2-3개월', '6개월 이상']} value="2-3개월" onChange={() => {}} />
+          </div>
+          <div>
+            <label className="field-label">흡연</label>
+            <RadioGroup options={['비흡연', '현재 흡연', '과거 흡연']} value={smoke} onChange={setSmoke} />
+          </div>
+        </div>
+        <div style={{ marginTop: 16 }}>
+          <label className="field-label">구강관리용품 (복수 선택)</label>
+          <CheckGroup
+            options={toolOptions}
+            value={tools}
+            onChange={setTools}
+          />
+          {tools.includes('기타') && (
+            <input className="input etc-input" placeholder="기타 항목을 입력하세요"
+              value={toolsEtc} onChange={e => setToolsEtc(e.target.value)} />
+          )}
+        </div>
+      </SubSection>
+
+      {/* 증상 및 불편감 */}
+      <SubSection id="s1-sub-4" label="Q3" title="증상 및 불편감">
+        <CheckGroup
+          options={symptomOptions}
+          value={symptoms}
+          onChange={setSymptoms}
+        />
+        {symptoms.includes('기타') && (
+          <input className="input etc-input" placeholder="기타 증상을 입력하세요"
+            value={symptomsEtc} onChange={e => setSymptomsEtc(e.target.value)} />
+        )}
+      </SubSection>
+
+      {/* Dental Anxiety Scale */}
+      <SubSection id="s1-sub-5" label="Q4" title="구강불안도 (Dental Anxiety Scale)"
+        sub="각 상황에서 느끼는 불안 수준을 선택하면 총점이 자동 계산됩니다."
+        right={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 12, color: 'var(--ink-500)' }}>총점</span>
+            <div className="scale-total">{anxietyTotal}<span style={{ fontSize: 11, opacity: 0.6 }}>/25</span></div>
+          </div>
+        }>
+        <div style={{ padding: '4px 0' }}>
+          {anxietyQs.map((q, qi) => (
+            <div key={qi} className="scale-row">
+              <div className="q">{q}</div>
+              <div className="scale-opts">
+                {anxietyLabels.map((l, i) => (
+                  <button key={i}
+                    className={`scale-opt ${anxiety[qi] === i + 1 ? 'active' : ''}`}
+                    onClick={() => {
+                      const next = [...anxiety]; next[qi] = i + 1; setAnxiety(next);
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: 13 }}>{i + 1}</div>
+                    <div style={{ marginTop: 2, opacity: 0.85 }}>{l}</div>
+                  </button>
+                ))}
+              </div>
+              <div style={{ width: 24, fontSize: 12, fontWeight: 700, color: 'var(--primary)', textAlign: 'right' }}>{anxiety[qi]}</div>
+            </div>
+          ))}
+        </div>
+      </SubSection>
+
+      {/* Systemic diseases (moved from Section 2) */}
+      <SubSection id="s1-sub-6" label="Q5" title="전신질환 병력"
+        sub="체크된 행만 세부 입력이 활성화됩니다.">
+        <div style={{ overflowX: 'auto' }}>
+          <table className="table" style={{ minWidth: 800 }}>
+            <thead>
+              <tr>
+                <th className="col-check"></th>
+                <th style={{ width: 180 }}>질환</th>
+                <th style={{ width: 110 }}>진단 시기</th>
+                <th style={{ width: 90 }}>현재 치료</th>
+                <th style={{ width: 90 }}>약물 복용</th>
+                <th>비고</th>
+              </tr>
+            </thead>
+            <tbody>
+              {diseases.map((d, i) => (
+                <tr key={i} className={d.checked ? '' : 'disabled'}>
+                  <td className="col-check">
+                    <span className={`chk ${d.checked ? 'on' : ''}`}
+                      onClick={() => setDiseases(prev => prev.map((x, k) => k === i ? { ...x, checked: !x.checked } : x))} />
+                  </td>
+                  <td>
+                    <div style={{ fontWeight: 600, color: d.checked ? 'var(--ink-900)' : 'var(--ink-400)' }}>{d.name}</div>
+                    {d.sub && <div style={{ fontSize: 11, color: 'var(--ink-400)', marginTop: 2 }}>{d.sub}</div>}
+                  </td>
+                  <td>{d.checked ? d.diag : '—'}</td>
+                  <td>{d.checked ? <span className="tag blue" style={{ fontSize: 10.5 }}>{d.tx}</span> : '—'}</td>
+                  <td>{d.checked ? <span className="tag blue" style={{ fontSize: 10.5 }}>{d.med}</span> : '—'}</td>
+                  <td style={{ fontSize: 12, color: 'var(--ink-500)' }}>{d.checked ? d.memo : ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </SubSection>
+
+      {/* 치과 주의사항 */}
+      <SubSection id="s1-sub-7" label="Q6" title="전신질환에 따른 치과 주의사항">
+        <textarea className="textarea" style={{ minHeight: 90 }} defaultValue="• 당뇨: 시술 전 혈당 확인, 저혈당 대비 스낵 준비, 감염 관리 철저&#10;• 고혈압: 시술 전 혈압 재측정, 스트레스 최소화, 필요시 진정 요법 고려" />
+      </SubSection>
+
+      {/* 복용 약물 */}
+      <SubSection id="s1-sub-8" label="Q7" title="복용 약물 및 약물 부작용"
+        right={<button className="btn sm"><Icon name="plus" size={12} />약물 추가</button>}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {meds.map((m, i) => (
+            <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                <div style={{ fontSize: 11, color: 'var(--ink-400)', fontWeight: 600 }}>약물 {i + 1}</div>
+                <input className="input" style={{ flex: 1, maxWidth: 320 }} defaultValue={m.name} />
+                <button className="btn ghost sm" style={{ color: 'var(--ink-400)' }}><Icon name="trash" size={12} /></button>
+              </div>
+              <div className="grid-2">
+                <div>
+                  <label className="field-label">전신 부작용</label>
+                  <textarea className="textarea" defaultValue={m.systemic} />
+                </div>
+                <div>
+                  <label className="field-label">구강 부작용</label>
+                  <textarea className="textarea" defaultValue={m.oral} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SubSection>
+
+      <ProfPanel content="문진 응답이 성실하며 치과 불안도가 중등도(14점)로 확인됩니다. 다음 회차 스케일링 전 심호흡·설명 시간을 5분 이상 확보하고, 예후 관찰 시 잇몸 출혈 부위를 우선 사진 기록해 주세요." />
+    </div>
+  );
+};
+
+/* ============= Section 2 — Clinical Examination ============= */
+const Section2 = () => {
+  // Editable vitals
+  const [glucose, setGlucose] = React.useState('142');
+  const [glucoseTiming, setGlucoseTiming] = React.useState('식후');
+  const [glucoseMenu, setGlucoseMenu] = React.useState('김치찌개, 밥');
+  const [glucoseElapsed, setGlucoseElapsed] = React.useState('1시간 30분');
+  const [systolic, setSystolic] = React.useState('138');
+  const [diastolic, setDiastolic] = React.useState('88');
+
+  // Intraoral toggle chips
+  const [intraoral, setIntraoral] = React.useState({
+    'Face & Neck': [],
+    'Lymph Nodes': [],
+    'TMJ': ['Audible'],
+    'Oral Mucosa': [],
+    'Palate': [],
+    'Tongue': ['Discolorations'],
+    'Floor of Mouth': [],
+    'Gingival characteristics': ['Bleeding'],
+  });
+
+  const [chartTab, setChartTab] = React.useState('notation');
+
+  // Chart notation data — sample
+  const notationMap = {
+    18: 'Ex', 17: 'G.I', 16: 'G.I',
+    13: 'C', 12: 'C', 11: 'C',
+    22: 'Cw',
+    25: 'C ck',
+    26: 'P.Cr', 27: 'P.Cr', 28: 'Ex',
+    48: 'Ex', 47: 'G.IC', 46: 'G.IFx',
+    42: 'Fx Cw', 41: 'Cw',
+    31: 'Cw', 32: 'Cw', 33: 'Cw',
+    36: 'G.IR.F', 37: 'G.IR.F', 38: 'Ex',
+  };
+  const missingSet = new Set([]);
+
+  const notationOptions = [
+    { code: 'Ex', desc: 'missing tooth' },
+    { code: 'UE', desc: 'uneruption' },
+    { code: 'PE', desc: 'partial eruption' },
+    { code: 'Im', desc: 'implant' },
+    { code: 'Fu', desc: 'full denture' },
+    { code: 'R.I', desc: 'resin inlay' },
+    { code: 'G.I', desc: 'gold inlay' },
+    { code: 'P.I', desc: 'porcelain inlay' },
+    { code: 'Br', desc: 'bridge' },
+    { code: 'Pd', desc: 'partial denture' },
+    { code: 'T.F', desc: 'temporary filling' },
+    { code: 'R.F', desc: 'resin filling' },
+    { code: 'A.F', desc: 'amalgam filling' },
+    { code: 'Sl', desc: 'sealants' },
+    { code: 'T.Cr', desc: 'temporary crown' },
+    { code: 'Fx', desc: 'fracture' },
+    { code: 'Rr', desc: 'root rest' },
+    { code: 'C.A', desc: 'cervical abrasion' },
+    { code: 'At', desc: 'attrition' },
+    { code: 'Is', desc: 'interdental space' },
+    { code: 'Ab', desc: 'abscess' },
+    { code: 'Fi', desc: 'fistula' },
+    { code: 'P.R', desc: 'percussion reaction' },
+    { code: 'F.Im', desc: 'food impaction' },
+    { code: 'G.Rc', desc: 'gingival recession' },
+    { code: 'Ap', desc: 'appliance' },
+    { code: 'Cd', desc: 'crowding' },
+    { code: 'St', desc: 'stain' },
+    { code: 'P.Cr', desc: 'porcelain crown' },
+    { code: 'G.Cr', desc: 'gold crown' },
+  ];
+
+  const intraoralItems = [
+    { key: 'Face & Neck', ko: '얼굴 및 목', opts: ['Significant lesions', 'Nodules', 'Asymmetry'] },
+    { key: 'Lymph Nodes', ko: '림프절', opts: ['Enlarged', 'Fixed', 'Indurated'] },
+    { key: 'TMJ', ko: '악관절', opts: ['Limitations', 'Deviations', 'Discomfort', 'Audible', 'Palpable'] },
+    { key: 'Oral Mucosa', ko: '구강 점막·치조제·입술', opts: ['Significant lesions', 'Ulcers', 'Discolorations', 'Nodules', 'Enlargements'] },
+    { key: 'Palate', ko: '구개·구인두', opts: ['Significant lesions', 'Ulcers', 'Tori', 'Discolorations'] },
+    { key: 'Tongue', ko: '혀', opts: ['Significant lesions', 'Ulcers', 'Discolorations', 'Nodules', 'Enlargements'] },
+    { key: 'Floor of Mouth', ko: '구강저', opts: ['Significant lesions', 'Ulcers', 'Discolorations', 'Nodules', 'Enlargements'] },
+    { key: 'Gingival characteristics', ko: '치은 특성', opts: ['Bleeding', 'Recession', 'Inflammation', 'Fibrous'] },
+  ];
+
+  const subsections = [
+    { id: 's2-sub-1', label: '혈당·혈압 측정' },
+    { id: 's2-sub-2', label: '구내 검사' },
+    { id: 's2-sub-3', label: '치식 차팅' },
+    { id: 's2-sub-4', label: '교수 요청/질문' },
+  ];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s2" ko="임상 검사" en="Clinical Examination"
+        progress={85} subsections={subsections} defaultReviewState="wip" />
+
+      <div className="doc-lead">
+        구외·구내 검사와 치식 다이어그램으로 대상자의 전반적인 임상 상태를 기록합니다.
+      </div>
+
+      {/* 혈당·혈압 */}
+      <SubSection id="s2-sub-1" label="Vitals" title="혈당 및 혈압 측정">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {/* 혈당 */}
+          <div style={{ padding: 16, background: 'var(--surface-50)', border: '1px solid var(--border)', borderRadius: 10 }}>
+            <div style={{ fontSize: 11.5, color: 'var(--ink-500)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>혈당</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 6 }}>
+              <input type="number" className="vital-input" value={glucose} onChange={e => setGlucose(e.target.value)} aria-label="혈당 수치" />
+              <div style={{ fontSize: 14, color: 'var(--ink-500)' }}>mg/dL</div>
+            </div>
+            <div style={{ marginTop: 10 }}>
+              <RadioGroup options={['공복', '식후', '모름']} value={glucoseTiming} onChange={setGlucoseTiming} />
+            </div>
+            {glucoseTiming === '식후' && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
+                <input className="input" placeholder="식사 메뉴" value={glucoseMenu} onChange={e => setGlucoseMenu(e.target.value)} />
+                <input className="input" placeholder="경과 시간" value={glucoseElapsed} onChange={e => setGlucoseElapsed(e.target.value)} />
+              </div>
+            )}
+          </div>
+
+          {/* 혈압 */}
+          <div style={{ padding: 16, background: 'var(--surface-50)', border: '1px solid var(--border)', borderRadius: 10 }}>
+            <div style={{ fontSize: 11.5, color: 'var(--ink-500)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>혈압</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 6 }}>
+              <input type="number" className="vital-input" value={systolic} onChange={e => setSystolic(e.target.value)} aria-label="수축기 혈압" />
+              <div style={{ fontSize: 20, color: 'var(--ink-300)' }}>/</div>
+              <input type="number" className="vital-input" value={diastolic} onChange={e => setDiastolic(e.target.value)} aria-label="이완기 혈압" />
+              <div style={{ fontSize: 14, color: 'var(--ink-500)' }}>mmHg</div>
+            </div>
+            {(Number(systolic) >= 140 || Number(diastolic) >= 90) && (
+              <div style={{ marginTop: 10, fontSize: 12, color: '#B45309', background: 'var(--warn-50)', padding: '6px 10px', borderRadius: 6, display: 'inline-block', fontWeight: 600 }}>
+                ⚠︎ 고혈압 2단계
+              </div>
+            )}
+            {((Number(systolic) >= 130 && Number(systolic) < 140) || (Number(diastolic) >= 80 && Number(diastolic) < 90)) && (
+              <div style={{ marginTop: 10, fontSize: 12, color: '#B45309', background: 'var(--warn-50)', padding: '6px 10px', borderRadius: 6, display: 'inline-block', fontWeight: 600 }}>
+                ⚠︎ 고혈압 1단계 (경도)
+              </div>
+            )}
+          </div>
+        </div>
+      </SubSection>
+
+      {/* 구내 검사 */}
+      <SubSection id="s2-sub-2" label="Intraoral" title="구내 검사"
+        sub="항목별 소견을 토글로 선택하고 필요 시 추가 메모를 남깁니다.">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          {intraoralItems.map(it => (
+            <div key={it.key} className="toggle-card">
+              <div className="tc-title">{it.ko}</div>
+              <div className="tc-en">{it.key}</div>
+              <div className="toggle-chips">
+                {it.opts.map(o => (
+                  <button key={o}
+                    className={`chip ${intraoral[it.key]?.includes(o) ? 'active' : ''}`}
+                    onClick={() => {
+                      setIntraoral(prev => {
+                        const cur = prev[it.key] || [];
+                        const next = cur.includes(o) ? cur.filter(x => x !== o) : [...cur, o];
+                        return { ...prev, [it.key]: next };
+                      });
+                    }}
+                  >{o}</button>
+                ))}
+              </div>
+              <textarea className="textarea" style={{ minHeight: 48, fontSize: 12 }} placeholder="소견 메모…" />
+            </div>
+          ))}
+        </div>
+      </SubSection>
+
+      {/* 치식 차팅 */}
+      <SubSection id="s2-sub-3" label="Tooth Charting" title="치식 차팅"
+        sub="전악 32치아. 1회차 기준 입력. Mob·Sw·BOP·PD 는 선택 입력입니다."
+        right={
+          <span style={{ fontSize: 11, color: 'var(--ink-500)' }}>기본: 1회차 입력</span>
+        }>
+        <div className="chart-tabs">
+          {[
+            { k: 'notation', label: 'Notation', desc: '치식 기호' },
+            { k: 'combined', label: 'PD / BOP / Mob / Sw', desc: '치주 지표 (선택 입력)' },
+            { k: 'cal', label: 'Calculus', desc: '치석' },
+          ].map(t => (
+            <button key={t.k} className={`chart-tab ${chartTab === t.k ? 'active' : ''}`} onClick={() => setChartTab(t.k)}>
+              <div>{t.label}</div>
+              <div style={{ fontSize: 10.5, fontWeight: 500, opacity: 0.75, marginTop: 2 }}>{t.desc}</div>
+            </button>
+          ))}
+        </div>
+
+        {chartTab === 'notation' && (
+          <>
+            <div className="notation-grid">
+              {notationOptions.map((o, i) => (
+                <div key={i} className="notation-chip">
+                  <span className="code">{o.code}</span>
+                  <span className="desc">{o.desc}</span>
+                </div>
+              ))}
+            </div>
+            <NotationChart notationMap={notationMap} missingSet={missingSet} />
+          </>
+        )}
+
+        {chartTab === 'combined' && (
+          <CombinedChart notationMap={notationMap} missingSet={missingSet} />
+        )}
+
+        {chartTab === 'cal' && (
+          <CalculusChart notationMap={notationMap} missingSet={missingSet} />
+        )}
+      </SubSection>
+
+      {/* 치식 차팅 하단 — 교수님께 요청/질문 */}
+      <SubSection id="s2-sub-4" label="Note" title="교수님께 요청/질문 사항"
+        sub="예: #35 교합면 우식 확인 필요, 구강 내 특정 병변 의심됨 등">
+        <textarea className="textarea prof-inquiry" placeholder="교수님께 확인 요청하거나 질문할 내용을 자유롭게 작성하세요…"
+          style={{ minHeight: 56 }} />
+      </SubSection>
+
+      <ProfPanel content="치식 차팅과 구내 검사가 상세히 기록되어 있습니다. 26번 크라운 부위와 16·46번 우식 진행 여부를 방사선 확인 후 계획에 반영하세요." />
+    </div>
+  );
+};
+
+/* ============= Section 3 — Oral Hygiene Index ============= */
+const Section3 = () => {
+  const [visit, setVisit] = React.useState('1회차');
+  const [focusTeeth, setFocusTeeth] = React.useState([16, 26, 36, 46]);
+  const missing = new Set([]);
+
+  // Sample PI data for 1st visit — heavy plaque
+  const initialPI = {
+    17: [1,0,1,1], 16: [1,1,1,1], 15: [1,1,0,0], 14: [1,0,0,1],
+    13: [1,1,0,0], 12: [1,1,0,1], 11: [1,1,1,0],
+    21: [1,1,1,1], 22: [1,1,0,0], 23: [1,0,0,1], 24: [1,1,0,0],
+    25: [1,0,0,0], 26: [1,1,0,1], 27: [1,1,0,0],
+    47: [1,1,0,1], 46: [1,1,1,0], 45: [1,0,0,1], 44: [1,1,0,0],
+    43: [1,1,1,0], 42: [1,1,0,1], 41: [1,1,1,1],
+    31: [1,1,1,1], 32: [1,1,1,0], 33: [1,1,0,0], 34: [1,0,0,1],
+    35: [1,0,0,0], 36: [1,1,1,0], 37: [1,1,0,1],
+  };
+  const [pi, setPi] = React.useState(initialPI);
+
+  const subsections = [
+    { id: 's3-sub-1', label: 'PI 측정' },
+    { id: 's3-sub-2', label: '회차별 추이' },
+    { id: 's3-sub-3', label: '집중 관리 치아' },
+    { id: 's3-sub-4', label: '위상차 현미경' },
+    { id: 's3-sub-5', label: '구취 측정' },
+    { id: 's3-sub-6', label: 'CO 측정' },
+  ];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s3" ko="구강위생 지수 검사" en="Oral Hygiene Index Examination"
+        progress={66} subsections={subsections} defaultReviewState="wip" />
+
+      <div className="doc-lead">
+        <b>O'Leary Plaque Index</b>를 측정하고 집중 관리 치아·위상차 현미경·구취·CO 수치를 통합 기록합니다. 기본은 1회차 입력 기준.
+      </div>
+
+      <SubSection id="s3-sub-1" label="PI" title="PI 측정 (Plaque Index)"
+        sub="각 치아를 4구역으로 나눠 착색면을 클릭하면 red dot으로 표시됩니다. 결손치는 자동 비활성화."
+        right={
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div className="tabs">
+              {['1회차', '2회차', '3회차'].map(v => (
+                <button key={v} className={`tab ${visit === v ? 'active' : ''}`} onClick={() => setVisit(v)}>{v}</button>
+              ))}
+            </div>
+            <button className="btn sm"><Icon name="check" size={12} />전체 선택</button>
+            <button className="btn sm" style={{ color: 'var(--danger)' }}>{visit} 초기화</button>
+          </div>
+        }>
+        <PIChart data={pi} missingSet={missing} onToggle={(n, arr) => setPi(prev => ({ ...prev, [n]: arr }))} />
+      </SubSection>
+
+      {/* Trend graph */}
+      <div id="s3-sub-2" style={{ marginTop: 'var(--gap-card)' }}>
+        <PITrend />
+      </div>
+
+      <SubSection id="s3-sub-3" label="Focus" title="집중 관리 치아 (Focus Teeth)">
+        <div className="focus-teeth-grid">
+          <div>
+            <label className="field-label">치아 선택</label>
+            <ToothPicker selected={focusTeeth} disabled={missing} onToggle={n => {
+              setFocusTeeth(prev => prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n]);
+            }} />
+            <div className="doc-hint">회색 처리된 치아는 결손·발치로 자동 비활성화되었습니다.</div>
+          </div>
+          <div>
+            <label className="field-label">선택된 치아 & 관리 계획</label>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
+              {focusTeeth.map(n => (
+                <span key={n} className="tooth-tag">#{n}</span>
+              ))}
+            </div>
+            <textarea className="textarea" style={{ minHeight: 120 }} defaultValue="• 16, 26, 36, 46: 대구치 인접면 플라크 축적. 치실·치간칫솔 교육 및 위상차 관찰 필요&#10;• 45mm 이상 pocket 시 SRP 계획 반영" />
+          </div>
+        </div>
+      </SubSection>
+
+      <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 'var(--gap-card)' }}>
+        <div className="card" style={{ margin: 0 }} id="s3-sub-4">
+          <div className="card-eyebrow">Phase-Contrast</div>
+          <div className="card-title" style={{ marginBottom: 12 }}>위상차 현미경 검사</div>
+          <CheckGroup
+            options={['Cocci', 'Rods', 'Filaments', 'Fusiforms', 'Spirochetes', 'Trichomonads', 'Amoeba']}
+            value={['Cocci', 'Rods', 'Spirochetes']}
+            onChange={() => {}}
+          />
+          <div style={{ marginTop: 12 }}>
+            <label className="field-label">운동성</label>
+            <RadioGroup options={['상 (활발)', '중', '하 (미미)']} value="중" onChange={() => {}} />
+          </div>
+        </div>
+        <div className="card" style={{ margin: 0 }} id="s3-sub-5">
+          <div className="card-eyebrow">Halitosis</div>
+          <div className="card-title" style={{ marginBottom: 12 }}>구취 측정</div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {[0, 1, 2, 3, 4, 5].map(n => (
+              <button key={n} className={`scale-opt ${n === 2 ? 'active' : ''}`} style={{ fontSize: 14, fontWeight: 700, padding: '12px 4px' }}>{n}</button>
+            ))}
+          </div>
+          <textarea className="textarea" style={{ marginTop: 10, minHeight: 60 }} placeholder="소견" defaultValue="경도 구취, 설태 관찰" />
+        </div>
+        <div className="card" style={{ margin: 0 }} id="s3-sub-6">
+          <div className="card-eyebrow">CO</div>
+          <div className="card-title" style={{ marginBottom: 12 }}>CO 측정</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--ink-400)', fontVariantNumeric: 'tabular-nums' }}>—</div>
+            <div style={{ fontSize: 13, color: 'var(--ink-500)' }}>ppm</div>
+          </div>
+          <div className="doc-hint" style={{ padding: 0, border: 'none' }}>비흡연자로 CO 측정 생략</div>
+        </div>
+      </div>
+
+      <ProfPanel content="1회차 대비 O'Leary Index가 18% 감소한 점이 확인됩니다. 대구치 인접면 관리 유지 및 위상차 소견의 spirochetes에 대한 재교육을 계획해주세요." />
+    </div>
+  );
+};
+
+/* ============= Section 4 — DH Diagnosis ============= */
+const Section4 = () => {
+  const items = [
+    { title: '치아우식 위험도', ko: 'Caries Risk', opts: ['낮음', '보통', '높음'], selected: '보통' },
+    { title: '치주 상태',       ko: 'Periodontal Status', opts: ['건강', '치은염', '경도 치주염', '중등도 치주염'], selected: '치은염' },
+    { title: '구강위생 실천도',  ko: 'OH Practice', opts: ['우수', '보통', '미흡'], selected: '보통' },
+    { title: '식이 습관',       ko: 'Dietary Habit', opts: ['적절', '개선 필요'], selected: '개선 필요' },
+    { title: '흡연 습관',       ko: 'Smoking', opts: ['없음', '경도', '중도', '고도'], selected: '없음' },
+    { title: '전신 건강 상태',   ko: 'Systemic Health', opts: ['양호', '관리 필요'], selected: '관리 필요' },
+    { title: '심리·불안 요인',   ko: 'Psychosocial', opts: ['낮음', '중등도', '높음'], selected: '중등도' },
+    { title: '재내원 협조도',    ko: 'Compliance', opts: ['우수', '보통', '미흡'], selected: '우수' },
+  ];
+  const subsections = [
+    { id: 's4-sub-1', label: '판단 항목' },
+    { id: 's4-sub-2', label: '성격 특성 분석' },
+  ];
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s4" ko="치위생 진단" en="Dental Hygiene Diagnosis"
+        progress={40} subsections={subsections} defaultReviewState="wip" />
+      <div className="doc-lead">
+        수집된 정보를 종합하여 <b>8개 판단 항목</b>으로 치위생 진단을 구조화합니다.
+      </div>
+
+      <SubSection id="s4-sub-1" label="Judgement" title="판단 항목">
+        <div className="grid-2" style={{ gap: 18 }}>
+          {items.map((it, i) => (
+            <div key={i} style={{ padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>{it.title}</div>
+              <div style={{ fontSize: 11, color: 'var(--ink-400)', fontStyle: 'italic', marginBottom: 8 }}>{it.ko}</div>
+              <RadioGroup options={it.opts} value={it.selected} onChange={() => {}} />
+            </div>
+          ))}
+        </div>
+      </SubSection>
+
+      <SubSection id="s4-sub-2" label="Persona" title="대상자 성격 특성 분석"
+        sub="관찰된 성격 특성과 협조도 관련 인사이트를 자유롭게 기록합니다.">
+        <textarea className="textarea" style={{ minHeight: 120 }} defaultValue="꼼꼼하고 협조도 우수. 치과 불안이 중등도로 확인되어 procedure 시작 전 충분한 설명 필요. 자가 관리 개선 의지 강함." />
+      </SubSection>
+
+      <ProfPanel content="8개 판단 항목이 논리적으로 정합하며, 치은염·심리적 불안 요인이 대상자의 관리 우선순위임을 잘 반영했습니다. 재내원 협조도가 우수하므로 3개월 유지관리 프로토콜 적용을 권장합니다." />
+    </div>
+  );
+};
+
+Object.assign(window, { Section1, Section2, Section3, Section4 });
+
+</script>
+
+<!-- 9. sections-5-8.jsx: Section5, Section6, Section7, Section8, ConfettiBurst -->
+<script type="text/babel">
+/* Sections 5-8 representative components */
+
+/* ============= Section 5 — Care Plan ============= */
+const Section5 = () => {
+  const [visit, setVisit] = React.useState('1회차');
+  const [checked, setChecked] = React.useState({
+    'self-brush': true,
+    'self-tools': true,
+    'edu-checkup': true,
+    'sys-related': true,
+    'caries-fluor': true,
+    'caries-solute': true,
+    'perio-scaling': true,
+    'perio-post': true,
+    'refer-dr': true,
+  });
+  const toggle = (k) => setChecked(prev => ({ ...prev, [k]: !prev[k] }));
+
+  const subsections = [
+    { id: 's5-sub-1', label: '치위생 관리 계획표' },
+  ];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s5" ko="치위생 계획" en="Dental Hygiene Care Plan"
+        progress={20} subsections={subsections} defaultReviewState="wip" />
+
+      <div className="doc-lead">
+        자가관리와 전문가 관리 계획을 하나의 표에서 통합적으로 작성합니다.
+      </div>
+
+      <SubSection id="s5-sub-1" label="Plan Table" title="치위생 관리 계획표"
+        sub="항목 체크 → 세부 내용 기입 순으로 작성합니다."
+        right={
+          <div className="tabs">
+            {['1회차', '2회차', '3회차'].map(v => (
+              <button key={v} className={`tab ${visit === v ? 'active' : ''}`} onClick={() => setVisit(v)}>{v}</button>
+            ))}
+          </div>
+        }>
+        <div className="plan-table">
+          {/* ===== 자가관리 ===== */}
+          <div className="plan-section">
+            <div className="plan-section-title">
+              <span className="idx">①</span>
+              <span>자가관리 <em>Self-care Management</em></span>
+            </div>
+
+            <PlanRow
+              cat="자가실천"
+              items={[
+                { key: 'self-brush', label: '칫솔질 교육',
+                  extra: (
+                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 6 }}>
+                      <CheckGroup options={['Rolling', 'Bass', '1회/1주', '2회/1부', '3회 이상/1부']} value={['Bass', '2회/1부']} onChange={()=>{}} />
+                    </div>
+                  )
+                },
+                { key: 'self-tools', label: '구강관리용품 추천 및 사용법 교육',
+                  extra: (
+                    <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+                      <CheckGroup options={['치실', '치간칫솔', '구강양치액', '1회/1주', '2회/1부', '3회 이상/1부']} value={['치실', '치간칫솔']} onChange={()=>{}} />
+                    </div>
+                  )
+                },
+              ]}
+              details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{ minHeight: 80 }} defaultValue="Modified Bass 시연 · 치간칫솔 SS 사이즈 사용법 지도. 취침 전 치실 매일 사용 강조." />}
+              checked={checked}
+              toggle={toggle}
+            />
+
+            <PlanRow
+              cat="교육사항"
+              items={[
+                { key: 'edu-checkup', label: '정기적 치과검진 권고' },
+                { key: 'edu-smoke', label: '흡연 관련 구강보건교육' },
+                { key: 'edu-drink', label: '음주 관련 구강보건교육' },
+                { key: 'edu-nutri', label: '영양 관련 구강보건교육' },
+                { key: 'edu-etc', label: '기타 교육사항', extra: (<input className="input" style={{ marginTop: 6, padding: '5px 10px', fontSize: 12 }} placeholder="내용" />) },
+              ]}
+              details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{ minHeight: 80 }} defaultValue="6개월 정기검진 안내. 스낵/설탕 함유 음료 섭취 후 물 헹구기 지도." />}
+              checked={checked}
+              toggle={toggle}
+            />
+
+            <PlanRow
+              cat="전신질환자"
+              items={[
+                { key: 'sys-related', label: '전신질환 관련 보건교육',
+                  extra: (
+                    <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+                      <CheckGroup options={['질환정보', '식이관련', '구강관리방법']} value={['질환정보', '구강관리방법']} onChange={()=>{}} />
+                    </div>
+                  )
+                },
+              ]}
+              details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{ minHeight: 60 }} defaultValue="당뇨: 혈당 관리와 치주염의 상호작용. 매 식후 15분 이내 칫솔질 권장." />}
+              detailsLabel="이론적 배경 (근거출처 및 내용)"
+              checked={checked}
+              toggle={toggle}
+            />
+          </div>
+
+          {/* ===== 전문가관리 ===== */}
+          <div className="plan-section">
+            <div className="plan-section-title">
+              <span className="idx">②</span>
+              <span>전문가 관리 <em>Professional Care</em></span>
+            </div>
+
+            <PlanRow
+              cat="우식관리"
+              items={[
+                { key: 'caries-fluor', label: '치면열구전색' },
+                { key: 'caries-solute', label: '불소도포',
+                  extra: (
+                    <div style={{ marginTop: 6 }}>
+                      <CheckGroup options={['불소겔', '불소이온', '불소바니쉬', '기타']} value={['불소바니쉬']} onChange={()=>{}} />
+                    </div>
+                  )
+                },
+              ]}
+              teethSelectorHint
+              details={<textarea className="textarea" placeholder="세부 내용" style={{ minHeight: 60 }} defaultValue="16, 26, 36, 46 열구전색 계획. 불소바니쉬는 전악 3개월 간격 도포." />}
+              checked={checked}
+              toggle={toggle}
+            />
+
+            <PlanRow
+              cat="치주관리"
+              items={[
+                { key: 'perio-scaling', label: '치석제거' },
+                { key: 'perio-pro', label: '전문가 치면세균막 관리',
+                  extra: (
+                    <div style={{ marginTop: 6 }}>
+                      <CheckGroup options={['와타나베칫솔질', 'Rubber cup', 'Bristle brush', 'Eva tip 이용 PMTC', 'Flossing']} value={['Rubber cup', 'Eva tip 이용 PMTC']} onChange={()=>{}} />
+                    </div>
+                  )
+                },
+                { key: 'perio-cx', label: '항균제 적용',
+                  extra: (
+                    <div style={{ marginTop: 6 }}>
+                      <CheckGroup options={['Chlorhexidine', 'Listerine', '기타']} value={['Chlorhexidine']} onChange={()=>{}} />
+                    </div>
+                  )
+                },
+                { key: 'perio-post', label: '치주치료 후 지각과민증 완화를 위한 처치',
+                  extra: (
+                    <div style={{ marginTop: 6 }}>
+                      <CheckGroup options={['불소바니쉬', '기타']} value={['불소바니쉬']} onChange={()=>{}} />
+                    </div>
+                  )
+                },
+              ]}
+              teethSelectorHint
+              details={<textarea className="textarea" placeholder="세부 내용" style={{ minHeight: 60 }} defaultValue="전악 스케일링 및 상하악 대구치 SRP. 시술 후 지각과민 부위 불소 바니쉬 도포." />}
+              checked={checked}
+              toggle={toggle}
+            />
+
+            <PlanRow
+              cat="기타"
+              items={[
+                { key: 'refer-dr', label: '전문의 의뢰', extra: <input className="input" style={{ marginTop: 6, padding: '5px 10px', fontSize: 12 }} placeholder="의뢰 내용" defaultValue="치아우식증 치료실 의뢰됨" /> },
+                { key: 'refer-etc', label: '기타', extra: <input className="input" style={{ marginTop: 6, padding: '5px 10px', fontSize: 12 }} placeholder="내용" /> },
+              ]}
+              details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{ minHeight: 60 }} defaultValue="26번 우식 진행 소견 → 보존과 의뢰. 위상차 재확인 후 필요시 SRP 재계획." />}
+              detailsLabel="이론적 배경 (근거출처 및 내용)"
+              checked={checked}
+              toggle={toggle}
+            />
+          </div>
+        </div>
+      </SubSection>
+
+      <ProfPanel content="자가관리·전문가 관리 계획이 세밀하게 구조화되어 있으며, 목표별 치아 번호와 이론적 배경이 명확합니다." />
+    </div>
+  );
+};
+
+const PlanRow = ({ cat, items, details, detailsLabel, checked, toggle, teethSelectorHint }) => (
+  <div className="plan-row">
+    <div className="plan-cat">{cat}</div>
+    <div className="plan-items">
+      {items.map(it => (
+        <div key={it.key} className="plan-item">
+          <label className="plan-check">
+            <span className={`chk ${checked[it.key] ? 'on' : ''}`} onClick={() => toggle(it.key)} />
+            <span>{it.label}</span>
+          </label>
+          {it.extra}
+        </div>
+      ))}
+      {teethSelectorHint && (
+        <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: 11.5, color: 'var(--ink-500)' }}>대상 치아:</span>
+          {[16, 26, 36, 46].map(t => <span key={t} className="tooth-tag">#{t}</span>)}
+          <button className="btn sm" style={{ padding: '3px 8px', fontSize: 11 }}>치식 팝업</button>
+        </div>
+      )}
+    </div>
+    <div className="plan-details">
+      <div className="plan-details-label">{detailsLabel || '세부 구강보건교육 내용'}</div>
+      {details}
+    </div>
+  </div>
+);
+
+/* ============= Section 6 — Intervention Record ============= */
+const Section6 = () => {
+  const subsections = [
+    { id: 's6-sub-1', label: '자유 서식 에디터' },
+  ];
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s6" ko="치위생 수행 기록" en="Dental Hygiene Intervention Record"
+        progress={0} subsections={subsections} defaultReviewState="empty" />
+
+      <div className="doc-lead">
+        자유서식(양식 1)과 구조화 입력(양식 2)을 상황에 맞게 사용하세요.
+      </div>
+
+      <SubSection id="s6-sub-1" label="Form 1" title="양식 1 — 자유 서식 에디터"
+        right={
+          <div className="tabs">
+            <button className="tab active">양식 1</button>
+            <button className="tab">양식 2</button>
+          </div>
+        }>
+        <div className="rich-toolbar">
+          <div className="grp">
+            <button className="rt-btn b" title="굵게">B</button>
+            <button className="rt-btn i" title="기울임">I</button>
+            <button className="rt-btn u" title="밑줄">U</button>
+          </div>
+          <div className="sep" />
+          <div className="grp">
+            <button className="rt-btn">H1</button>
+            <button className="rt-btn">H2</button>
+            <button className="rt-btn" style={{ fontSize: 11 }}>본문</button>
+          </div>
+          <div className="sep" />
+          <div className="grp" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: 'var(--ink-400)' }}>형광펜</span>
+            <span className="rt-hl" style={{ background: '#FEF08A' }} />
+            <span className="rt-hl" style={{ background: '#BEF264' }} />
+            <span className="rt-hl" style={{ background: '#BAE6FD' }} />
+            <span className="rt-hl" style={{ background: '#FBCFE8' }} />
+            <button className="rt-btn" style={{ fontSize: 11 }}>✕</button>
+          </div>
+          <div className="sep" />
+          <div className="grp" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: 'var(--ink-400)' }}>글자색</span>
+            <span className="rt-color" style={{ background: '#DC2626' }} />
+            <span className="rt-color" style={{ background: '#2A6FDB' }} />
+            <span className="rt-color" style={{ background: '#10B981' }} />
+            <span className="rt-color" style={{ background: '#0F172A' }} />
+          </div>
+          <div className="sep" />
+          <div className="grp">
+            <button className="rt-btn" title="기호 삽입">Ω</button>
+            <button className="rt-btn" title="목록">•</button>
+            <button className="rt-btn" title="번호목록">1.</button>
+          </div>
+        </div>
+        <div className="rt-editor">
+          <h3>2회차 스케일링 수행 기록</h3>
+          <p><b>일시:</b> 2026.07.20 14:30–16:00 (90분) · <b>담당:</b> 정하윤</p>
+          <h4>1. 사전 준비</h4>
+          <p>혈압 <mark className="hl-y">138/88 mmHg</mark>, 혈당 142 mg/dL (식후 1시간 30분). 대상자와 오늘 수행 절차 및 예상 감각(진동·차가움)에 대해 설명하고 <mark className="hl-b">서면 동의</mark> 확인.</p>
+          <h4>2. 수행 내용</h4>
+          <p>· 초음파 스케일러(모드 P, 강도 3)로 상·하악 전악 <b>SRP</b> 시행<br/>
+             · <span style={{ color: '#DC2626' }}>16, 26, 46 부위</span> 인접면 집중 관리<br/>
+             · Air-polishing (Erythritol) 30초 × 4분면</p>
+          <h4>3. 대상자 반응 및 다음 계획</h4>
+          <p>중간 휴식 2회 요청. 종료 후 통증·불편감 없음. 다음 내원 시 <mark className="hl-g">치실 시연 재확인</mark> 계획.</p>
+        </div>
+      </SubSection>
+
+      <ProfPanel content="스케일링 프로토콜 준수 상태가 양호하며 대상자 반응 기록이 상세합니다." />
+    </div>
+  );
+};
+
+/* ============= Section 7 — Evaluation ============= */
+const Section7 = () => {
+  const evalItems = [
+    { title: '칫솔질 실천 유무', d2: { yes: true, m: 'Modified Bass', n: 3 }, d3: { yes: true, m: 'Modified Bass + 회전법', n: 3 } },
+    { title: '구강관리용품 사용',  d2: { yes: true, m: '치실, 치간칫솔', n: 1 }, d3: { yes: true, m: '치실, 치간칫솔, 가글', n: 2 } },
+    { title: '흡연량 변화',        d2: { yes: false }, d3: { yes: false } },
+    { title: '음주량 변화',        d2: { yes: true, n: 1 }, d3: { yes: true, n: 0 } },
+    { title: '영양 교육 실천',     d2: { yes: true }, d3: { yes: true } },
+    { title: '전신질환 건강행동',  d2: { yes: false }, d3: { yes: true } },
+  ];
+
+  const Cell = ({ data, unit1 = '방법', unit2 = '빈도(회/일)' }) => (
+    <div style={{ padding: 12, background: data.yes ? 'var(--primary-50)' : 'var(--surface-100)', borderRadius: 8, border: '1px solid ' + (data.yes ? 'var(--primary-100)' : 'var(--border)') }}>
+      <RadioGroup options={['예', '아니오']} value={data.yes ? '예' : '아니오'} onChange={() => {}} />
+      {data.yes && (
+        <div className="grid-2" style={{ marginTop: 8 }}>
+          {data.m !== undefined && (
+            <div>
+              <div style={{ fontSize: 10.5, color: 'var(--ink-500)', marginBottom: 3 }}>{unit1}</div>
+              <input className="input" style={{ padding: '6px 10px', fontSize: 12 }} defaultValue={data.m || ''} />
+            </div>
+          )}
+          {data.n !== undefined && (
+            <div>
+              <div style={{ fontSize: 10.5, color: 'var(--ink-500)', marginBottom: 3 }}>{unit2}</div>
+              <input className="input" style={{ padding: '6px 10px', fontSize: 12 }} defaultValue={data.n} />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  const subsections = [
+    { id: 's7-sub-1', label: '내원별 평가 항목' },
+  ];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s7" ko="치위생 평가" en="Dental Hygiene Evaluation"
+        progress={0} subsections={subsections} defaultReviewState="empty" />
+
+      <div className="doc-lead">
+        2차/3차 내원 결과를 좌우로 나란히 비교합니다. 각 항목의 "예" 선택 시 세부 값을 입력합니다.
+      </div>
+
+      <SubSection id="s7-sub-1" label="Compare" title="내원별 평가 항목">
+        <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr 1fr', gap: 14, alignItems: 'start' }}>
+          <div />
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textAlign: 'center', padding: '8px 0', background: 'var(--primary-50)', borderRadius: 6 }}>2차 내원</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textAlign: 'center', padding: '8px 0', background: 'var(--primary-50)', borderRadius: 6 }}>3차 내원</div>
+
+          {evalItems.map((it, i) => (
+            <React.Fragment key={i}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-900)', paddingTop: 12 }}>{it.title}</div>
+              <Cell data={it.d2} />
+              <Cell data={it.d3} />
+            </React.Fragment>
+          ))}
+        </div>
+      </SubSection>
+
+      <ProfPanel content="2차 대비 3차에서 구강관리용품 사용 빈도가 증가하고 음주가 감소한 점이 긍정적입니다." />
+    </div>
+  );
+};
+
+/* ============= Section 8 — Follow-up ============= */
+const Section8 = () => {
+  const [followInterval, setFollowInterval] = React.useState('3개월');
+  const [statuses, setStatuses] = React.useState({ 0: 'partial', 1: 'met' });
+  const goals = [
+    '치은염 완화 및 잇몸 출혈 감소 (13-23 BOP 50% 감소)',
+    '대구치 인접면 플라크 관리 (O\'Leary Index < 15%)',
+  ];
+  const setStatus = (i, v) => setStatuses(prev => ({ ...prev, [i]: v }));
+
+  const allMet = goals.every((_, i) => statuses[i] === 'met');
+  const [confetti, setConfetti] = React.useState(false);
+  const prevAllMet = React.useRef(allMet);
+  React.useEffect(() => {
+    if (allMet && !prevAllMet.current) {
+      setConfetti(true);
+      setTimeout(() => setConfetti(false), 4500);
+    }
+    prevAllMet.current = allMet;
+  }, [allMet]);
+
+  const subsections = [
+    { id: 's8-sub-1', label: '목표별 달성 평가' },
+    { id: 's8-sub-2', label: '치위생관리과정 자가평가' },
+  ];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s8" ko="추적 관리 및 권고" en="Follow-up & Recommendations"
+        progress={0} subsections={subsections} defaultReviewState="empty" />
+
+      <div className="doc-lead">
+        섹션 5에서 세운 목표별 달성도를 평가하고, 대상자와 술자의 자가평가를 정리하여 다음 유지관리 계획으로 연결합니다.
+      </div>
+
+      <SubSection id="s8-sub-1" label="Goals" title="목표별 달성 평가"
+        sub="목표를 자동으로 불러와 평가합니다. 모든 목표가 Met 이 되면 완료 축하 애니메이션이 재생됩니다.">
+        {goals.map((g, i) => (
+          <div key={i} style={{ padding: 16, border: '1px solid var(--border)', borderRadius: 10, marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)' }}>목표 {i + 1}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-900)', marginTop: 2 }}>{g}</div>
+              </div>
+              <div className="mpu">
+                {['met', 'partial', 'unmet'].map(k => (
+                  <button key={k}
+                    className={`mpu-btn ${k} ${statuses[i] === k ? 'active' : ''}`}
+                    onClick={() => setStatus(i, k)}
+                  >
+                    {k === 'met' ? 'Met' : k === 'partial' ? 'Partial met' : 'Unmet'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <textarea className="textarea" style={{ marginTop: 10, minHeight: 60 }}
+              placeholder="달성 근거 및 관찰 내용" defaultValue={i === 0
+                ? '탐침 시 12·22 부위 BOP 지속. 전체적으로 40% 감소하였으나 목표 50%에는 도달하지 못함.'
+                : 'O\'Leary Index 24.1% → 3회차 목표 15% 이하 달성. 인접면 관리 지속 요망.'} />
+          </div>
+        ))}
+
+        <div style={{ marginTop: 14, padding: 16, background: 'var(--primary-50)', borderRadius: 10 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', marginBottom: 8 }}>구강건강 유지관리 간격</div>
+          <RadioGroup options={['1개월', '3개월', '6개월', '12개월', '기타']} value={followInterval} onChange={setFollowInterval} />
+        </div>
+      </SubSection>
+
+      <SubSection id="s8-sub-2" label="Self-eval" title="치위생관리과정 자가평가">
+        <div className="grid-2">
+          <div>
+            <label className="field-label">잘한 점</label>
+            <textarea className="textarea" style={{ minHeight: 90 }} defaultValue="• 대상자와 라포 형성이 원활했음&#10;• 치과 불안 관리에 신경 쓰며 진행함&#10;• 결과 지표(O'Leary)의 큰 폭 개선을 이끌어냄" />
+          </div>
+          <div>
+            <label className="field-label">부족한 점</label>
+            <textarea className="textarea" style={{ minHeight: 90 }} defaultValue="• 상악 전치부 BOP 관리 목표 미달&#10;• 위상차 결과를 대상자에게 설명하는 시간이 부족했음&#10;• 시술 시간 관리에서 5분 초과" />
+          </div>
+        </div>
+      </SubSection>
+
+      <ProfPanel content="목표 1은 부분 달성, 목표 2는 완전 달성으로 평가되어 계획의 유효성이 확인됩니다." />
+
+      {confetti && <ConfettiBurst />}
+    </div>
+  );
+};
+
+/* Confetti — pure CSS/SVG burst, plays once when all goals are Met. */
+const ConfettiBurst = () => {
+  const pieces = React.useMemo(() => {
+    const colors = ['#F59E0B','#10B981','#2A6FDB','#EC4899','#8B5CF6','#EF4444','#22C55E','#F97316'];
+    return Array.from({ length: 90 }, (_, i) => ({
+      left: Math.random() * 100,
+      delay: Math.random() * 0.6,
+      duration: 2.6 + Math.random() * 1.6,
+      rotate: Math.random() * 360,
+      size: 6 + Math.random() * 8,
+      color: colors[i % colors.length],
+      shape: Math.random() > 0.5 ? 'square' : 'circle',
+      drift: -30 + Math.random() * 60,
+    }));
+  }, []);
+  return (
+    <div className="confetti-overlay" aria-hidden>
+      <div className="confetti-message">🎉 모든 목표 달성! 관리과정 완료를 축하합니다.</div>
+      {pieces.map((p, i) => (
+        <span key={i} className={`confetti-piece ${p.shape}`}
+          style={{
+            left: p.left + '%',
+            width: p.size, height: p.size,
+            background: p.color,
+            animationDelay: p.delay + 's',
+            animationDuration: p.duration + 's',
+            '--drift': p.drift + 'vw',
+            '--rot': p.rotate + 'deg',
+          }} />
+      ))}
+    </div>
+  );
+};
+
+Object.assign(window, { Section5, Section6, Section7, Section8, ConfettiBurst });
+
+</script>
+
+<!-- 10. photo-and-components.jsx: PhotoModal, ComponentsShowcase, PhotoPage -->
+<script type="text/babel">
+/* Photo Modal preview + Shared Components showcase */
+
+const PhotoModal = ({ open, onClose }) => {
+  const [visit, setVisit] = React.useState('2회차');
+  const [method, setMethod] = React.useState('6매법');
+  if (!open) return null;
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <div>
+            <h3>구강 사진 관리</h3>
+            <div style={{ fontSize: 12, color: 'var(--ink-500)', marginTop: 2 }}>업로드 즉시 자동 저장 · 회차별로 분리 보관</div>
+          </div>
+          <button className="close" onClick={onClose}><Icon name="close" size={14} /></button>
+        </div>
+        <div className="modal-body">
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 18 }}>
+            <div className="tabs">
+              {['1회차', '2회차', '3회차'].map(v => (
+                <button key={v} className={`tab ${visit === v ? 'active' : ''}`} onClick={() => setVisit(v)}>{v}</button>
+              ))}
+            </div>
+            <div className="tabs" style={{ marginLeft: 'auto' }}>
+              {['5매법', '6매법'].map(m => (
+                <button key={m} className={`tab ${method === m ? 'active' : ''}`} onClick={() => setMethod(m)}>{m}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {method === '5매법' ? (
+              <>
+                <div className="photo-set-card g1">
+                  <div className="st">Set #1</div>
+                  <div className="stt">십자형 5매 (전면·좌·중앙·우·하방)</div>
+                  <div className="slot-5">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <div key={i} className="slot">
+                        <div style={{ textAlign: 'center' }}>
+                          <div className="icn"><Icon name="upload" size={18} /></div>
+                          <div>{['상방', '우측', '정면', '좌측', '하방'][i]}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="photo-set-card g2">
+                  <div className="st">Set #2</div>
+                  <div className="stt">비교 컷 (전후·좌우)</div>
+                  <div className="slot-5">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <div key={i} className="slot">
+                        <div style={{ textAlign: 'center' }}>
+                          <div className="icn"><Icon name="upload" size={18} /></div>
+                          <div>{['상방', '우측', '정면', '좌측', '하방'][i]}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="photo-set-card g3">
+                  <div className="st">Set #1</div>
+                  <div className="stt">6매법 (교합면·설면 포함)</div>
+                  <div className="slot-6">
+                    {['정면', '우측', '좌측', '상악 교합', '하악 교합', '설면'].map((l, i) => (
+                      <div key={i} className="slot">
+                        <div style={{ textAlign: 'center' }}>
+                          <div className="icn"><Icon name="upload" size={18} /></div>
+                          <div>{l}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="photo-set-card g4">
+                  <div className="st">Set #2</div>
+                  <div className="stt">6매법 비교 컷</div>
+                  <div className="slot-6">
+                    {['정면', '우측', '좌측', '상악 교합', '하악 교합', '설면'].map((l, i) => (
+                      <div key={i} className="slot">
+                        <div style={{ textAlign: 'center' }}>
+                          <div className="icn"><Icon name="upload" size={18} /></div>
+                          <div>{l}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div style={{ marginTop: 16, padding: 12, background: 'var(--surface-50)', borderRadius: 8, fontSize: 12, color: 'var(--ink-500)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 14 }}>💾</span>
+            사진은 업로드 즉시 자동 저장되며, 새로고침 후에도 복원됩니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ============= Components showcase page — for design system reference ============= */
+const ComponentsShowcase = ({ onOpenPhoto }) => {
+  return (
+    <div>
+      <div className="page-title">공용 컴포넌트</div>
+      <div className="page-sub">Hy-STEP 차트에서 반복적으로 사용되는 공용 컴포넌트 라이브러리입니다.</div>
+
+      <div className="card">
+        <div className="card-head">
+          <div className="card-title">색상 팔레트</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
+          {[
+            { l: 'Primary', c: '#2A6FDB' },
+            { l: 'Ink 900', c: '#0F172A' },
+            { l: 'Ink 500', c: '#64748B' },
+            { l: 'OK', c: '#10B981' },
+            { l: 'Warn', c: '#F59E0B' },
+            { l: 'Danger', c: '#EF4444' },
+          ].map((s, i) => (
+            <div key={i}>
+              <div style={{ height: 60, background: s.c, borderRadius: 8, border: '1px solid rgba(15,23,42,0.06)' }} />
+              <div style={{ marginTop: 6, fontSize: 12, fontWeight: 600, color: 'var(--ink-900)' }}>{s.l}</div>
+              <div style={{ fontSize: 11, color: 'var(--ink-500)', fontFamily: 'ui-monospace, monospace' }}>{s.c}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <div className="card-title">타이포그래피</div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.01em' }}>페이지 타이틀</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-400)', fontFamily: 'ui-monospace' }}>22px · 700</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <div style={{ fontSize: 15, fontWeight: 700 }}>카드 타이틀</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-400)', fontFamily: 'ui-monospace' }}>15px · 700</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <div style={{ fontSize: 13.5, color: 'var(--ink-500)' }}>본문 텍스트 / 설명</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-400)', fontFamily: 'ui-monospace' }}>13.5px · 400</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <div className="card-eyebrow" style={{ margin: 0 }}>EYEBROW LABEL</div>
+            <div style={{ fontSize: 11, color: 'var(--ink-400)', fontFamily: 'ui-monospace' }}>10.5px · 600 · uppercase</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head"><div className="card-title">버튼</div></div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button className="btn primary"><Icon name="save" size={13} />저장하기</button>
+          <button className="btn">목록으로</button>
+          <button className="btn photo"><Icon name="camera" size={13} />Photo</button>
+          <button className="btn sm">Small</button>
+          <button className="btn ghost">Ghost</button>
+          <button className="btn primary" style={{ opacity: 0.5 }} disabled>Disabled</button>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head"><div className="card-title">상태 뱃지 · 진행률</div></div>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+          <StatusPill status="done" />
+          <StatusPill status="wip" />
+          <StatusPill status="empty" />
+          <StatusPill status="review" />
+        </div>
+        <div style={{ maxWidth: 340 }}>
+          <div style={{ fontSize: 12, color: 'var(--ink-500)', marginBottom: 4, display: 'flex', justifyContent: 'space-between' }}>
+            <span>전체 진행률</span><b style={{ color: 'var(--ink-900)' }}>62%</b>
+          </div>
+          <div className="bar"><span style={{ width: '62%' }} /></div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head"><div className="card-title">입력 컨트롤</div></div>
+        <div className="grid-2" style={{ gap: 18 }}>
+          <div>
+            <label className="field-label">텍스트 입력</label>
+            <input className="input" placeholder="예: 김민서" />
+          </div>
+          <div>
+            <label className="field-label">텍스트 영역</label>
+            <textarea className="textarea" placeholder="소견 메모…" />
+          </div>
+          <div>
+            <label className="field-label">라디오</label>
+            <RadioGroup options={['예', '아니오', '모름']} value="예" onChange={() => {}} />
+          </div>
+          <div>
+            <label className="field-label">체크박스</label>
+            <CheckGroup options={['치실', '치간칫솔', '가글', '워터픽']} value={['치실', '가글']} onChange={() => {}} />
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <div className="card-title">Photo 모달</div>
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <button className="btn photo" onClick={onOpenPhoto}><Icon name="camera" size={13} />모달 열기</button>
+          <div style={{ fontSize: 12, color: 'var(--ink-500)' }}>회차 선택 · 5매/6매법 전환 · 자동 저장</div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head"><div className="card-title">교수 평가 패널 (Read-only)</div></div>
+        <ProfPanel />
+      </div>
+    </div>
+  );
+};
+
+/* ============= Photo page (opens modal, shows preview under it too) ============= */
+const PhotoPage = ({ onOpenPhoto }) => {
+  return (
+    <div>
+      <div className="page-title">Photo 관리</div>
+      <div className="page-sub">회차별·촬영법별 사진 세트를 관리합니다.</div>
+      <div className="card">
+        <div className="card-head">
+          <div className="card-title">Photo 모달 미리보기</div>
+          <button className="btn photo" onClick={onOpenPhoto}><Icon name="camera" size={13} />모달 열기</button>
+        </div>
+        <div className="doc-hint" style={{ padding: 0, border: 'none' }}>
+          모달을 열면 회차(1/2/3) · 촬영법(5매/6매) · 세트별 업로드 슬롯 UI를 확인할 수 있습니다.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { PhotoModal, ComponentsShowcase, PhotoPage });
+
+</script>
+
+<!-- 11. PatientEditModal -->
+<script type="text/babel">
+
+/* ========= Patient Edit Modal ========= */
+const PatientEditModal = ({ open, onClose }) => {
+  const [form, setForm] = React.useState({
+    name: '김민서',
+    dob: '1997.03.14',
+    gender: '여성',
+    address: '서울특별시 성북구 안암로 145',
+    job: '대학원생',
+    route: '지인 소개',
+    reason: '스케일링·잇몸 관리 상담',
+  });
+  if (!open) return null;
+  const set = (k) => (e) => setForm(prev => ({...prev, [k]: e.target.value}));
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" style={{ maxWidth: 560 }} onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <div>
+            <h3>대상자 정보 수정</h3>
+            <div style={{ fontSize: 12, color: 'var(--ink-500)', marginTop: 2 }}>잠금 항목(술자·타임)은 수정할 수 없습니다.</div>
+          </div>
+          <button className="close" onClick={onClose}><Icon name="close" size={14} /></button>
+        </div>
+        <div className="modal-body">
+          <div className="grid-2" style={{ gap: '14px 20px' }}>
+            <div>
+              <label className="field-label">이름</label>
+              <input className="input" value={form.name} onChange={set('name')} />
+            </div>
+            <div>
+              <label className="field-label">생년월일</label>
+              <input className="input" value={form.dob} onChange={set('dob')} placeholder="예: 1997.03.14" />
+            </div>
+            <div>
+              <label className="field-label">성별</label>
+              <div className="radio-group">
+                {['남성','여성','기타'].map(g => (
+                  <button key={g} className={`radio-chip ${form.gender===g?'active':''}`} onClick={() => setForm(p=>({...p,gender:g}))}>
+                    <span className="dot"/>
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="field-label">직업</label>
+              <input className="input" value={form.job} onChange={set('job')} />
+            </div>
+            <div style={{ gridColumn: '1/-1' }}>
+              <label className="field-label">주소</label>
+              <input className="input" value={form.address} onChange={set('address')} />
+            </div>
+            <div>
+              <label className="field-label">내원 경로</label>
+              <input className="input" value={form.route} onChange={set('route')} />
+            </div>
+            <div>
+              <label className="field-label">방문이유</label>
+              <input className="input" value={form.reason} onChange={set('reason')} />
+            </div>
+            <div style={{ background: 'var(--surface-100)', borderRadius: 8, padding: '10px 14px', gridColumn: '1/-1' }}>
+              <div style={{ fontSize: 11.5, color: 'var(--ink-500)', marginBottom: 4 }}>🔒 수정 불가 항목</div>
+              <div className="grid-2" style={{ gap: '6px 20px' }}>
+                <div><span style={{ fontSize: 11, color: 'var(--ink-400)' }}>술자</span><div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-700)' }}>이지민 (2023560031)</div></div>
+                <div><span style={{ fontSize: 11, color: 'var(--ink-400)' }}>타임</span><div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-700)' }}>2026.07.20 14:30</div></div>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
+            <button className="btn" onClick={onClose}>취소</button>
+            <button className="btn primary" onClick={onClose}><Icon name="check" size={14}/>저장</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+Object.assign(window, { PatientEditModal });
+
+</script>
+
+<!-- 12. app.jsx: App, DensityFloater (must be last) -->
+<script type="text/babel">
+/* Main App: layout + routing between sections */
+
+const { useState, useEffect } = React;
+
+const App = () => {
+  const [current, setCurrent] = useState(() => localStorage.getItem('hy-step:current') || 'dashboard');
+  const [photoOpen, setPhotoOpen] = useState(false);
+  const [density, setDensity] = useState(() => localStorage.getItem('hy-step:density') || 'comfortable');
+  const [patientEditOpen, setPatientEditOpen] = useState(false);
+
+  const handleSave = React.useCallback(() => {
+    const saved = { savedAt: new Date().toISOString(), section: current };
+    localStorage.setItem('hy-step:save', JSON.stringify(saved));
+    // Visual feedback
+    const btn = document.querySelector('.btn.primary .save-label');
+    if (btn) { btn.textContent = '저장됨 ✓'; setTimeout(() => { btn.textContent = '저장하기'; }, 2000); }
+    alert('저장되었습니다. (로컬 스토리지에 보관)');
+  }, [current]);
+
+  useEffect(() => {
+    localStorage.setItem('hy-step:current', current);
+    // Scroll main area to top whenever section changes
+    const el = document.querySelector('.main');
+    if (el) el.scrollTop = 0;
+  }, [current]);
+  useEffect(() => {
+    document.body.dataset.density = density;
+    localStorage.setItem('hy-step:density', density);
+  }, [density]);
+
+  // Tweaks panel
+  const [defaults] = useState({ density: 'comfortable' });
+  useEffect(() => {
+    const handler = (e) => {
+      const d = e.data;
+      if (!d) return;
+      if (d.type === '__activate_edit_mode') window.__tweaksOpen = true;
+      if (d.type === '__deactivate_edit_mode') window.__tweaksOpen = false;
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  React.useEffect(() => {
+    window.__saveChart = handleSave;
+    return () => { delete window.__saveChart; };
+  }, [handleSave]);
+
+  // Expose edit opener globally so PatientPanel can trigger without prop drilling
+  React.useEffect(() => {
+    window.__openPatientEdit = () => setPatientEditOpen(true);
+    return () => { delete window.__openPatientEdit; };
+  }, [setPatientEditOpen]);
+
+  const renderPage = () => {
+    const pageMap = {
+      dashboard: <Dashboard onOpenSection={setCurrent} />,
+      s1: <Section1 />,
+      s2: <Section2 />,
+      s3: <Section3 />,
+      s4: <Section4 />,
+      s5: <Section5 />,
+      s6: <Section6 />,
+      s7: <Section7 />,
+      s8: <Section8 />,
+      components: <ComponentsShowcase onOpenPhoto={() => setPhotoOpen(true)} />,
+      photo: <PhotoPage onOpenPhoto={() => setPhotoOpen(true)} />,
+    };
+    return pageMap[current] || pageMap.dashboard;
+  };
+
+  return (
+    <div className="app" data-screen-label={current}>
+      <Sidebar current={current} onChange={setCurrent} />
+      <Header current={current} onOpenPhoto={() => setPhotoOpen(true)} />
+      <main className="main">
+        <div className="main-inner">
+          {renderPage()}
+        </div>
+      </main>
+
+      <PhotoModal open={photoOpen} onClose={() => setPhotoOpen(false)} />
+      <PatientEditModal open={patientEditOpen} onClose={() => setPatientEditOpen(false)} />
+
+      {/* Density Tweak (accessible even without tweaks toolbar) */}
+      <DensityFloater density={density} setDensity={setDensity} />
+    </div>
+  );
+};
+
+/* Simple always-visible density toggle in the bottom-right, styled subtly */
+const DensityFloater = ({ density, setDensity }) => {
+  return (
+    <div style={{
+      position: 'fixed', bottom: 20, right: 20,
+      background: '#fff', border: '1px solid var(--border)',
+      borderRadius: 999, padding: 4,
+      display: 'flex', gap: 2, alignItems: 'center',
+      boxShadow: '0 8px 24px rgba(15,23,42,0.08)', zIndex: 50,
+      fontSize: 12,
+    }}>
+      <span style={{ padding: '4px 10px', color: 'var(--ink-500)', fontSize: 11, fontWeight: 500 }}>Density</span>
+      {[
+        { k: 'compact', l: 'Compact' },
+        { k: 'comfortable', l: 'Comfortable' },
+      ].map(o => (
+        <button key={o.k}
+          onClick={() => setDensity(o.k)}
+          style={{
+            padding: '6px 14px', borderRadius: 999, border: 'none', cursor: 'pointer',
+            background: density === o.k ? 'var(--primary)' : 'transparent',
+            color: density === o.k ? '#fff' : 'var(--ink-600)',
+            fontWeight: density === o.k ? 600 : 500, fontSize: 12,
+          }}
+        >{o.l}</button>
+      ))}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>
