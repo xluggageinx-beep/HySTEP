@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EZ-STEP | 브랜드 스토리</title>
+<meta name="description" content="EZ-STEP이 치위생 교육 현장을 위해 존재하는 이유, 만들어온 과정, 그 철학을 소개합니다."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+
+<style>
+/* ── Tokens ── */
+:root {
+  --brand-900: #0A1E4A;
+  --brand-800: #0D2A5E;
+  --brand-700: #123878;
+  --brand-600: #1E5FBF;
+  --brand-500: #1E74D4;
+  --brand-400: #4A96E8;
+  --brand-300: #7EC8FF;
+  --brand-100: #E8F1FE;
+  --brand-50:  #F4F8FF;
+  --accent:    #7EC8FF;
+
+  --ink-900: #0B1220;
+  --ink-800: #17223A;
+  --ink-700: #2A3654;
+  --ink-500: #5A6785;
+  --ink-400: #7B87A5;
+  --ink-300: #A9B2CB;
+  --ink-200: #D8DEEC;
+  --ink-100: #EBEFF8;
+  --ink-50:  #F5F7FC;
+  --bg:      #F8FAFC;
+  --line:    rgba(11,18,32,0.08);
+  --line-strong: rgba(11,18,32,0.14);
+
+  --font-sans: "Pretendard Variable","Pretendard","Inter",system-ui,-apple-system,sans-serif;
+  --font-mono: "JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --ease: cubic-bezier(0.22,1,0.36,1);
+  --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:28px;
+  --shadow-sm:0 1px 2px rgba(11,18,32,.04),0 2px 6px rgba(11,18,32,.04);
+  --shadow-md:0 4px 12px rgba(11,18,32,.06),0 12px 32px rgba(11,18,32,.06);
+  --shadow-lg:0 12px 32px rgba(13,42,94,.12),0 24px 60px rgba(13,42,94,.16);
+}
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:var(--font-sans);
+  font-size:16px;
+  line-height:1.6;
+  color:var(--ink-900);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:0; background:none; }
+img { max-width:100%; display:block; }
+
+.container {
+  width:100%;
+  max-width:1240px;
+  margin:0 auto;
+  padding:0 clamp(20px,4vw,40px);
+}
+
+/* ── Header ── */
+.header {
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:1000;
+  padding:16px 0;
+  transition:background .3s var(--ease), border-color .3s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.header.scrolled {
+  background:rgba(255,255,255,.75);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom-color:var(--line);
+}
+.header .container {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.logo-mark {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  font-size:18px;
+  letter-spacing:-.02em;
+  color:#fff;
+}
+.header.scrolled .logo-mark { color:var(--ink-900); }
+.logo-mark img { height:32px; object-fit:contain; }
+
+.nav-links {
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.nav-link {
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:500;
+  color:rgba(255,255,255,.85);
+  transition:background .2s var(--ease), color .2s var(--ease);
+}
+.nav-link:hover { background:rgba(255,255,255,.1); color:#fff; }
+.header.scrolled .nav-link { color:var(--ink-700); }
+.header.scrolled .nav-link:hover { background:var(--ink-50); color:var(--ink-900); }
+.nav-link.active { color:#fff; background:rgba(255,255,255,.15); }
+.header.scrolled .nav-link.active { color:var(--brand-600); background:var(--brand-100); }
+
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 20px; border-radius:999px;
+  font-weight:600; font-size:15px; line-height:1;
+  transition:transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+  white-space:nowrap; cursor:pointer; border:none;
+}
+.btn-primary { background:var(--ink-900); color:#fff; }
+.btn-primary:hover { background:var(--brand-800); transform:translateY(-1px); }
+.btn-sm { padding:9px 16px; font-size:14px; }
+.btn .arrow { transition:transform .2s var(--ease); }
+.btn:hover .arrow { transform:translateX(3px); }
+
+/* ── Page Hero (small, dark) ── */
+.page-hero {
+  padding:120px 0 0;
+  background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 100%);
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+}
+.page-hero::before {
+  content:"";
+  position:absolute; inset:0;
+  background-image:repeating-linear-gradient(
+    135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 60px
+  );
+  pointer-events:none;
+}
+.page-hero .container { position:relative; z-index:2; }
+.page-hero-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 12px 6px 8px; border-radius:999px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16);
+  font-size:12px; font-weight:600; color:rgba(255,255,255,.85);
+  letter-spacing:.06em; text-transform:uppercase; margin-bottom:20px;
+}
+.page-hero-eyebrow .dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--accent);
+}
+.page-hero h1 {
+  font-size:clamp(34px,4.5vw,56px);
+  line-height:1.1;
+  letter-spacing:-.03em;
+  font-weight:800;
+  max-width:700px;
+}
+.page-hero h1 .grad {
+  background:linear-gradient(90deg,#fff 0%,var(--accent) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.page-hero-sub {
+  margin-top:18px;
+  font-size:clamp(15px,1.3vw,17px);
+  line-height:1.7;
+  color:rgba(255,255,255,.7);
+  max-width:560px;
+}
+
+/* ── Tab Bar (sticky below hero) ── */
+.tab-bar-wrap {
+  background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 100%);
+  padding:24px 0 0;
+  position:sticky;
+  top:64px;
+  z-index:900;
+}
+/* bottom fade into bg */
+.tab-bar-wrap::after {
+  content:"";
+  display:block;
+  height:32px;
+  background:linear-gradient(to bottom, var(--brand-700), var(--bg));
+}
+.tab-bar {
+  display:flex;
+  gap:4px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  padding:0 clamp(20px,4vw,40px);
+  max-width:1240px;
+  margin:0 auto;
+}
+.tab-btn {
+  position:relative;
+  padding:12px 20px;
+  font-size:15px;
+  font-weight:600;
+  color:rgba(255,255,255,.55);
+  border:none; background:none; cursor:pointer;
+  border-radius:8px 8px 0 0;
+  transition:color .2s var(--ease), background .2s var(--ease);
+  white-space:nowrap;
+  letter-spacing:-.01em;
+}
+.tab-btn:hover { color:rgba(255,255,255,.85); background:rgba(255,255,255,.06); }
+.tab-btn.active { color:#fff; }
+.tab-btn.active::after {
+  content:"";
+  position:absolute; bottom:-1px; left:0; right:0;
+  height:2px;
+  background:var(--accent);
+  border-radius:2px 2px 0 0;
+}
+
+/* ── Tab Panels ── */
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* ── Section utility ── */
+.section { padding:clamp(60px,9vw,110px) 0; }
+.section-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 12px; border-radius:999px;
+  background:var(--brand-100); color:var(--brand-700);
+  font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+}
+.section-title {
+  margin-top:16px;
+  font-size:clamp(28px,3.2vw,42px);
+  line-height:1.15; letter-spacing:-.025em; font-weight:800;
+  color:var(--ink-900); max-width:780px;
+}
+.section-sub {
+  margin-top:14px; font-size:16px; line-height:1.65;
+  color:var(--ink-500); max-width:620px;
+}
+
+/* ── Reveal ── */
+.reveal { opacity:0; transform:translateY(18px); transition:opacity .65s var(--ease), transform .65s var(--ease); }
+.reveal.in { opacity:1; transform:none; }
+
+/* ═══════════════════════════════════════
+   TAB 1: ABOUT
+═══════════════════════════════════════ */
+
+/* Brand name block */
+.brand-names {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:48px;
+}
+.brand-name-card {
+  padding:32px 36px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-xl);
+  transition:all .3s var(--ease);
+}
+.brand-name-card:hover {
+  border-color:var(--brand-300);
+  box-shadow:var(--shadow-md);
+  transform:translateY(-3px);
+}
+.brand-name-card .name {
+  font-size:32px; font-weight:900; letter-spacing:-.03em;
+  color:var(--ink-900); margin-bottom:6px;
+}
+.brand-name-card .full {
+  font-family:var(--font-mono);
+  font-size:12px; font-weight:600; color:var(--brand-600);
+  letter-spacing:.04em; margin-bottom:16px;
+  line-height:1.5;
+}
+.brand-name-card .role-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:999px;
+  background:var(--brand-100); color:var(--brand-700);
+  font-size:12px; font-weight:700; letter-spacing:.04em;
+  margin-bottom:14px;
+}
+.brand-name-card p {
+  font-size:14.5px; line-height:1.7; color:var(--ink-500);
+}
+
+/* 3-tier flow */
+.tier-flow {
+  margin-top:64px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  position:relative;
+}
+.tier-flow::before {
+  content:"";
+  position:absolute;
+  top:56px; left:calc(33.33% - 12px); right:calc(33.33% - 12px);
+  height:2px;
+  background:linear-gradient(90deg,var(--brand-300),var(--brand-500),var(--brand-300));
+}
+.tier-node {
+  position:relative; z-index:1;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:28px;
+  text-align:center;
+  transition:all .3s var(--ease);
+}
+.tier-node:hover { border-color:var(--brand-300); box-shadow:var(--shadow-md); transform:translateY(-4px); }
+.tier-node .tier-icon {
+  width:112px; height:112px;
+  border-radius:24px;
+  margin:0 auto 20px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:4px;
+}
+.tier-node.ez .tier-icon  { background:linear-gradient(135deg,#0D2A5E,#1E74D4); box-shadow:0 12px 32px rgba(30,116,212,.28); }
+.tier-node.adm .tier-icon { background:linear-gradient(135deg,#1A1A2E,#16213E); box-shadow:0 12px 32px rgba(0,0,0,.2); }
+.tier-node.hy .tier-icon  { background:linear-gradient(135deg,#123878,#1E5FBF); box-shadow:0 12px 32px rgba(18,56,120,.28); }
+.tier-icon-em { font-size:18px; font-weight:900; color:#fff; letter-spacing:-.02em; }
+.tier-icon-sub { font-size:9px; font-weight:700; color:rgba(255,255,255,.6); letter-spacing:.1em; }
+.tier-node .tier-name { font-size:19px; font-weight:800; letter-spacing:-.02em; color:var(--ink-900); margin-bottom:6px; }
+.tier-node .tier-role { font-size:12px; font-weight:700; color:var(--brand-600); margin-bottom:12px; letter-spacing:.03em; text-transform:uppercase; }
+.tier-node p { font-size:13.5px; line-height:1.65; color:var(--ink-500); }
+.tier-tags { margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; gap:5px; }
+.tier-tag { padding:3px 9px; border-radius:999px; font-size:11px; font-weight:600; background:var(--brand-100); color:var(--brand-700); }
+
+/* 4-axis */
+.axis-grid {
+  margin-top:48px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.axis-card {
+  padding:22px 18px;
+  text-align:center;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  transition:all .3s var(--ease);
+}
+.axis-card:hover { border-color:var(--brand-300); box-shadow:var(--shadow-sm); transform:translateY(-2px); }
+.axis-card .axis-icon { font-size:28px; margin-bottom:12px; }
+.axis-card h4 { font-size:14px; font-weight:700; color:var(--ink-900); margin-bottom:6px; }
+.axis-card p { font-size:12.5px; line-height:1.6; color:var(--ink-500); }
+
+/* Q-cards (About philosophy) */
+.q-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:16px;
+}
+.q-card {
+  padding:30px 32px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  transition:all .3s var(--ease);
+}
+.q-card:hover { border-color:var(--brand-300); box-shadow:var(--shadow-md); transform:translateX(3px); }
+.q-card .q-num {
+  font-family:var(--font-mono);
+  font-size:11px; font-weight:700;
+  color:var(--brand-500); letter-spacing:.1em;
+  text-transform:uppercase; margin-bottom:10px;
+}
+.q-card h3 { font-size:17px; font-weight:700; letter-spacing:-.015em; color:var(--ink-900); margin-bottom:11px; line-height:1.35; }
+.q-card p  { font-size:14px; line-height:1.72; color:var(--ink-500); }
+
+/* ═══════════════════════════════════════
+   TAB 2: WHY WE BUILT THIS
+═══════════════════════════════════════ */
+.why-hero-band {
+  background:linear-gradient(160deg, var(--ink-900) 0%, var(--brand-900) 100%);
+  border-radius:var(--r-xl);
+  padding:clamp(40px,6vw,72px);
+  color:#fff;
+  margin-bottom:40px;
+  position:relative;
+  overflow:hidden;
+}
+.why-hero-band::before {
+  content:"";
+  position:absolute; inset:0;
+  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.02) 0 1px,transparent 1px 60px);
+  pointer-events:none;
+}
+.why-hero-band > * { position:relative; z-index:1; }
+.why-hero-band .eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:5px 12px; border-radius:999px;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
+  font-size:11px; font-weight:700; color:rgba(255,255,255,.8);
+  letter-spacing:.1em; text-transform:uppercase; margin-bottom:18px;
+}
+.why-hero-band h2 { font-size:clamp(26px,3vw,38px); font-weight:800; letter-spacing:-.025em; line-height:1.15; max-width:600px; }
+.why-hero-band p { margin-top:14px; font-size:15px; line-height:1.7; color:rgba(255,255,255,.65); max-width:560px; }
+
+.why-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.why-card {
+  padding:32px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  transition:all .3s var(--ease);
+}
+.why-card:hover { border-color:var(--brand-400); box-shadow:var(--shadow-md); transform:translateY(-3px); }
+.why-card .icon-box {
+  width:46px; height:46px;
+  border-radius:13px;
+  background:var(--brand-100);
+  color:var(--brand-600);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:20px;
+}
+.why-card h3 { font-size:18px; font-weight:700; letter-spacing:-.015em; color:var(--ink-900); margin-bottom:12px; line-height:1.3; }
+.why-card p  { font-size:14px; line-height:1.72; color:var(--ink-500); }
+.why-card .tag-row { margin-top:18px; display:flex; flex-wrap:wrap; gap:6px; }
+.why-card .tag {
+  padding:4px 10px; border-radius:999px;
+  font-size:11px; font-weight:600;
+  background:var(--ink-50); color:var(--ink-700);
+  border:1px solid var(--line);
+}
+
+/* premise block */
+.premise-block {
+  margin-top:40px;
+  padding:36px 40px;
+  background:linear-gradient(135deg, var(--brand-50) 0%, #fff 100%);
+  border:1px solid var(--brand-100);
+  border-radius:var(--r-xl);
+  border-left:4px solid var(--brand-500);
+}
+.premise-block .pre-label {
+  font-size:11px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--brand-600); margin-bottom:14px;
+}
+.premise-block p {
+  font-size:16px; line-height:1.8; color:var(--ink-800); font-weight:500;
+  font-style:italic;
+}
+.premise-block .pre-source { margin-top:12px; font-size:12.5px; color:var(--brand-600); font-weight:600; }
+
+/* ═══════════════════════════════════════
+   TAB 3: HISTORY (Timeline)
+═══════════════════════════════════════ */
+.history-layout {
+  display:grid;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:clamp(40px,6vw,80px);
+  align-items:start;
+}
+.history-sticky {
+  position:sticky;
+  top:180px;
+}
+.history-sticky .section-title { font-size:clamp(24px,2.8vw,36px); }
+.history-sticky .section-sub { font-size:15px; }
+.history-quote {
+  margin-top:28px;
+  padding:22px 26px;
+  background:var(--brand-50);
+  border:1px solid var(--brand-100);
+  border-left:3px solid var(--brand-500);
+  border-radius:var(--r-md);
+  font-size:13.5px; line-height:1.7; color:var(--brand-800);
+  font-style:italic;
+}
+.history-quote .src { margin-top:10px; font-size:11.5px; color:var(--brand-600); font-weight:700; font-style:normal; }
+
+/* timeline */
+.timeline { position:relative; padding-left:36px; }
+.timeline::before {
+  content:"";
+  position:absolute;
+  left:9px; top:10px; bottom:10px;
+  width:2px;
+  background:linear-gradient(180deg,var(--brand-500),var(--brand-300),var(--brand-100));
+}
+.tl-item { position:relative; margin-bottom:44px; }
+.tl-item:last-child { margin-bottom:0; }
+.tl-dot {
+  position:absolute;
+  left:-33px; top:5px;
+  width:22px; height:22px;
+  border-radius:50%;
+  background:var(--brand-500);
+  border:3px solid #fff;
+  box-shadow:0 0 0 2px var(--brand-300);
+}
+.tl-item.future .tl-dot { background:var(--ink-200); box-shadow:0 0 0 2px var(--ink-100); }
+.tl-era {
+  font-family:var(--font-mono);
+  font-size:11px; font-weight:700;
+  color:var(--brand-600); letter-spacing:.07em;
+  margin-bottom:5px; text-transform:uppercase;
+}
+.tl-item.future .tl-era { color:var(--ink-400); }
+.tl-title { font-size:20px; font-weight:700; letter-spacing:-.015em; color:var(--ink-900); margin-bottom:10px; }
+.tl-item.future .tl-title { color:var(--ink-400); }
+.tl-desc { font-size:14.5px; line-height:1.72; color:var(--ink-500); }
+.tl-item.future .tl-desc { color:var(--ink-300); }
+.tl-tags { margin-top:12px; display:flex; flex-wrap:wrap; gap:6px; }
+.tl-tag {
+  padding:4px 10px; border-radius:999px;
+  font-size:11.5px; font-weight:600;
+  background:var(--brand-100); color:var(--brand-700);
+}
+.tl-item.future .tl-tag { background:var(--ink-100); color:var(--ink-400); }
+
+/* academic highlight */
+.academic-card {
+  margin-top:16px;
+  padding:20px 22px;
+  background:linear-gradient(135deg,var(--brand-50) 0%,#fff 100%);
+  border:1px solid var(--brand-100);
+  border-radius:var(--r-md);
+  display:flex; gap:14px; align-items:flex-start;
+}
+.academic-card .ac-icon {
+  width:36px; height:36px;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--brand-600),var(--brand-400));
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.academic-card .ac-body h4 { font-size:14px; font-weight:700; color:var(--ink-900); margin-bottom:4px; }
+.academic-card .ac-body p  { font-size:13px; line-height:1.6; color:var(--ink-500); }
+
+/* ── Footer ── */
+.footer {
+  background:linear-gradient(160deg,#0A1535 0%,#06101F 100%);
+  color:rgba(255,255,255,.7);
+  padding:56px 0 36px;
+  font-size:14px;
+  margin-top:clamp(60px,8vw,100px);
+}
+.footer-inner {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  flex-wrap:wrap;
+  padding-bottom:28px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.footer-inner img { height:28px; object-fit:contain; filter:brightness(0) invert(1); opacity:.7; }
+.footer-links { display:flex; gap:20px; flex-wrap:wrap; }
+.footer-links a { font-size:13.5px; color:rgba(255,255,255,.55); transition:color .2s; }
+.footer-links a:hover { color:#fff; }
+.footer-bottom-bar {
+  margin-top:22px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:12px; color:rgba(255,255,255,.35); flex-wrap:wrap; gap:8px;
+}
+
+/* ── Responsive ── */
+@media (max-width:1024px) {
+  .tier-flow { grid-template-columns:1fr; }
+  .tier-flow::before { display:none; }
+  .brand-names { grid-template-columns:1fr; }
+  .axis-grid { grid-template-columns:repeat(2,1fr); }
+  .q-grid { grid-template-columns:1fr; }
+  .why-grid { grid-template-columns:1fr; }
+  .history-layout { grid-template-columns:1fr; }
+  .history-sticky { position:static; }
+}
+@media (max-width:640px) {
+  .tab-btn { padding:10px 14px; font-size:14px; }
+  .axis-grid { grid-template-columns:1fr 1fr; }
+  .page-hero { padding:100px 0 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header" id="site-header">
+  <div class="container">
+    <a href="/" class="logo-mark">
+      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">홈</a>
+      <a href="/story" class="nav-link active">브랜드 스토리</a>
+      <a href="/policy" class="nav-link">이용정책</a>
+      <a class="btn btn-primary btn-sm" href="/builder" style="margin-left:8px;">
+        차트 만들기
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ── Page Hero ── -->
+<div class="page-hero">
+  <div class="container">
+    <div class="page-hero-eyebrow"><span class="dot"></span> Brand Story</div>
+    <h1>EZ-STEP이 존재하는 이유,<br/><span class="grad">그 철학과 역사.</span></h1>
+    <p class="page-hero-sub">
+      치위생 교육 현장에서 직접 느낀 문제의식으로 시작된 이 플랫폼의 이야기를 소개합니다.
+    </p>
+  </div>
+
+  <!-- ── Tab Bar ── -->
+  <div class="tab-bar-wrap">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="about">About</button>
+      <button class="tab-btn" data-tab="why">Why We Built This</button>
+      <button class="tab-btn" data-tab="history">개발 역사</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TAB PANELS
+══════════════════════════════════════ -->
+
+<!-- ─── TAB: About ─── -->
+<div id="panel-about" class="tab-panel active">
+
+  <!-- Brand name section -->
+  <section class="section" style="background:#fff; padding-bottom:0;">
+    <div class="container">
+      <span class="section-eyebrow reveal">브랜드 구조</span>
+      <h2 class="section-title reveal">EZ-STEP은 브랜드명입니다.<br/>Hy-STEP은 그 안의 차트 라인명입니다.</h2>
+      <p class="section-sub reveal">
+        두 이름은 같은 플랫폼 안에서 서로 다른 역할을 가집니다. 각각의 정확한 의미와 위치를 확인하세요.
+      </p>
+      <div class="brand-names reveal" style="transition-delay:60ms;">
+        <div class="brand-name-card">
+          <div class="name">EZ-STEP</div>
+          <div class="full">Education Zero-in-on<br/>Student Training E-Platform</div>
+          <div class="role-badge">🏷 브랜드 &amp; 플랫폼명</div>
+          <p>
+            치위생 교육 현장의 디지털 실습 환경을 설계하는 플랫폼 전체의 브랜드명입니다.
+            학교 담당자가 서비스를 구성·신청하는 구성기(Configurator)이자, 이 시스템 전체를 가리키는 이름입니다.
+          </p>
+        </div>
+        <div class="brand-name-card">
+          <div class="name">Hy-STEP</div>
+          <div class="full">Dental Hygiene · Student Training E-Platform</div>
+          <div class="role-badge">📋 치위생 차트 라인명</div>
+          <p>
+            각 학교에 실제 배포되어 학생과 교수가 사용하는 디지털 임상차트 웹의 라인명입니다.
+            EZ-STEP 플랫폼 안에서 제공되는 핵심 서비스로, 학교별 설정이 적용된 독립 인스턴스로 운영됩니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-tier system -->
+  <section class="section" style="background:var(--bg);">
+    <div class="container">
+      <span class="section-eyebrow reveal">시스템 구조</span>
+      <h2 class="section-title reveal">3계층으로 이루어진 하나의 시스템</h2>
+      <p class="section-sub reveal">
+        학교별 코드를 개별 제작하는 방식이 아닙니다. 공통 엔진 위에 학교별 설정을 조합하는 모듈 조립형 SaaS 구조입니다.
+      </p>
+
+      <div class="tier-flow">
+        <div class="tier-node ez reveal" style="transition-delay:0ms;">
+          <div class="tier-icon">
+            <span class="tier-icon-em">EZ-STEP</span>
+            <span class="tier-icon-sub">서비스 구성기</span>
+          </div>
+          <div class="tier-name">EZ-STEP</div>
+          <div class="tier-role">외부 진입 · 구성기</div>
+          <p>학교 담당자가 서비스 구성을 선택하고 견적·신청을 제출하는 외부 공개 사이트.</p>
+          <div class="tier-tags">
+            <span class="tier-tag">섹션 선택</span>
+            <span class="tier-tag">견적 신청</span>
+            <span class="tier-tag">부가기능 구성</span>
+          </div>
+        </div>
+
+        <div class="tier-node adm reveal" style="transition-delay:100ms;">
+          <div class="tier-icon">
+            <span class="tier-icon-em">관리자스텝</span>
+            <span class="tier-icon-sub">내부 콘솔</span>
+          </div>
+          <div class="tier-name">관리자스텝</div>
+          <div class="tier-role">조립판 · 내부 전용</div>
+          <p>운영자 전용 내부 관리 시스템. 학교 생성·설정 조립·활성화·상태 관리 수행.</p>
+          <div class="tier-tags">
+            <span class="tier-tag">학교 생성</span>
+            <span class="tier-tag">프리셋 관리</span>
+            <span class="tier-tag">운영 상태</span>
+          </div>
+        </div>
+
+        <div class="tier-node hy reveal" style="transition-delay:200ms;">
+          <div class="tier-icon">
+            <span class="tier-icon-em">Hy-STEP</span>
+            <span class="tier-icon-sub">차트 웹</span>
+          </div>
+          <div class="tier-name">Hy-STEP</div>
+          <div class="tier-role">학교별 차트 웹</div>
+          <p>각 학교 학생·교수가 실제 학기 운영 중 사용하는 차트 웹. 공통 엔진 + 학교 설정 적용.</p>
+          <div class="tier-tags">
+            <span class="tier-tag">차트 작성</span>
+            <span class="tier-tag">교수 평가</span>
+            <span class="tier-tag">대시보드</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 axis -->
+      <div style="margin-top:56px;">
+        <h3 class="reveal" style="font-size:20px;font-weight:700;letter-spacing:-.015em;color:var(--ink-900);margin-bottom:6px;">학교별 차이를 만드는 설정 4축</h3>
+        <p class="reveal" style="font-size:14.5px;color:var(--ink-500);margin-bottom:0;">각 학교는 아래 4개 축의 조합으로 자신만의 Hy-STEP 환경을 구성합니다.</p>
+        <div class="axis-grid">
+          <div class="axis-card reveal" style="transition-delay:0ms;">
+            <div class="axis-icon">📋</div>
+            <h4>차트 구성 축</h4>
+            <p>섹션 선택 &amp; 항목별 양식 선택</p>
+          </div>
+          <div class="axis-card reveal" style="transition-delay:40ms;">
+            <div class="axis-icon">📅</div>
+            <h4>대상자 유입 축</h4>
+            <p>예약형 / 수기형 선택</p>
+          </div>
+          <div class="axis-card reveal" style="transition-delay:80ms;">
+            <div class="axis-icon">🔑</div>
+            <h4>권한 축</h4>
+            <p>학생 전용 / 학생+교수 선택</p>
+          </div>
+          <div class="axis-card reveal" style="transition-delay:120ms;">
+            <div class="axis-icon">⚡</div>
+            <h4>부가기능 축</h4>
+            <p>AI · 사진 업로드 · 대시보드</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy Q&A -->
+  <section class="section" style="background:#fff;">
+    <div class="container">
+      <span class="section-eyebrow reveal">브랜드 철학</span>
+      <h2 class="section-title reveal">우리가 스스로에게 던진 질문들</h2>
+      <p class="section-sub reveal">
+        이 시스템을 만들면서 계속 물었던 질문들입니다. 여기서 나온 답이 EZ-STEP의 방향을 결정했습니다.
+      </p>
+      <div class="q-grid">
+        <div class="q-card reveal" style="transition-delay:0ms;">
+          <div class="q-num">Question 01</div>
+          <h3>치위생 교육에 왜 디지털 실습 환경이 필요한가?</h3>
+          <p>오늘날 많은 치과 임상 환경은 이미 디지털 기반으로 운영되고 있습니다. 그러나 교육 현장에서는 여전히 수기 중심의 실습 방식이 남아있거나, 실습이 단편적 기능 반복에 머무르는 경우가 많습니다. 학생이 졸업 전 충분한 디지털 실습 경험을 갖지 못한 채 임상에 진입하게 되는 구조를 바꿔야 합니다.</p>
+        </div>
+        <div class="q-card reveal" style="transition-delay:50ms;">
+          <div class="q-num">Question 02</div>
+          <h3>치과위생사 면허 교육은 어떤 무게를 가져야 하는가?</h3>
+          <p>면허를 위한 교육은 충분한 전문적 훈련과 실습의 무게를 가져야 합니다. 실습은 단순히 몇 가지 술식을 반복하는 시간이 아니라, 대상자에 대한 기록·평가·관찰·피드백이 유기적으로 연결되는 과정이어야 합니다.</p>
+        </div>
+        <div class="q-card reveal" style="transition-delay:100ms;">
+          <div class="q-num">Question 03</div>
+          <h3>학교는 학생에게 졸업 이후와 연결되는 환경을 제공하고 있는가?</h3>
+          <p>학생이 단순 기능 반복을 넘어, 실제 임상과 연결되는 기록·평가·사고의 흐름을 경험하고 있는지 물어야 합니다. EZ-STEP은 이 질문에 대한 하나의 실천적 답변으로 기획되었습니다.</p>
+        </div>
+        <div class="q-card reveal" style="transition-delay:150ms;">
+          <div class="q-num">Question 04</div>
+          <h3>이 서비스를 만든 사람은 왜 이 문제를 진지하게 바라보는가?</h3>
+          <p>임상실습 현장에서 직접 느낀 수기 중심 운영의 한계, 디지털 적응의 공백, 교수와 학생 모두가 겪는 기록과 피드백의 단절. 이 문제의식을 바탕으로 베타 시스템을 개발하고, 실제 학기 운영을 통해 검증하며 이 시스템을 발전시켜왔습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /panel-about -->
+
+
+<!-- ─── TAB: Why We Built This ─── -->
+<div id="panel-why" class="tab-panel">
+  <section class="section">
+    <div class="container">
+
+      <div class="why-hero-band reveal">
+        <div class="eyebrow">Why We Built This</div>
+        <h2>더 높은 수준의 실습 경험을 위해.<br/>네 가지 이유로 만들었습니다.</h2>
+        <p>단순한 기능 개선이 아닙니다. 치위생 교육이 마주한 구조적 문제에 대한 응답입니다.</p>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-card reveal" style="transition-delay:0ms;">
+          <div class="icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>디지털 임상 환경에 대한 조기 적응</h3>
+          <p>
+            학생이 졸업 후 처음 디지털 임상 환경을 접하는 것이 아니라, 학교 안에서부터 디지털 기록과 실습 흐름을 경험할 수 있도록 합니다.
+            이는 단순한 편의가 아니라, 임상 적응의 질과 속도에 영향을 줄 수 있는 교육적 기반입니다.
+          </p>
+          <div class="tag-row">
+            <span class="tag">디지털 전환</span>
+            <span class="tag">조기 적응</span>
+            <span class="tag">임상 준비도</span>
+          </div>
+        </div>
+
+        <div class="why-card reveal" style="transition-delay:60ms;">
+          <div class="icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3>구조화된 실습 경험 제공</h3>
+          <p>
+            실습은 단순히 몇 가지 술식을 반복하는 시간이 아닙니다. 대상자에 대한 기록·평가·관찰·피드백이 유기적으로 연결되는 과정이어야 합니다.
+            이 시스템은 그 과정을 더 구조적으로 남기고, 실습을 보다 일관되게 운영할 수 있도록 돕습니다.
+          </p>
+          <div class="tag-row">
+            <span class="tag">기록 구조화</span>
+            <span class="tag">회차 추적</span>
+            <span class="tag">평가 연동</span>
+          </div>
+        </div>
+
+        <div class="why-card reveal" style="transition-delay:120ms;">
+          <div class="icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>교수와 학생 모두를 위한 정리</h3>
+          <p>
+            학생에게는 자신의 대상자 기록과 성장 과정을 남기는 도구가 되고,
+            교수에게는 학생의 기록을 체계적으로 확인하고 피드백할 수 있는 기반이 됩니다.
+            두 역할이 하나의 차트 위에서 연결됩니다.
+          </p>
+          <div class="tag-row">
+            <span class="tag">교수 피드백</span>
+            <span class="tag">학생 기록</span>
+            <span class="tag">권한 분기</span>
+          </div>
+        </div>
+
+        <div class="why-card reveal" style="transition-delay:180ms;">
+          <div class="icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <h3>치위생 교육 수준에 대한 문제제기</h3>
+          <p>
+            이 시스템은 단순한 "도구 제공"을 넘어서, 치위생학계가 어떤 실습 기준을 지향해야 하는지에 대한 문제의식을 담고 있습니다.
+            실습 교육은 단순 반복을 넘어 더 높은 수준의 전문성과 사고를 담아야 한다는 방향을 전제로 합니다.
+          </p>
+          <div class="tag-row">
+            <span class="tag">교육 기준</span>
+            <span class="tag">전문성</span>
+            <span class="tag">학계 문제의식</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="premise-block reveal">
+        <div class="pre-label">핵심 전제</div>
+        <p>
+          "치위생 교육이 마주한 구조적 문제를 인식하고, 학교 안에서부터 더 구조적이고 실질적인 디지털 실습 경험을 할 수 있도록 설계한다."
+        </p>
+        <div class="pre-source">— EZ-STEP 개발 방향 원칙</div>
+      </div>
+
+    </div>
+  </section>
+</div><!-- /panel-why -->
+
+
+<!-- ─── TAB: History ─── -->
+<div id="panel-history" class="tab-panel">
+  <section class="section">
+    <div class="container">
+      <div class="history-layout">
+
+        <!-- Left sticky -->
+        <div class="history-sticky reveal">
+          <span class="section-eyebrow">개발 역사</span>
+          <h2 class="section-title">뜬구름이 아닌,<br/>현장에서 검증된 시스템.</h2>
+          <p class="section-sub">
+            Hy-STEP 베타는 실제 학교 실습 현장에서 운영되었고, 사례보고·학술대회 발표·수상을 통해 그 가치가 검증된 시스템입니다.
+          </p>
+          <div class="history-quote">
+            기존 베타의 코드를 그대로 계승하기보다, 검증된 규칙과 흐름을 추출하여 신규 시스템의 설계 기준으로 사용합니다. 기능 경험은 계승하되 구조는 새로 설계하는 방식입니다.
+            <div class="src">— 개발 방향 원칙</div>
+          </div>
+        </div>
+
+        <!-- Right timeline -->
+        <div>
+          <div class="timeline reveal">
+
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-era">시작 배경</div>
+              <div class="tl-title">임상실습 현장의 문제의식</div>
+              <p class="tl-desc">
+                실습 현장에서 직접 느낀 수기 중심 운영의 한계, 디지털 적응의 공백, 그리고 교수와 학생 모두가 겪는 기록과 피드백의 단절에서 출발했습니다.
+                "왜 이 현장은 아직 수기인가?"라는 단순한 질문이 이 모든 것의 시작이었습니다.
+              </p>
+              <div class="tl-tags">
+                <span class="tl-tag">수기차트 한계</span>
+                <span class="tl-tag">디지털 공백</span>
+                <span class="tl-tag">피드백 단절</span>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-era">Hy-STEP Beta</div>
+              <div class="tl-title">베타 시스템 개발 및 실제 학기 운영</div>
+              <p class="tl-desc">
+                실제 학교 실습 차트를 기반으로 베타 시스템을 개발했습니다.
+                예약, 차트, 대시보드, 교수 평가 기능 등을 포함한 운영형 구조를 구현하고,
+                실제 한 학기 이상의 사용 경험을 축적했습니다.
+                이 과정에서 어떤 기능이 실제 필요하고 어떤 것이 과잉인지 파악할 수 있었습니다.
+              </p>
+              <div class="tl-tags">
+                <span class="tl-tag">예약 시스템</span>
+                <span class="tl-tag">차트 웹</span>
+                <span class="tl-tag">대시보드</span>
+                <span class="tl-tag">실제 운영</span>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-era">검증 · 연구</div>
+              <div class="tl-title">사례보고 · 학술대회 발표 · 수상</div>
+              <p class="tl-desc">
+                베타 운영 데이터를 기반으로 사례보고를 진행하고, 내부 사용자 평가 설문을 수행했습니다.
+                이를 바탕으로 학술대회 발표와 수상이 이루어졌으며, 졸업 논문 작성으로 이어졌습니다.
+              </p>
+              <div class="academic-card">
+                <div class="ac-icon">🏆</div>
+                <div class="ac-body">
+                  <h4>학술 검증 완료</h4>
+                  <p>사례보고 → 사용자 설문 → 학술대회 발표 → 수상 → 논문 작성의 전 과정을 통해 교육적 유효성이 공식 검증되었습니다.</p>
+                </div>
+              </div>
+              <div class="tl-tags" style="margin-top:14px;">
+                <span class="tl-tag">사례보고</span>
+                <span class="tl-tag">사용자 설문</span>
+                <span class="tl-tag">학술대회 발표</span>
+                <span class="tl-tag">수상</span>
+                <span class="tl-tag">졸업 논문</span>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-era">EZ-STEP · 현재</div>
+              <div class="tl-title">모듈 조립형 SaaS로 재설계</div>
+              <p class="tl-desc">
+                베타 경험을 기반으로 보다 확장 가능한 판매용 시스템을 재설계 중입니다.
+                공통 엔진 + 학교별 설정 조합이라는 모듈 조립형 구조로 발전하여,
+                EZ-STEP(구성기) → 관리자스텝(내부콘솔) → Hy-STEP(차트웹) 3계층 아키텍처를 정립했습니다.
+              </p>
+              <div class="tl-tags">
+                <span class="tl-tag">EZ-STEP</span>
+                <span class="tl-tag">관리자스텝</span>
+                <span class="tl-tag">Hy-STEP</span>
+                <span class="tl-tag">SaaS 구조화</span>
+              </div>
+            </div>
+
+            <div class="tl-item future">
+              <div class="tl-dot"></div>
+              <div class="tl-era">향후 계획</div>
+              <div class="tl-title">후속 연구 · 플랫폼 확장</div>
+              <p class="tl-desc">
+                후속 학술 발표 및 연구 확장, 교육 프로그램 이수 체계 연동, AI 기능 강화, 예약 시스템 연동 확대 등
+                교육 플랫폼으로서의 장기 비전을 실현해 나갑니다.
+              </p>
+              <div class="tl-tags">
+                <span class="tl-tag">후속 연구</span>
+                <span class="tl-tag">AI 강화</span>
+                <span class="tl-tag">교육 프로그램 연동</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- /panel-history -->
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+      <div class="footer-links">
+        <a href="/">홈</a>
+        <a href="/story">브랜드 스토리</a>
+        <a href="/policy">이용정책</a>
+        <a href="/builder">차트 만들기</a>
+        <a href="mailto:dlwlalsdentalchart@gmail.com">문의하기</a>
+      </div>
+    </div>
+    <div class="footer-bottom-bar">
+      <span>© 2026 EZ-STEP · Dental Hygiene Student Training E-Platform</span>
+      <span>치위생 교육 기반 디지털 임상실습 플랫폼</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Header scroll ── */
+(function(){
+  var h = document.getElementById('site-header');
+  function tick(){ h.classList.toggle('scrolled', window.scrollY > 40); }
+  window.addEventListener('scroll', tick, { passive:true });
+  tick();
+})();
+
+/* ── Tab switching ── */
+(function(){
+  var btns   = document.querySelectorAll('.tab-btn');
+  var panels = document.querySelectorAll('.tab-panel');
+
+  // read ?tab= from URL
+  var params = new URLSearchParams(window.location.search);
+  var initTab = params.get('tab') || 'about';
+  activateTab(initTab);
+
+  btns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var t = btn.getAttribute('data-tab');
+      activateTab(t);
+      // update URL without reload
+      var url = new URL(window.location.href);
+      url.searchParams.set('tab', t);
+      history.pushState(null, '', url.toString());
+      // scroll to top of content (below tab bar)
+      var tabWrap = document.querySelector('.tab-bar-wrap');
+      var offset  = tabWrap ? tabWrap.getBoundingClientRect().bottom + window.scrollY : 200;
+      window.scrollTo({ top: offset - 10, behavior:'smooth' });
+    });
+  });
+
+  function activateTab(name){
+    btns.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tab') === name); });
+    panels.forEach(function(p){ p.classList.toggle('active', p.id === 'panel-' + name); });
+    // re-trigger reveals in the newly shown panel
+    setTimeout(triggerReveal, 50);
+  }
+})();
+
+/* ── Scroll reveal ── */
+function triggerReveal(){
+  var els = document.querySelectorAll('.tab-panel.active .reveal:not(.in)');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold:0.05, rootMargin:'0px 0px -30px 0px' });
+  els.forEach(function(el){
+    var r = el.getBoundingClientRect();
+    if(r.top < window.innerHeight && r.bottom > 0){ el.classList.add('in'); }
+    else { io.observe(el); }
+  });
+  setTimeout(function(){
+    document.querySelectorAll('.tab-panel.active .reveal:not(.in)').forEach(function(el){ el.classList.add('in'); });
+  }, 1800);
+}
+triggerReveal();
+</script>
+</body>
+</html>

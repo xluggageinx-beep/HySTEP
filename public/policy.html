@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EZ-STEP | 이용정책</title>
+<meta name="description" content="EZ-STEP 서비스 이용 범위, 데이터 보관, 지원 정책을 안내합니다."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+
+<style>
+:root {
+  --brand-900: #0A1E4A;
+  --brand-800: #0D2A5E;
+  --brand-700: #123878;
+  --brand-600: #1E5FBF;
+  --brand-500: #1E74D4;
+  --brand-400: #4A96E8;
+  --brand-300: #7EC8FF;
+  --brand-100: #E8F1FE;
+  --brand-50:  #F4F8FF;
+  --accent:    #7EC8FF;
+
+  --ink-900: #0B1220;
+  --ink-800: #17223A;
+  --ink-700: #2A3654;
+  --ink-500: #5A6785;
+  --ink-400: #7B87A5;
+  --ink-300: #A9B2CB;
+  --ink-200: #D8DEEC;
+  --ink-100: #EBEFF8;
+  --ink-50:  #F5F7FC;
+  --bg:      #F8FAFC;
+  --line:    rgba(11,18,32,0.08);
+  --line-strong: rgba(11,18,32,0.14);
+
+  --font-sans: "Pretendard Variable","Pretendard","Inter",system-ui,-apple-system,sans-serif;
+  --font-mono: "JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --ease: cubic-bezier(0.22,1,0.36,1);
+  --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:28px;
+  --shadow-sm:0 1px 2px rgba(11,18,32,.04),0 2px 6px rgba(11,18,32,.04);
+  --shadow-md:0 4px 12px rgba(11,18,32,.06),0 12px 32px rgba(11,18,32,.06);
+}
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:var(--font-sans);
+  font-size:16px; line-height:1.6;
+  color:var(--ink-900); background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; cursor:pointer; border:0; background:none; }
+img { max-width:100%; display:block; }
+
+.container { width:100%; max-width:1240px; margin:0 auto; padding:0 clamp(20px,4vw,40px); }
+
+/* ── Header ── */
+.header {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  padding:16px 0;
+  transition:background .3s var(--ease), border-color .3s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.header.scrolled {
+  background:rgba(255,255,255,.75);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom-color:var(--line);
+}
+.header .container { display:flex; align-items:center; justify-content:space-between; }
+.logo-mark { display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:18px; letter-spacing:-.02em; color:#fff; }
+.header.scrolled .logo-mark { color:var(--ink-900); }
+.logo-mark img { height:32px; object-fit:contain; }
+.nav-links { display:flex; align-items:center; gap:4px; }
+.nav-link {
+  padding:8px 14px; border-radius:999px;
+  font-size:14px; font-weight:500;
+  color:rgba(255,255,255,.85);
+  transition:background .2s var(--ease), color .2s var(--ease);
+}
+.nav-link:hover { background:rgba(255,255,255,.1); color:#fff; }
+.header.scrolled .nav-link { color:var(--ink-700); }
+.header.scrolled .nav-link:hover { background:var(--ink-50); color:var(--ink-900); }
+.nav-link.active { color:#fff; background:rgba(255,255,255,.15); }
+.header.scrolled .nav-link.active { color:var(--brand-600); background:var(--brand-100); }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:999px; font-weight:600; font-size:15px; line-height:1; white-space:nowrap; cursor:pointer; border:none; transition:transform .2s var(--ease), background .2s var(--ease); }
+.btn-primary { background:var(--ink-900); color:#fff; }
+.btn-primary:hover { background:var(--brand-800); transform:translateY(-1px); }
+.btn-sm { padding:9px 16px; font-size:14px; }
+.btn .arrow { transition:transform .2s var(--ease); }
+.btn:hover .arrow { transform:translateX(3px); }
+
+/* ── Page Hero ── */
+.page-hero {
+  padding:140px 0 80px;
+  background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 100%);
+  color:#fff; position:relative; overflow:hidden;
+}
+.page-hero::before {
+  content:""; position:absolute; inset:0;
+  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 60px);
+  pointer-events:none;
+}
+.page-hero::after {
+  content:""; position:absolute; left:0; right:0; bottom:-1px; height:64px;
+  background:linear-gradient(to bottom, transparent, var(--bg)); pointer-events:none;
+}
+.page-hero .container { position:relative; z-index:2; }
+.page-hero-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 12px 6px 8px; border-radius:999px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16);
+  font-size:12px; font-weight:600; color:rgba(255,255,255,.85);
+  letter-spacing:.06em; text-transform:uppercase; margin-bottom:20px;
+}
+.page-hero-eyebrow .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); }
+.page-hero h1 { font-size:clamp(32px,4vw,52px); line-height:1.12; letter-spacing:-.03em; font-weight:800; max-width:680px; }
+.page-hero h1 .grad { background:linear-gradient(90deg,#fff 0%,var(--accent) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.page-hero-sub { margin-top:16px; font-size:clamp(14px,1.2vw,16px); line-height:1.7; color:rgba(255,255,255,.7); max-width:520px; }
+
+/* ── Side-nav + Content layout ── */
+.policy-layout {
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:clamp(32px,5vw,64px);
+  padding:clamp(60px,9vw,100px) 0 clamp(80px,12vw,140px);
+  align-items:start;
+}
+.policy-nav {
+  position:sticky;
+  top:100px;
+}
+.policy-nav-title {
+  font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-400); margin-bottom:12px; padding-left:12px;
+}
+.policy-nav ul { list-style:none; display:flex; flex-direction:column; gap:2px; }
+.policy-nav ul a {
+  display:block; padding:9px 12px; border-radius:var(--r-sm);
+  font-size:14px; font-weight:500; color:var(--ink-500);
+  transition:background .2s var(--ease), color .2s var(--ease);
+}
+.policy-nav ul a:hover { background:var(--ink-50); color:var(--ink-900); }
+.policy-nav ul a.active { background:var(--brand-100); color:var(--brand-700); font-weight:600; }
+
+/* ── Policy sections ── */
+.policy-content { min-width:0; }
+.policy-block {
+  margin-bottom:clamp(48px,7vw,72px);
+  scroll-margin-top:120px;
+}
+.policy-block:last-child { margin-bottom:0; }
+
+.p-block-header { display:flex; align-items:flex-start; gap:18px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--line); }
+.p-block-icon {
+  width:48px; height:48px; flex-shrink:0;
+  border-radius:14px; background:var(--brand-100); color:var(--brand-600);
+  display:flex; align-items:center; justify-content:center; margin-top:2px;
+}
+.p-block-num {
+  font-family:var(--font-mono); font-size:11px; font-weight:700;
+  color:var(--brand-500); letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px;
+}
+.p-block-title { font-size:24px; font-weight:800; letter-spacing:-.02em; color:var(--ink-900); }
+
+/* rows inside block */
+.p-rows { display:flex; flex-direction:column; gap:16px; }
+.p-row {
+  padding:20px 22px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-md);
+  transition:border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.p-row:hover { border-color:var(--brand-300); box-shadow:var(--shadow-sm); }
+.p-row-head {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:8px;
+}
+.p-row-badge {
+  padding:3px 9px; border-radius:999px;
+  font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  background:var(--ink-100); color:var(--ink-600);
+  flex-shrink:0;
+}
+.p-row-badge.warn { background:#FEF3C7; color:#92400E; }
+.p-row-badge.ok   { background:#D1FAE5; color:#065F46; }
+.p-row-badge.note { background:var(--brand-100); color:var(--brand-700); }
+.p-row h4 { font-size:15px; font-weight:700; color:var(--ink-900); letter-spacing:-.01em; }
+.p-row p  { font-size:14px; line-height:1.72; color:var(--ink-500); }
+
+/* alert / note boxes */
+.p-note {
+  margin-top:20px; padding:18px 22px;
+  border-radius:var(--r-md);
+  font-size:13.5px; line-height:1.7;
+}
+.p-note.blue  { background:var(--brand-50);  border:1px solid var(--brand-100); border-left:3px solid var(--brand-500); color:var(--brand-800); }
+.p-note.yellow{ background:#FFFBEB; border:1px solid #FDE68A; border-left:3px solid #F59E0B; color:#78350F; }
+.p-note.green { background:#F0FDF4; border:1px solid #BBF7D0; border-left:3px solid #22C55E; color:#14532D; }
+
+/* contact CTA */
+.contact-cta {
+  margin-top:56px;
+  padding:36px 40px;
+  background:linear-gradient(135deg, var(--brand-800) 0%, var(--brand-600) 100%);
+  border-radius:var(--r-xl);
+  color:#fff;
+  position:relative; overflow:hidden;
+}
+.contact-cta::before {
+  content:""; position:absolute; inset:0;
+  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 60px);
+  pointer-events:none;
+}
+.contact-cta > * { position:relative; z-index:1; }
+.contact-cta h3 { font-size:22px; font-weight:800; letter-spacing:-.02em; margin-bottom:8px; }
+.contact-cta p  { font-size:14.5px; line-height:1.7; color:rgba(255,255,255,.72); max-width:480px; }
+.contact-cta .email-link {
+  display:inline-flex; align-items:center; gap:8px;
+  margin-top:20px; padding:11px 20px; border-radius:999px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+  font-size:14px; font-weight:600; color:#fff;
+  transition:background .2s var(--ease);
+  font-family:var(--font-mono);
+}
+.contact-cta .email-link:hover { background:rgba(255,255,255,.2); }
+
+/* ── Reveal ── */
+.reveal { opacity:0; transform:translateY(16px); transition:opacity .6s var(--ease), transform .6s var(--ease); }
+.reveal.in { opacity:1; transform:none; }
+
+/* ── Footer ── */
+.footer {
+  background:linear-gradient(160deg,#0A1535 0%,#06101F 100%);
+  color:rgba(255,255,255,.7); padding:56px 0 36px; font-size:14px;
+}
+.footer-inner {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; flex-wrap:wrap;
+  padding-bottom:28px; border-bottom:1px solid rgba(255,255,255,.08);
+}
+.footer-inner img { height:28px; object-fit:contain; filter:brightness(0) invert(1); opacity:.7; }
+.footer-links { display:flex; gap:20px; flex-wrap:wrap; }
+.footer-links a { font-size:13.5px; color:rgba(255,255,255,.55); transition:color .2s; }
+.footer-links a:hover { color:#fff; }
+.footer-bottom-bar {
+  margin-top:22px; display:flex; justify-content:space-between; align-items:center;
+  font-size:12px; color:rgba(255,255,255,.35); flex-wrap:wrap; gap:8px;
+}
+
+/* ── Responsive ── */
+@media (max-width:900px) {
+  .policy-layout { grid-template-columns:1fr; }
+  .policy-nav { position:static; display:flex; gap:8px; flex-wrap:wrap; }
+  .policy-nav ul { flex-direction:row; flex-wrap:wrap; }
+  .policy-nav-title { display:none; }
+}
+@media (max-width:640px) {
+  .page-hero { padding:120px 0 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header" id="site-header">
+  <div class="container">
+    <a href="/" class="logo-mark">
+      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">홈</a>
+      <a href="/story" class="nav-link">브랜드 스토리</a>
+      <a href="/policy" class="nav-link active">이용정책</a>
+      <a class="btn btn-primary btn-sm" href="/builder" style="margin-left:8px;">
+        차트 만들기
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ── Page Hero ── -->
+<div class="page-hero">
+  <div class="container">
+    <div class="page-hero-eyebrow"><span class="dot"></span> 이용정책</div>
+    <h1>투명하게,<br/><span class="grad">명확하게 운영합니다.</span></h1>
+    <p class="page-hero-sub">
+      서비스 범위, 데이터 보관, 지원 정책을 명확히 정리합니다.
+      학교 데이터와 실습 기록의 특성을 충분히 고려한 운영 기준입니다.
+    </p>
+  </div>
+</div>
+
+<!-- ── Main layout ── -->
+<div class="container">
+  <div class="policy-layout">
+
+    <!-- Side nav -->
+    <nav class="policy-nav">
+      <div class="policy-nav-title">목차</div>
+      <ul>
+        <li><a href="#scope"    class="active">01 · 이용 범위</a></li>
+        <li><a href="#data"            >02 · 데이터 보관</a></li>
+        <li><a href="#backup"          >03 · 백업 정책</a></li>
+        <li><a href="#support"         >04 · 응답 · 지원</a></li>
+        <li><a href="#limits"          >05 · 제한 사항</a></li>
+        <li><a href="#custom"          >06 · 추가 개발</a></li>
+        <li><a href="#contact"         >07 · 문의하기</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <div class="policy-content">
+
+      <!-- 01 이용 범위 -->
+      <div class="policy-block reveal" id="scope">
+        <div class="p-block-header">
+          <div class="p-block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
+          </div>
+          <div>
+            <div class="p-block-num">Policy 01</div>
+            <div class="p-block-title">이용 범위</div>
+          </div>
+        </div>
+        <div class="p-rows">
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge ok">허용</span>
+              <h4>계약·승인된 학교 및 사용자</h4>
+            </div>
+            <p>서비스는 계약 또는 운영자 승인이 완료된 학교 단위로만 제공됩니다. 동일 학교 내 등록된 사용자(학생·교수)에 한해 접근이 허용됩니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge note">범위</span>
+              <h4>신청된 학교·학기·구성 기준</h4>
+            </div>
+            <p>사용 범위는 신청 시 선택한 학교명·학기·섹션 구성·부가기능 기준으로 제한됩니다. 계약 범위 외의 기능 또는 다른 학교·과정에 대한 접근은 허용되지 않습니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge warn">금지</span>
+              <h4>무단 공유 및 계정 양도</h4>
+            </div>
+            <p>서비스 URL, 접근 계정, 링크를 허가되지 않은 외부인에게 공유하는 행위는 금지됩니다. 계정을 타인에게 양도하거나 대리 사용하는 행위도 금지됩니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 데이터 보관 -->
+      <div class="policy-block reveal" id="data" style="transition-delay:40ms;">
+        <div class="p-block-header">
+          <div class="p-block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div>
+            <div class="p-block-num">Policy 02</div>
+            <div class="p-block-title">데이터 보관 정책</div>
+          </div>
+        </div>
+        <div class="p-rows">
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge note">기본 원칙</span>
+              <h4>학기 종료 후 장기 온라인 보관 미보장</h4>
+            </div>
+            <p>학기 운영 종료 후 기본 운영 데이터는 장기 온라인 보관을 전제로 하지 않습니다. 서비스 계약 기간 내의 데이터 접근은 보장되나, 계약 종료 이후의 보관 여부는 별도 아카이브 정책을 따릅니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge ok">제공</span>
+              <h4>차트 결과물 일괄 파일 제공</h4>
+            </div>
+            <p>학기 종료 시점에 학교 단위로 차트 결과물을 파일 형태(PDF 또는 데이터 패키지)로 일괄 제공받을 수 있습니다. 데이터 인계 방식 및 일정은 사전 협의로 결정합니다.</p>
+          </div>
+        </div>
+        <div class="p-note yellow">
+          <strong>주의:</strong> 실습 기록은 교육적 가치가 있는 데이터입니다. 학기 종료 전 반드시 필요한 데이터를 백업하거나 내보내기를 진행하시기 바랍니다.
+        </div>
+      </div>
+
+      <!-- 03 백업 -->
+      <div class="policy-block reveal" id="backup" style="transition-delay:80ms;">
+        <div class="p-block-header">
+          <div class="p-block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          </div>
+          <div>
+            <div class="p-block-num">Policy 03</div>
+            <div class="p-block-title">백업 정책</div>
+          </div>
+        </div>
+        <div class="p-rows">
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge note">목적</span>
+              <h4>시스템 안정성 및 운영 복구 목적</h4>
+            </div>
+            <p>운영 중 데이터는 시스템 안정성 유지와 장애 발생 시 복구를 위해 정기적으로 백업될 수 있습니다. 이 백업은 내부 운영 목적이며, 장기 영구 보관 또는 개별 사용자 데이터 복구와 동일한 개념이 아닙니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge warn">구분</span>
+              <h4>내부 운영 백업 ≠ 개인 데이터 보관</h4>
+            </div>
+            <p>백업 데이터는 서비스 운영 목적으로만 사용됩니다. 개별 학생의 차트 기록을 영구적으로 보관하거나 외부에 제공하는 용도로는 사용하지 않습니다.</p>
+          </div>
+        </div>
+        <div class="p-note blue">
+          데이터 장기 보관이 필요한 경우, 별도 아카이브 계약을 통해 협의할 수 있습니다. 문의하기를 통해 연락해 주세요.
+        </div>
+      </div>
+
+      <!-- 04 응답·지원 -->
+      <div class="policy-block reveal" id="support" style="transition-delay:120ms;">
+        <div class="p-block-header">
+          <div class="p-block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div>
+            <div class="p-block-num">Policy 04</div>
+            <div class="p-block-title">응답 · 지원 정책</div>
+          </div>
+        </div>
+        <div class="p-rows">
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge ok">지원</span>
+              <h4>지원 범위</h4>
+            </div>
+            <p>기능 설명 및 사용법 안내, 계정 문제, 운영 오류 보고, 일반 문의를 지원합니다. 학교별 설정 변경 요청은 계약 범위 내에서 협의 후 반영됩니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge note">응답 기준</span>
+              <h4>영업일 기준 응답</h4>
+            </div>
+            <p>기본 응답은 영업일 기준으로 제공됩니다. 주말·공휴일 응답 및 긴급 장애 대응은 상황에 따라 달라질 수 있으며, 별도 기준을 따릅니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge warn">제외</span>
+              <h4>지원 제외 사항</h4>
+            </div>
+            <p>계약 범위 외 기능 개발 요청, 다른 학교·시스템과의 연동, 개인 PC·브라우저 환경 문제, 서드파티 서비스(이메일·네트워크 등)에 의한 오류는 기본 지원 범위에 포함되지 않습니다.</p>
+          </div>
+        </div>
+        <div class="p-note green">
+          <strong>빠른 해결을 위해:</strong> 문의 시 학교명, 사용자 역할(학생/교수), 발생 상황을 함께 기재해 주시면 더 빠르게 안내드릴 수 있습니다.
+        </div>
+      </div>
+
+      <!-- 05 제한 사항 -->
+      <div class="policy-block reveal" id="limits" style="transition-delay:160ms;">
+        <div class="p-block-header">
+          <div class="p-block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <div>
+            <div class="p-block-num">Policy 05</div>
+            <div class="p-block-title">제한 사항</div>
+          </div>
+        </div>
+        <div class="p-rows">
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge warn">제한</span>
+              <h4>무단 공유 금지</h4>
+            </div>
+            <p>서비스 URL, 접근 링크, 계정 정보를 허가되지 않은 외부인에게 공유하는 행위는 서비스 이용 중단 사유가 됩니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge warn">제한</span>
+              <h4>계약 범위 외 사용 금지</h4>
+            </div>
+            <p>신청된 학교·학기·섹션 구성 외의 영역에서 서비스를 사용하거나, 다른 학교·과정에 동일 접근 정보를 사용하는 행위는 금지됩니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge warn">제한</span>
+              <h4>저장용량 및 운영 범위 제한</h4>
+            </div>
+            <p>사진 업로드, 저장 용량, 동시 접속 사용자 수 등은 계약 조건에 따라 제한이 적용될 수 있습니다. 제한 기준은 학교별 계약 내용에 명시됩니다.</p>
+          </div>
+        </div>
+        <div class="p-note yellow">
+          <strong>이용 중단 기준:</strong> 위 제한 사항을 반복적으로 위반하거나 악의적으로 사용하는 경우, 사전 통보 없이 서비스 접근이 제한될 수 있습니다.
+        </div>
+      </div>
+
+      <!-- 06 추가개발 -->
+      <div class="policy-block reveal" id="custom" style="transition-delay:200ms;">
+        <div class="p-block-header">
+          <div class="p-block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07M8.46 8.46a5 5 0 000 7.07"/></svg>
+          </div>
+          <div>
+            <div class="p-block-num">Policy 06</div>
+            <div class="p-block-title">추가 개발 정책</div>
+          </div>
+        </div>
+        <div class="p-rows">
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge note">기본 원칙</span>
+              <h4>EZ-STEP 노출 선택지 = 기본 판매 범위</h4>
+            </div>
+            <p>EZ-STEP(서비스 구성기)에 노출된 섹션 및 부가기능 선택지만 기본 판매 범위로 간주합니다. 노출되지 않은 기능은 현재 제공 범위에 포함되지 않습니다.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge warn">별도 협의</span>
+              <h4>추가 개발 요청은 기본 상품 범위 외</h4>
+            </div>
+            <p>학교별 특수 요구사항에 따른 추가 기능 개발은 기본 상품 범위에 포함되지 않으며, 별도 협의 및 비용이 발생할 수 있습니다. 개발 가능 여부와 일정은 문의를 통해 확인하세요.</p>
+          </div>
+          <div class="p-row">
+            <div class="p-row-head">
+              <span class="p-row-badge ok">예정</span>
+              <h4>반복 수요 기능의 정식 편입</h4>
+            </div>
+            <p>여러 학교에서 반복적으로 요청되는 기능의 경우, 일정 검토 후 EZ-STEP 정식 옵션으로 편입될 수 있습니다. 이 경우 해당 기능을 요청했던 학교에 우선 안내됩니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 07 문의하기 -->
+      <div class="policy-block reveal" id="contact" style="transition-delay:240ms;">
+        <div class="contact-cta">
+          <h3>정책 관련 문의가 있으신가요?</h3>
+          <p>
+            세부 정책 내용이나 특수한 운영 상황에 대한 문의는 이메일로 연락해 주세요.
+            학교별 상황에 맞는 안내를 제공합니다. 문의 시 학교명·담당자명을 함께 기재해 주시면 빠르게 응대할 수 있습니다.
+          </p>
+          <a href="mailto:dlwlalsdentalchart@gmail.com" class="email-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            dlwlalsdentalchart@gmail.com
+          </a>
+        </div>
+      </div>
+
+    </div><!-- /policy-content -->
+  </div><!-- /policy-layout -->
+</div><!-- /container -->
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+      <div class="footer-links">
+        <a href="/">홈</a>
+        <a href="/story">브랜드 스토리</a>
+        <a href="/policy">이용정책</a>
+        <a href="/builder">차트 만들기</a>
+        <a href="mailto:dlwlalsdentalchart@gmail.com">문의하기</a>
+      </div>
+    </div>
+    <div class="footer-bottom-bar">
+      <span>© 2026 EZ-STEP · Dental Hygiene Student Training E-Platform</span>
+      <span>치위생 교육 기반 디지털 임상실습 플랫폼</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Header scroll ── */
+(function(){
+  var h = document.getElementById('site-header');
+  function tick(){ h.classList.toggle('scrolled', window.scrollY > 40); }
+  window.addEventListener('scroll', tick, { passive:true });
+  tick();
+})();
+
+/* ── Side nav active highlight on scroll ── */
+(function(){
+  var blocks  = document.querySelectorAll('.policy-block');
+  var navLinks= document.querySelectorAll('.policy-nav ul a');
+  function onScroll(){
+    var scrollY = window.scrollY + 140;
+    var current = '';
+    blocks.forEach(function(b){
+      if(b.offsetTop <= scrollY) current = b.id;
+    });
+    navLinks.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+})();
+
+/* ── Scroll reveal ── */
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  els.forEach(function(el){
+    var r = el.getBoundingClientRect();
+    if(r.top < window.innerHeight && r.bottom > 0) el.classList.add('in');
+  });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold:0.05, rootMargin:'0px 0px -30px 0px' });
+  els.forEach(function(el){
+    if(!el.classList.contains('in')) io.observe(el);
+  });
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){ el.classList.add('in'); });
+  }, 1800);
+})();
+</script>
+</body>
+</html>
