@@ -111,10 +111,7 @@ img { max-width:100%; display:block; }
     repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 72px);
   pointer-events:none;
 }
-.page-hero::after {
-  content:""; position:absolute; left:0; right:0; bottom:-1px; height:80px;
-  background:linear-gradient(to bottom, transparent 0%, var(--bg) 100%); pointer-events:none;
-}
+.page-hero::after { display:none; }
 .page-hero .container { position:relative; z-index:2; }
 .page-hero-eyebrow {
   display:inline-flex; align-items:center; gap:8px;
@@ -277,7 +274,7 @@ img { max-width:100%; display:block; }
 <header class="header" id="site-header">
   <div class="container">
     <a href="/" class="logo-mark">
-      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+      <img src="/images/logo-ezstep-white.png" alt="EZ-STEP" id="site-logo"/>
     </a>
     <div class="nav-links">
       <a href="/" class="nav-link">홈</a>
@@ -580,8 +577,13 @@ img { max-width:100%; display:block; }
 <script>
 /* ── Header scroll ── */
 (function(){
-  var h = document.getElementById('site-header');
-  function tick(){ h.classList.toggle('scrolled', window.scrollY > 40); }
+  var h    = document.getElementById('site-header');
+  var logo = document.getElementById('site-logo');
+  function tick(){
+    var scrolled = window.scrollY > 40;
+    h.classList.toggle('scrolled', scrolled);
+    if(logo) logo.src = scrolled ? '/images/logo-ezstep-blue.png' : '/images/logo-ezstep-white.png';
+  }
   window.addEventListener('scroll', tick, { passive:true });
   tick();
 })();

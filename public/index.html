@@ -179,6 +179,7 @@ img { max-width: 100%; display: block; }
   height: 32px;
   object-fit: contain;
   display: block;
+  transition: opacity 0.2s var(--ease);
 }
 .header.scrolled .logo-mark img {
   filter: none;
@@ -730,7 +731,7 @@ img { max-width: 100%; display: block; }
 .addons { background: #fff; }
 .addons-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
 .addon-card {
@@ -757,6 +758,10 @@ img { max-width: 100%; display: block; }
   color: var(--brand-700);
   font-weight: 700;
   letter-spacing: 0.04em;
+}
+.addon-card .badge.soon {
+  background: var(--ink-100);
+  color: var(--ink-400);
 }
 .addon-card .glyph {
   width: 48px; height: 48px;
@@ -1137,7 +1142,7 @@ img { max-width: 100%; display: block; }
 <header class="header" id="site-header">
   <div class="container">
     <a href="/" class="logo-mark">
-      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+      <img src="/images/logo-ezstep-white.png" alt="EZ-STEP" id="site-logo"/>
     </a>
     <nav class="nav">
       <a href="/story" style="padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:rgba(255,255,255,.85);transition:background .2s,color .2s;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background=''" id="nav-story">브랜드 스토리</a>
@@ -1162,13 +1167,13 @@ img { max-width: 100%; display: block; }
         치위생학과 임상실습 디지털 플랫폼
       </div>
       <h1 class="reveal">
-        수기 차트의 시대는 끝났습니다.<br/>
-        임상실습, <span class="grad">한 번의 클릭</span>으로.
+        치위생 임상실습의<br/>
+        <span class="grad">새로운 표준.</span>
       </h1>
       <p class="hero-sub reveal">
-        EZ-STEP은 치위생학과 학생·교수를 위한 웹 기반 임상 차트 시스템입니다.
-        9개 섹션의 표준 흐름과 회차별 데이터 기록, AI 임상 가이드까지 —
-        학교마다 맞춤형으로 구성해 드립니다.
+        수기 차트로 반복되던 실수, 분실된 기록, 무거운 행정 부담.
+        EZ-STEP은 치위생학과 임상실습 현장의 그 불편함에서 시작했습니다.
+        학교마다 다른 교육 환경에 맞춰 — 학생과 교수 모두를 위한 디지털 임상 환경을 설계합니다.
       </p>
       <div class="hero-ctas reveal">
         <a class="btn btn-brand btn-lg" href="/builder">
@@ -1212,7 +1217,7 @@ img { max-width: 100%; display: block; }
             <div class="cm-sb-item"><span class="cm-sb-num">1</span> 문진</div>
             <div class="cm-sb-item"><span class="cm-sb-num">2</span> 치주검사</div>
             <div class="cm-sb-item active"><span class="cm-sb-num">3</span> PI 측정</div>
-            <div class="cm-sb-item"><span class="cm-sb-num">4</span> 진단</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">4</span> 판단</div>
             <div class="cm-sb-item"><span class="cm-sb-num">5</span> 목표 설정</div>
             <div class="cm-sb-item"><span class="cm-sb-num">6</span> 교육</div>
             <div class="cm-sb-item"><span class="cm-sb-num">7</span> 처치</div>
@@ -1406,7 +1411,7 @@ img { max-width: 100%; display: block; }
         </div>
         <div class="section-list-item reveal" style="transition-delay:90ms">
           <div class="num">SEC 04</div>
-          <div class="info"><h4>진단</h4><p>수집된 데이터를 기반으로 한 임상 진단 소견 정리.</p></div>
+          <div class="info"><h4>판단</h4><p>수집된 데이터를 기반으로 한 임상 판단 소견 정리.</p></div>
           <div class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
         </div>
         <div class="section-list-item reveal" style="transition-delay:120ms">
@@ -1439,6 +1444,45 @@ img { max-width: 100%; display: block; }
   </div>
 </section>
 
+<!-- ── How It Works ── -->
+<section class="section how" id="how">
+  <div class="container">
+    <div class="section-head-center">
+      <span class="section-eyebrow reveal">How it works</span>
+      <h2 class="section-title reveal">우리 학교 전용 차트, 4단계로 완성.</h2>
+      <p class="section-sub reveal">
+        표준화된 도입 프로세스로 학교마다 맞춤형 차트 시스템을 빠르게 구축합니다.
+      </p>
+    </div>
+    <div class="how-grid">
+      <div class="how-step reveal" style="transition-delay:0ms">
+        <div class="num">01</div>
+        <h4>기본 정보 입력</h4>
+        <p>학교명·담당자 정보와 예상 사용자 수를 입력합니다.</p>
+        <div class="meta"><span>Step 1</span><span>5분 이내</span></div>
+      </div>
+      <div class="how-step reveal" style="transition-delay:60ms">
+        <div class="num">02</div>
+        <h4>차트 섹션 선택</h4>
+        <p>기본 9개 섹션 중 필요한 항목만 골라 구성합니다.</p>
+        <div class="meta"><span>Step 2</span><span>커스텀 가능</span></div>
+      </div>
+      <div class="how-step reveal" style="transition-delay:120ms">
+        <div class="num">03</div>
+        <h4>부가기능 선택</h4>
+        <p>AI·대시보드·사진 업로드 등 애드온을 조합합니다.</p>
+        <div class="meta"><span>Step 3</span><span>학교별 맞춤</span></div>
+      </div>
+      <div class="how-step reveal" style="transition-delay:180ms">
+        <div class="num">04</div>
+        <h4>미리보기 &amp; 신청</h4>
+        <p>완성된 차트를 미리 체험하고 견적 요청을 발송합니다.</p>
+        <div class="meta"><span>Step 4</span><span>이메일 회신</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ── Add-ons ── -->
 <section class="section addons">
   <div class="container">
@@ -1456,31 +1500,47 @@ img { max-width: 100%; display: block; }
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         </div>
         <h4>사진 업로드</h4>
-        <p>5매법·6매법 세트를 회차별로 관리. 시각 자료 기반 진행 확인.</p>
+        <p>회차별 5매법·6매법 촬영 세트를 관리. 각 회차마다 2세트씩 자동 저장됩니다.</p>
       </div>
       <div class="addon-card reveal" style="transition-delay:40ms">
         <span class="badge">AI</span>
         <div class="glyph">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
         </div>
-        <h4>AI 어시스턴트</h4>
-        <p>Gemini 기반 임상 가이드. 학생 질문에 실시간으로 응답합니다.</p>
+        <h4>AI 임상 가이드</h4>
+        <p>대상자 데이터 기반 Gemini 실시간 임상 조언. 학생 질문에 즉시 응답합니다.</p>
       </div>
       <div class="addon-card reveal" style="transition-delay:80ms">
         <span class="badge">FACULTY</span>
         <div class="glyph">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
         </div>
-        <h4>교수평가 · 서명</h4>
-        <p>섹션별 평가·서명 등록. 학생-교수 사이의 피드백 루프를 마감합니다.</p>
+        <h4>교수 평가 패널</h4>
+        <p>섹션별 교수 서명·평가 패널. 서명 요청·완료 상태 관리로 피드백 루프를 완결합니다.</p>
       </div>
       <div class="addon-card reveal" style="transition-delay:120ms">
         <span class="badge">ADMIN</span>
         <div class="glyph">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <h4>대시보드 · 설문</h4>
-        <p>학급 현황과 실습 성과를 한 화면에서. 만족도 설문 자동 배포.</p>
+        <h4>관리자 대시보드</h4>
+        <p>학급 실습 현황과 KPI·섹션별 진행률을 한 화면에서. 만족도 설문 자동 배포.</p>
+      </div>
+      <div class="addon-card reveal" style="transition-delay:160ms">
+        <span class="badge">SURVEY</span>
+        <div class="glyph">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <h4>사전문진 링크</h4>
+        <p>대상자가 내원 전 스마트폰으로 문진을 작성하는 개인 전용 링크를 생성합니다.</p>
+      </div>
+      <div class="addon-card reveal" style="transition-delay:200ms">
+        <span class="badge soon">SOON</span>
+        <div class="glyph">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <h4>예약 시스템 연동</h4>
+        <p>대상자 예약부터 차트 작성까지 원스톱 연결. 순번 관리·예약 현황 통합 운영.</p>
       </div>
     </div>
   </div>
@@ -1516,7 +1576,7 @@ img { max-width: 100%; display: block; }
             <div class="cm-sb-item"><span class="cm-sb-num">1</span> 문진</div>
             <div class="cm-sb-item"><span class="cm-sb-num">2</span> 치주검사</div>
             <div class="cm-sb-item active"><span class="cm-sb-num">3</span> PI 측정</div>
-            <div class="cm-sb-item"><span class="cm-sb-num">4</span> 진단</div>
+            <div class="cm-sb-item"><span class="cm-sb-num">4</span> 판단</div>
             <div class="cm-sb-item"><span class="cm-sb-num">5</span> 목표 설정</div>
             <div class="cm-sb-item"><span class="cm-sb-num">6</span> 교육</div>
             <div class="cm-sb-item"><span class="cm-sb-num">7</span> 처치</div>
@@ -1564,45 +1624,6 @@ img { max-width: 100%; display: block; }
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── How It Works ── -->
-<section class="section how" id="how">
-  <div class="container">
-    <div class="section-head-center">
-      <span class="section-eyebrow reveal">How it works</span>
-      <h2 class="section-title reveal">우리 학교 전용 차트, 4단계로 완성.</h2>
-      <p class="section-sub reveal">
-        표준화된 도입 프로세스로 학교마다 맞춤형 차트 시스템을 빠르게 구축합니다.
-      </p>
-    </div>
-    <div class="how-grid">
-      <div class="how-step reveal" style="transition-delay:0ms">
-        <div class="num">01</div>
-        <h4>기본 정보 입력</h4>
-        <p>학교명·담당자 정보와 예상 사용자 수를 입력합니다.</p>
-        <div class="meta"><span>Step 1</span><span>5분 이내</span></div>
-      </div>
-      <div class="how-step reveal" style="transition-delay:60ms">
-        <div class="num">02</div>
-        <h4>차트 섹션 선택</h4>
-        <p>기본 9개 섹션 중 필요한 항목만 골라 구성합니다.</p>
-        <div class="meta"><span>Step 2</span><span>커스텀 가능</span></div>
-      </div>
-      <div class="how-step reveal" style="transition-delay:120ms">
-        <div class="num">03</div>
-        <h4>부가기능 선택</h4>
-        <p>AI·대시보드·사진 업로드 등 애드온을 조합합니다.</p>
-        <div class="meta"><span>Step 3</span><span>학교별 맞춤</span></div>
-      </div>
-      <div class="how-step reveal" style="transition-delay:180ms">
-        <div class="num">04</div>
-        <h4>미리보기 &amp; 신청</h4>
-        <p>완성된 차트를 미리 체험하고 견적 요청을 발송합니다.</p>
-        <div class="meta"><span>Step 4</span><span>이메일 회신</span></div>
       </div>
     </div>
   </div>
@@ -1722,16 +1743,19 @@ img { max-width: 100%; display: block; }
 <script>
 /* ── Header Scroll State ── */
 (function() {
-  var header = document.getElementById('site-header');
+  var header    = document.getElementById('site-header');
+  var logo      = document.getElementById('site-logo');
   var navStory  = document.getElementById('nav-story');
   var navPolicy = document.getElementById('nav-policy');
   function onScroll() {
     if (window.scrollY > 40) {
       header.classList.add('scrolled');
+      if(logo)      { logo.src = '/images/logo-ezstep-blue.png'; }
       if(navStory)  { navStory.style.color  = 'var(--ink-700)'; }
       if(navPolicy) { navPolicy.style.color = 'var(--ink-700)'; }
     } else {
       header.classList.remove('scrolled');
+      if(logo)      { logo.src = '/images/logo-ezstep-white.png'; }
       if(navStory)  { navStory.style.color  = 'rgba(255,255,255,.85)'; }
       if(navPolicy) { navPolicy.style.color = 'rgba(255,255,255,.85)'; }
     }
