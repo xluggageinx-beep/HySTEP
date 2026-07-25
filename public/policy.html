@@ -97,18 +97,23 @@ img { max-width:100%; display:block; }
 
 /* ── Page Hero ── */
 .page-hero {
-  padding:140px 0 80px;
-  background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 100%);
+  padding:160px 0 100px;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% -10%, rgba(78,166,255,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at -10% 80%, rgba(30,95,191,.22) 0%, transparent 55%),
+    linear-gradient(170deg, #060e22 0%, #0b1f50 35%, #113270 65%, #1552a8 100%);
   color:#fff; position:relative; overflow:hidden;
 }
 .page-hero::before {
   content:""; position:absolute; inset:0;
-  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 60px);
+  background-image:
+    radial-gradient(circle at 75% 30%, rgba(126,200,255,.07) 0%, transparent 40%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 72px);
   pointer-events:none;
 }
 .page-hero::after {
-  content:""; position:absolute; left:0; right:0; bottom:-1px; height:64px;
-  background:linear-gradient(to bottom, transparent, var(--bg)); pointer-events:none;
+  content:""; position:absolute; left:0; right:0; bottom:-1px; height:80px;
+  background:linear-gradient(to bottom, transparent 0%, var(--bg) 100%); pointer-events:none;
 }
 .page-hero .container { position:relative; z-index:2; }
 .page-hero-eyebrow {

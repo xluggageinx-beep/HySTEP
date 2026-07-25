@@ -132,10 +132,13 @@ img { max-width:100%; display:block; }
 .btn .arrow { transition:transform .2s var(--ease); }
 .btn:hover .arrow { transform:translateX(3px); }
 
-/* ── Page Hero (small, dark) ── */
+/* ── Page Hero ── */
 .page-hero {
-  padding:120px 0 0;
-  background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 100%);
+  padding:140px 0 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% -10%, rgba(78,166,255,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at -10% 80%, rgba(30,95,191,.22) 0%, transparent 55%),
+    linear-gradient(170deg, #060e22 0%, #0b1f50 35%, #113270 65%, #1552a8 100%);
   color:#fff;
   position:relative;
   overflow:hidden;
@@ -143,12 +146,12 @@ img { max-width:100%; display:block; }
 .page-hero::before {
   content:"";
   position:absolute; inset:0;
-  background-image:repeating-linear-gradient(
-    135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 60px
-  );
+  background-image:
+    radial-gradient(circle at 75% 30%, rgba(126,200,255,.07) 0%, transparent 40%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 72px);
   pointer-events:none;
 }
-.page-hero .container { position:relative; z-index:2; }
+.page-hero .container { position:relative; z-index:2; padding-bottom:48px; }
 .page-hero-eyebrow {
   display:inline-flex; align-items:center; gap:8px;
   padding:6px 12px 6px 8px; border-radius:999px;
@@ -181,8 +184,11 @@ img { max-width:100%; display:block; }
 
 /* ── Tab Bar (sticky below hero) ── */
 .tab-bar-wrap {
-  background:linear-gradient(160deg, var(--brand-900) 0%, var(--brand-700) 100%);
-  padding:24px 0 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% -10%, rgba(78,166,255,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at -10% 80%, rgba(30,95,191,.22) 0%, transparent 55%),
+    linear-gradient(170deg, #060e22 0%, #0b1f50 35%, #113270 65%, #1552a8 100%);
+  padding:28px 0 0;
   position:sticky;
   top:64px;
   z-index:900;
@@ -191,8 +197,8 @@ img { max-width:100%; display:block; }
 .tab-bar-wrap::after {
   content:"";
   display:block;
-  height:32px;
-  background:linear-gradient(to bottom, var(--brand-700), var(--bg));
+  height:40px;
+  background:linear-gradient(to bottom, #1552a8 0%, transparent 60%, var(--bg) 100%);
 }
 .tab-bar {
   display:flex;
@@ -255,110 +261,54 @@ img { max-width:100%; display:block; }
    TAB 1: ABOUT
 ═══════════════════════════════════════ */
 
-/* Brand name block */
-.brand-names {
+/* Brand intro */
+.brand-intro-grid {
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:16px;
-  margin-top:48px;
+  gap:clamp(48px,6vw,80px);
+  align-items:center;
+  margin-top:56px;
 }
-.brand-name-card {
-  padding:32px 36px;
+.brand-intro-text .story-text {
+  font-size:16px; line-height:2.0; color:var(--ink-700);
+  margin-bottom:20px;
+}
+.brand-intro-text .story-text strong { color:var(--brand-600); }
+.story-quote {
+  border-left:3px solid var(--brand-500);
+  padding:18px 24px;
+  background:var(--brand-50);
+  border-radius:0 var(--r-md) var(--r-md) 0;
+  font-size:15px; font-style:italic; color:var(--ink-800);
+  line-height:1.85; margin:28px 0;
+}
+.hystem-card {
   background:#fff;
   border:1px solid var(--line);
   border-radius:var(--r-xl);
-  transition:all .3s var(--ease);
-}
-.brand-name-card:hover {
-  border-color:var(--brand-300);
+  padding:40px 36px;
   box-shadow:var(--shadow-md);
-  transform:translateY(-3px);
 }
-.brand-name-card .name {
-  font-size:32px; font-weight:900; letter-spacing:-.03em;
-  color:var(--ink-900); margin-bottom:6px;
+.hystem-card .hc-name {
+  font-size:38px; font-weight:900; letter-spacing:-.04em;
+  color:var(--ink-900); margin-bottom:8px;
 }
-.brand-name-card .full {
+.hystem-card .hc-full {
   font-family:var(--font-mono);
-  font-size:12px; font-weight:600; color:var(--brand-600);
-  letter-spacing:.04em; margin-bottom:16px;
-  line-height:1.5;
+  font-size:11.5px; font-weight:600; color:var(--brand-600);
+  letter-spacing:.05em; margin-bottom:20px; line-height:1.6;
+  text-transform:uppercase;
 }
-.brand-name-card .role-badge {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:5px 12px; border-radius:999px;
-  background:var(--brand-100); color:var(--brand-700);
-  font-size:12px; font-weight:700; letter-spacing:.04em;
-  margin-bottom:14px;
+.hystem-card p {
+  font-size:15px; line-height:1.8; color:var(--ink-500);
 }
-.brand-name-card p {
-  font-size:14.5px; line-height:1.7; color:var(--ink-500);
+.hystem-card .hc-divider {
+  width:40px; height:3px;
+  background:linear-gradient(90deg,var(--brand-500),var(--brand-300));
+  border-radius:999px; margin:20px 0;
 }
 
-/* 3-tier flow */
-.tier-flow {
-  margin-top:64px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-  position:relative;
-}
-.tier-flow::before {
-  content:"";
-  position:absolute;
-  top:56px; left:calc(33.33% - 12px); right:calc(33.33% - 12px);
-  height:2px;
-  background:linear-gradient(90deg,var(--brand-300),var(--brand-500),var(--brand-300));
-}
-.tier-node {
-  position:relative; z-index:1;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  padding:28px;
-  text-align:center;
-  transition:all .3s var(--ease);
-}
-.tier-node:hover { border-color:var(--brand-300); box-shadow:var(--shadow-md); transform:translateY(-4px); }
-.tier-node .tier-icon {
-  width:112px; height:112px;
-  border-radius:24px;
-  margin:0 auto 20px;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center; gap:4px;
-}
-.tier-node.ez .tier-icon  { background:linear-gradient(135deg,#0D2A5E,#1E74D4); box-shadow:0 12px 32px rgba(30,116,212,.28); }
-.tier-node.adm .tier-icon { background:linear-gradient(135deg,#1A1A2E,#16213E); box-shadow:0 12px 32px rgba(0,0,0,.2); }
-.tier-node.hy .tier-icon  { background:linear-gradient(135deg,#123878,#1E5FBF); box-shadow:0 12px 32px rgba(18,56,120,.28); }
-.tier-icon-em { font-size:18px; font-weight:900; color:#fff; letter-spacing:-.02em; }
-.tier-icon-sub { font-size:9px; font-weight:700; color:rgba(255,255,255,.6); letter-spacing:.1em; }
-.tier-node .tier-name { font-size:19px; font-weight:800; letter-spacing:-.02em; color:var(--ink-900); margin-bottom:6px; }
-.tier-node .tier-role { font-size:12px; font-weight:700; color:var(--brand-600); margin-bottom:12px; letter-spacing:.03em; text-transform:uppercase; }
-.tier-node p { font-size:13.5px; line-height:1.65; color:var(--ink-500); }
-.tier-tags { margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; gap:5px; }
-.tier-tag { padding:3px 9px; border-radius:999px; font-size:11px; font-weight:600; background:var(--brand-100); color:var(--brand-700); }
-
-/* 4-axis */
-.axis-grid {
-  margin-top:48px;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-}
-.axis-card {
-  padding:22px 18px;
-  text-align:center;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  transition:all .3s var(--ease);
-}
-.axis-card:hover { border-color:var(--brand-300); box-shadow:var(--shadow-sm); transform:translateY(-2px); }
-.axis-card .axis-icon { font-size:28px; margin-bottom:12px; }
-.axis-card h4 { font-size:14px; font-weight:700; color:var(--ink-900); margin-bottom:6px; }
-.axis-card p { font-size:12.5px; line-height:1.6; color:var(--ink-500); }
-
-/* Q-cards (About philosophy) */
+/* philosophy Q-cards */
 .q-grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -576,10 +526,7 @@ img { max-width:100%; display:block; }
 
 /* ── Responsive ── */
 @media (max-width:1024px) {
-  .tier-flow { grid-template-columns:1fr; }
-  .tier-flow::before { display:none; }
-  .brand-names { grid-template-columns:1fr; }
-  .axis-grid { grid-template-columns:repeat(2,1fr); }
+  .brand-intro-grid { grid-template-columns:1fr; }
   .q-grid { grid-template-columns:1fr; }
   .why-grid { grid-template-columns:1fr; }
   .history-layout { grid-template-columns:1fr; }
@@ -639,125 +586,50 @@ img { max-width:100%; display:block; }
 <!-- ─── TAB: About ─── -->
 <div id="panel-about" class="tab-panel active">
 
-  <!-- Brand name section -->
-  <section class="section" style="background:#fff; padding-bottom:0;">
+  <!-- Brand intro + Hy-STEP card -->
+  <section class="section" style="background:#fff;">
     <div class="container">
-      <span class="section-eyebrow reveal">브랜드 구조</span>
-      <h2 class="section-title reveal">EZ-STEP은 브랜드명입니다.<br/>Hy-STEP은 그 안의 차트 라인명입니다.</h2>
-      <p class="section-sub reveal">
-        두 이름은 같은 플랫폼 안에서 서로 다른 역할을 가집니다. 각각의 정확한 의미와 위치를 확인하세요.
-      </p>
-      <div class="brand-names reveal" style="transition-delay:60ms;">
-        <div class="brand-name-card">
-          <div class="name">EZ-STEP</div>
-          <div class="full">Education Zero-in-on<br/>Student Training E-Platform</div>
-          <div class="role-badge">🏷 브랜드 &amp; 플랫폼명</div>
-          <p>
-            치위생 교육 현장의 디지털 실습 환경을 설계하는 플랫폼 전체의 브랜드명입니다.
-            학교 담당자가 서비스를 구성·신청하는 구성기(Configurator)이자, 이 시스템 전체를 가리키는 이름입니다.
+      <span class="section-eyebrow reveal">Our Story</span>
+      <h2 class="section-title reveal">왜 EZ-STEP을 만들었나요?</h2>
+
+      <div class="brand-intro-grid">
+        <div class="brand-intro-text reveal">
+          <p class="story-text">
+            치위생학과 임상실습 현장에서 학생들은 여전히 <strong>수기 차트</strong>를 작성합니다.
+            손으로 그린 치식, 손으로 계산한 PI 지수, 손으로 쓴 평가 기록들.
+            매번 반복되는 계산 실수, 분실된 차트, 교수님의 무거운 행정 부담.
+          </p>
+          <p class="story-text">
+            "2026년인데, 왜 아직도 수기 차트를 쓰지?" 라는 단순한 질문에서 EZ-STEP이 시작되었습니다.
+            단순히 종이를 디지털로 바꾸는 것이 아니라,
+            <strong>보건의료 교육 프로세스 전체를 디지털로 재설계</strong>하는 것이 목표입니다.
+          </p>
+          <div class="story-quote">
+            "수기 차트의 한계를 넘어, 데이터 중심의 보건의료 교육을 선도합니다."
+          </div>
+          <p class="story-text">
+            Hy-STEP은 그 첫 번째 결과물입니다. 치위생학과 전용 베타 버전으로 시작해,
+            간호학과(N-STEP), 치의학과(D-STEP)으로 확장해 나갈 예정입니다.
+            언젠가는 <strong>모든 보건의료 계열 학과</strong>가 EZ-STEP을 통해 실습 교육을 진행하게 되는 미래를 꿈꿉니다.
           </p>
         </div>
-        <div class="brand-name-card">
-          <div class="name">Hy-STEP</div>
-          <div class="full">Dental Hygiene · Student Training E-Platform</div>
-          <div class="role-badge">📋 치위생 차트 라인명</div>
+
+        <div class="hystem-card reveal" style="transition-delay:80ms;">
+          <div class="hc-name">Hy-STEP</div>
+          <div class="hc-full">Dental Hygiene<br/>Student Training E-Platform</div>
+          <div class="hc-divider"></div>
           <p>
-            각 학교에 실제 배포되어 학생과 교수가 사용하는 디지털 임상차트 웹의 라인명입니다.
-            EZ-STEP 플랫폼 안에서 제공되는 핵심 서비스로, 학교별 설정이 적용된 독립 인스턴스로 운영됩니다.
+            각 학교에 실제 배포되어 학생과 교수가 사용하는 디지털 임상차트 웹입니다.
+            학교별 설정이 적용된 독립 인스턴스로 운영되며,
+            EZ-STEP 플랫폼 안에서 제공되는 핵심 서비스입니다.
           </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3-tier system -->
-  <section class="section" style="background:var(--bg);">
-    <div class="container">
-      <span class="section-eyebrow reveal">시스템 구조</span>
-      <h2 class="section-title reveal">3계층으로 이루어진 하나의 시스템</h2>
-      <p class="section-sub reveal">
-        학교별 코드를 개별 제작하는 방식이 아닙니다. 공통 엔진 위에 학교별 설정을 조합하는 모듈 조립형 SaaS 구조입니다.
-      </p>
-
-      <div class="tier-flow">
-        <div class="tier-node ez reveal" style="transition-delay:0ms;">
-          <div class="tier-icon">
-            <span class="tier-icon-em">EZ-STEP</span>
-            <span class="tier-icon-sub">서비스 구성기</span>
-          </div>
-          <div class="tier-name">EZ-STEP</div>
-          <div class="tier-role">외부 진입 · 구성기</div>
-          <p>학교 담당자가 서비스 구성을 선택하고 견적·신청을 제출하는 외부 공개 사이트.</p>
-          <div class="tier-tags">
-            <span class="tier-tag">섹션 선택</span>
-            <span class="tier-tag">견적 신청</span>
-            <span class="tier-tag">부가기능 구성</span>
-          </div>
-        </div>
-
-        <div class="tier-node adm reveal" style="transition-delay:100ms;">
-          <div class="tier-icon">
-            <span class="tier-icon-em">관리자스텝</span>
-            <span class="tier-icon-sub">내부 콘솔</span>
-          </div>
-          <div class="tier-name">관리자스텝</div>
-          <div class="tier-role">조립판 · 내부 전용</div>
-          <p>운영자 전용 내부 관리 시스템. 학교 생성·설정 조립·활성화·상태 관리 수행.</p>
-          <div class="tier-tags">
-            <span class="tier-tag">학교 생성</span>
-            <span class="tier-tag">프리셋 관리</span>
-            <span class="tier-tag">운영 상태</span>
-          </div>
-        </div>
-
-        <div class="tier-node hy reveal" style="transition-delay:200ms;">
-          <div class="tier-icon">
-            <span class="tier-icon-em">Hy-STEP</span>
-            <span class="tier-icon-sub">차트 웹</span>
-          </div>
-          <div class="tier-name">Hy-STEP</div>
-          <div class="tier-role">학교별 차트 웹</div>
-          <p>각 학교 학생·교수가 실제 학기 운영 중 사용하는 차트 웹. 공통 엔진 + 학교 설정 적용.</p>
-          <div class="tier-tags">
-            <span class="tier-tag">차트 작성</span>
-            <span class="tier-tag">교수 평가</span>
-            <span class="tier-tag">대시보드</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4 axis -->
-      <div style="margin-top:56px;">
-        <h3 class="reveal" style="font-size:20px;font-weight:700;letter-spacing:-.015em;color:var(--ink-900);margin-bottom:6px;">학교별 차이를 만드는 설정 4축</h3>
-        <p class="reveal" style="font-size:14.5px;color:var(--ink-500);margin-bottom:0;">각 학교는 아래 4개 축의 조합으로 자신만의 Hy-STEP 환경을 구성합니다.</p>
-        <div class="axis-grid">
-          <div class="axis-card reveal" style="transition-delay:0ms;">
-            <div class="axis-icon">📋</div>
-            <h4>차트 구성 축</h4>
-            <p>섹션 선택 &amp; 항목별 양식 선택</p>
-          </div>
-          <div class="axis-card reveal" style="transition-delay:40ms;">
-            <div class="axis-icon">📅</div>
-            <h4>대상자 유입 축</h4>
-            <p>예약형 / 수기형 선택</p>
-          </div>
-          <div class="axis-card reveal" style="transition-delay:80ms;">
-            <div class="axis-icon">🔑</div>
-            <h4>권한 축</h4>
-            <p>학생 전용 / 학생+교수 선택</p>
-          </div>
-          <div class="axis-card reveal" style="transition-delay:120ms;">
-            <div class="axis-icon">⚡</div>
-            <h4>부가기능 축</h4>
-            <p>AI · 사진 업로드 · 대시보드</p>
-          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Philosophy Q&A -->
-  <section class="section" style="background:#fff;">
+  <section class="section" style="background:var(--bg);">
     <div class="container">
       <span class="section-eyebrow reveal">브랜드 철학</span>
       <h2 class="section-title reveal">우리가 스스로에게 던진 질문들</h2>
@@ -966,17 +838,17 @@ img { max-width:100%; display:block; }
             <div class="tl-item">
               <div class="tl-dot"></div>
               <div class="tl-era">EZ-STEP · 현재</div>
-              <div class="tl-title">모듈 조립형 SaaS로 재설계</div>
+              <div class="tl-title">판매 가능한 서비스로 재설계</div>
               <p class="tl-desc">
-                베타 경험을 기반으로 보다 확장 가능한 판매용 시스템을 재설계 중입니다.
-                공통 엔진 + 학교별 설정 조합이라는 모듈 조립형 구조로 발전하여,
-                EZ-STEP(구성기) → 관리자스텝(내부콘솔) → Hy-STEP(차트웹) 3계층 아키텍처를 정립했습니다.
+                베타 운영 경험과 학술 검증을 토대로, 더 많은 학교에 제공할 수 있는
+                확장 가능한 시스템으로 재설계 중입니다.
+                베타에서 검증된 기능과 교육적 흐름을 보존하면서,
+                학교별로 유연하게 구성할 수 있는 서비스 형태를 갖춰나가고 있습니다.
               </p>
               <div class="tl-tags">
-                <span class="tl-tag">EZ-STEP</span>
-                <span class="tl-tag">관리자스텝</span>
-                <span class="tl-tag">Hy-STEP</span>
-                <span class="tl-tag">SaaS 구조화</span>
+                <span class="tl-tag">서비스 재설계</span>
+                <span class="tl-tag">확장성</span>
+                <span class="tl-tag">학교별 맞춤</span>
               </div>
             </div>
 
