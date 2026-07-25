@@ -1140,7 +1140,9 @@ img { max-width: 100%; display: block; }
       <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
     </a>
     <nav class="nav">
-      <a class="btn btn-primary btn-sm nav-cta" href="/builder">
+      <a href="/story" style="padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:rgba(255,255,255,.85);transition:background .2s,color .2s;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background=''" id="nav-story">브랜드 스토리</a>
+      <a href="/policy" style="padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:rgba(255,255,255,.85);transition:background .2s,color .2s;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background=''" id="nav-policy">이용정책</a>
+      <a class="btn btn-primary btn-sm nav-cta" href="/builder" style="margin-left:8px;">
         차트 만들기
         <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -1721,11 +1723,17 @@ img { max-width: 100%; display: block; }
 /* ── Header Scroll State ── */
 (function() {
   var header = document.getElementById('site-header');
+  var navStory  = document.getElementById('nav-story');
+  var navPolicy = document.getElementById('nav-policy');
   function onScroll() {
     if (window.scrollY > 40) {
       header.classList.add('scrolled');
+      if(navStory)  { navStory.style.color  = 'var(--ink-700)'; }
+      if(navPolicy) { navPolicy.style.color = 'var(--ink-700)'; }
     } else {
       header.classList.remove('scrolled');
+      if(navStory)  { navStory.style.color  = 'rgba(255,255,255,.85)'; }
+      if(navPolicy) { navPolicy.style.color = 'rgba(255,255,255,.85)'; }
     }
   }
   window.addEventListener('scroll', onScroll, { passive: true });
