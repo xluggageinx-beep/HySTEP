@@ -197,8 +197,8 @@ img { max-width:100%; display:block; }
 .tab-bar-wrap::after {
   content:"";
   display:block;
-  height:40px;
-  background:linear-gradient(to bottom, #1552a8 0%, transparent 60%, var(--bg) 100%);
+  height:32px;
+  background:linear-gradient(to bottom, rgba(21,82,168,0) 0%, var(--bg) 100%);
 }
 .tab-bar {
   display:flex;
@@ -260,6 +260,25 @@ img { max-width:100%; display:block; }
 /* ═══════════════════════════════════════
    TAB 1: ABOUT
 ═══════════════════════════════════════ */
+
+/* Vision cards */
+.vision-grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+  margin-top:16px;
+}
+.vision-card {
+  padding:28px 30px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  transition:all .3s var(--ease);
+}
+.vision-card:hover { border-color:var(--brand-300); box-shadow:var(--shadow-md); transform:translateY(-3px); }
+.vision-card .vi-icon { font-size:28px; margin-bottom:14px; }
+.vision-card h4 { font-size:16px; font-weight:700; letter-spacing:-.015em; color:var(--ink-900); margin-bottom:8px; }
+.vision-card p  { font-size:14px; line-height:1.72; color:var(--ink-500); }
 
 /* Brand intro */
 .brand-intro-grid {
@@ -528,6 +547,7 @@ img { max-width:100%; display:block; }
 @media (max-width:1024px) {
   .brand-intro-grid { grid-template-columns:1fr; }
   .q-grid { grid-template-columns:1fr; }
+  .vision-grid { grid-template-columns:1fr; }
   .why-grid { grid-template-columns:1fr; }
   .history-layout { grid-template-columns:1fr; }
   .history-sticky { position:static; }
@@ -545,7 +565,7 @@ img { max-width:100%; display:block; }
 <header class="header" id="site-header">
   <div class="container">
     <a href="/" class="logo-mark">
-      <img src="/images/logo-ezstep.png" alt="EZ-STEP"/>
+      <img src="/images/logo-ezstep-white.png" alt="EZ-STEP" id="site-logo"/>
     </a>
     <div class="nav-links">
       <a href="/" class="nav-link">홈</a>
@@ -656,6 +676,39 @@ img { max-width:100%; display:block; }
           <div class="q-num">Question 04</div>
           <h3>이 서비스를 만든 사람은 왜 이 문제를 진지하게 바라보는가?</h3>
           <p>임상실습 현장에서 직접 느낀 수기 중심 운영의 한계, 디지털 적응의 공백, 교수와 학생 모두가 겪는 기록과 피드백의 단절. 이 문제의식을 바탕으로 베타 시스템을 개발하고, 실제 학기 운영을 통해 검증하며 이 시스템을 발전시켜왔습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vision -->
+  <section class="section" style="background:#fff;">
+    <div class="container">
+      <span class="section-eyebrow reveal">Vision</span>
+      <h2 class="section-title reveal">EZ-STEP이 향하는 곳</h2>
+      <p class="section-sub reveal">
+        수기 차트를 없애는 것이 목표가 아닙니다. 임상 교육이 마땅히 가져야 할 무게와 구조를 되돌려놓는 것이 목표입니다.
+      </p>
+      <div class="vision-grid">
+        <div class="vision-card reveal" style="transition-delay:0ms;">
+          <div class="vi-icon">🎯</div>
+          <h4>교육 현장의 디지털 전환</h4>
+          <p>수기 차트를 완전히 대체하는 표준 디지털 실습 교육 플랫폼을 구축합니다. 기록이 남고, 데이터가 쌓이고, 교육이 진화합니다.</p>
+        </div>
+        <div class="vision-card reveal" style="transition-delay:50ms;">
+          <div class="vi-icon">🏫</div>
+          <h4>학교별 맞춤 시스템</h4>
+          <p>모든 학교가 같은 방식으로 실습할 필요는 없습니다. 각 학교의 교육 방식과 커리큘럼에 맞춘 독립적인 환경을 제공합니다.</p>
+        </div>
+        <div class="vision-card reveal" style="transition-delay:100ms;">
+          <div class="vi-icon">🤖</div>
+          <h4>AI 기반 임상 판단력 지원</h4>
+          <p>AI 어시스턴트는 답을 주는 것이 아니라 생각을 유도합니다. 학생이 스스로 임상 판단을 훈련할 수 있는 환경을 만듭니다.</p>
+        </div>
+        <div class="vision-card reveal" style="transition-delay:150ms;">
+          <div class="vi-icon">🌐</div>
+          <h4>보건의료 교육의 디지털 표준</h4>
+          <p>Hy-STEP에서 시작해 N-STEP(간호), D-STEP(치의학)으로 확장합니다. 모든 보건의료 계열 학과가 EZ-STEP 위에서 실습 교육을 진행하는 미래를 만들어갑니다.</p>
         </div>
       </div>
     </div>
@@ -897,8 +950,13 @@ img { max-width:100%; display:block; }
 <script>
 /* ── Header scroll ── */
 (function(){
-  var h = document.getElementById('site-header');
-  function tick(){ h.classList.toggle('scrolled', window.scrollY > 40); }
+  var h    = document.getElementById('site-header');
+  var logo = document.getElementById('site-logo');
+  function tick(){
+    var scrolled = window.scrollY > 40;
+    h.classList.toggle('scrolled', scrolled);
+    if(logo) logo.src = scrolled ? '/images/logo-ezstep-blue.png' : '/images/logo-ezstep-white.png';
+  }
   window.addEventListener('scroll', tick, { passive:true });
   tick();
 })();
