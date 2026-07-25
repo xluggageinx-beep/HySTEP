@@ -340,88 +340,75 @@ const state = {
   totalSteps: 4,
   schoolName: '',
   grades: [],
+  // Hy-STEP 8섹션 구조 — 섹션 번호는 배열 순서로 자동 채번 (하드코딩 금지)
+  // 소분류(items)도 동일 원칙: 키 순서 = 표시 순서
   sections: {
-    1: { selected: true,  name: '치과병력 및 건강행태', eng: 'Dental Hygiene Assessment', items: {
-      '치과 방문 경험 및 치주치료 이력': true,
-      '칫솔질 습관 (빈도/방법)': true,
+    s1: { selected: true, name: '초진 및 대상자 사정', eng: 'Initial Interview & Patient History', items: {
+      '사전문진 링크 관리 (발급·응답·만료)': true,
+      '치과 방문 경험 및 교정 여부': true,
+      '칫솔질 습관 (시간대·빈도·방법·칫솔 교환주기)': true,
       '구강관리용품 사용 현황': true,
-      '흡연/음주/영양 습관': true,
-      '증상 체크리스트': true,
-      '치과공포도 조사 (자동 점수)': true,
-      'Dental Hygiene Plan': true
+      '흡연·음주·영양 습관': true,
+      '증상 및 불편감 체크리스트': true,
+      '구강불안도 (Dental Anxiety Scale, 자동 총점)': true,
+      '전신질환 병력 및 복용 약물': true
     }},
-    2: { selected: true,  name: '전신병력 및 복용약물', eng: 'Medical History & Medication', items: {
-      '당뇨병 (혈당 수치)': true,
-      '심혈관계 질환': true,
-      '호흡기 질환': true,
-      '근골격계 및 기타 질환': true,
-      '임신 (단계/예정 출산일)': true,
-      '복용 약물 및 부작용': true
+    s2: { selected: true, name: '임상 검사', eng: 'Clinical Examination', items: {
+      '혈당 및 혈압 측정 (자동 경고 표시)': true,
+      '구내·구외 검사 8항목 (토글 소견 입력)': true,
+      '치식 차팅 (32치아, 해부학적 SVG + 기호 오버레이)': true,
+      '치주지표 통합 탭 (PD/BOP/Mob/Sw 10행 그리드)': true,
+      '교수님 요청/질문 메모': true
     }},
-    3: { selected: true,  name: '구강 내/외 검사', eng: 'Intra & Extra Oral Examination', items: {
-      'Face & Neck': true,
-      'Lymph Nodes': true,
-      'TMJ': true,
-      'Oral Mucosa & Alveolar Ridge': true,
-      'Palate & Oral Pharynx': true,
-      'Tongue & Floor of Mouth': true,
-      'Gingival Characteristics': true,
-      '치식 다이어그램 연동': true
-    }},
-    4: { selected: true,  name: '구강위생관리 PI 측정', eng: 'Oral Hygiene Care - PI', items: {
-      'PI 측정 인터랙티브 다이어그램': true,
-      "O'Leary Plaque Index 자동 계산": true,
-      '초점 치아 선택 (Focus Teeth)': true,
-      '미생물 검사': true,
-      '구취 측정 (Halitosis)': true,
+    s3: { selected: true, name: '구강위생 지수 검사', eng: 'Oral Hygiene Index Examination', items: {
+      'PI 측정 — 치아별 4구역 클릭 입력 (red dot)': true,
+      "O'Leary Index 자동 계산 + 회차별 추이 그래프": true,
+      '집중 관리 치아 선택 (Focus Teeth)': true,
+      '위상차 현미경 검사 (세균 종류 + 운동성)': true,
+      '구취 측정 0–5 스케일': true,
       'CO 측정 (흡연자용)': true
     }},
-    5: { selected: true,  name: '근거중심 치위생판단', eng: 'Evidence-based Judgement', items: {
-      '전신건강위험도 평가': true,
-      '불안/스트레스 평가': true,
-      '구강건강 지식/책임감 평가': true,
-      '머리와 목의 동통 평가': true,
-      '치주 및 피부 점막 평가': true,
-      '치열 및 인상 평가': true,
-      '대상자 성격특성 관찰': true
+    s4: { selected: true, name: '치위생 진단', eng: 'Dental Hygiene Diagnosis', items: {
+      '치아우식 위험도': true,
+      '치주 상태 판단': true,
+      '구강위생 실천도·식이·흡연·전신 건강 상태': true,
+      '심리·불안 요인 및 재내원 협조도': true,
+      '대상자 성격 특성 분석 (자유 텍스트)': true
     }},
-    6: { selected: true,  name: '치위생 관리 목표 및 계획', eng: 'Client Goals', items: {
-      '진단번호/목표번호별 입력': true,
-      '원인/목표/관리계획 입력': true,
-      '동적 목표 추가/삭제': true
+    s5: { selected: true, name: '치위생 계획', eng: 'Dental Hygiene Care Plan', items: {
+      '자가관리 계획 (칫솔질·구강관리용품·보건교육)': true,
+      '전신질환자 보건교육 계획': true,
+      '전문가 관리 계획 (우식·치주·항균·의뢰)': true,
+      '치아 선택 팝업 (대상 치아 번호 반영)': true,
+      '양식2 — 구조화 계획표': true
     }},
-    7: { selected: true,  name: '근거중심 치위생수행', eng: 'Evidence-based Implementation', items: {
-      '수행 내용 기록 (넓은 노트)': true,
-      '대상자 이름 입력': true
+    s6: { selected: true, name: '치위생 수행 기록', eng: 'Dental Hygiene Intervention Record', items: {
+      '양식1 — contenteditable 리치텍스트 에디터': true,
+      '서식 툴바 (Bold·Italic·형광펜·글자색·기호)': true,
+      '양식2 — 구조화 입력 표': true
     }},
-    8: { selected: true,  name: '치위생 평가', eng: 'Dental Hygiene Evaluation', items: {
-      '2차 내원 체크리스트': true,
-      '3차 내원 체크리스트': true,
-      '칫솔질 실천 유무': true,
-      '구강관리용품 사용 유무': true,
-      '흡연량/음주량 변화': true
+    s7: { selected: true, name: '치위생 평가', eng: 'Dental Hygiene Evaluation', items: {
+      '2차 내원 평가 (칫솔질·용품·흡연·음주·영양·전신질환)': true,
+      '3차 내원 평가 (2차 대비 2열 비교)': true
     }},
-    9: { selected: true,  name: '목표 달성도 평가 및 자기평가', eng: 'Goal Achievement', items: {
-      'Met / Partial met / Unmet 평가': true,
-      '달성근거 입력': true,
-      '구강건강 유지관리 간격': true,
-      '자기평가 (잘한 점/부족한 점)': true,
-      '전체 Met 시 축하 효과 🎉': true
+    s8: { selected: true, name: '추적 관리 및 권고', eng: 'Follow-up & Recommendations', items: {
+      '목표별 달성 평가 (Met / Partial met / Unmet)': true,
+      '구강건강 유지관리 간격 (1/3/6/12개월)': true,
+      '자가평가 (잘한 점·부족한 점)': true,
+      '전체 Met 달성 시 축하 Confetti 애니메이션 🎉': true
     }}
   },
   addons: {
+    photo:      { label:'구강 사진 관리 (Photo)', icon:'fa-camera', color:'#D97706', enabled:false,
+      desc:'회차별·5매법/6매법 촬영 세트를 관리하며 업로드 즉시 자동 저장됩니다. 각 회차마다 2세트씩 보관.' },
+    profEval:   { label:'교수 평가 패널', icon:'fa-user-graduate', color:'#0F766E', enabled:false,
+      desc:'각 섹션 하단에 교수 서명 상태 dot 및 읽기 전용 교수 평가 패널을 표시합니다. 서명 요청·완료 상태 관리 포함.' },
+    ai:         { label:'AI 임상 가이드', icon:'fa-robot', color:'#7C3AED', enabled:false,
+      desc:'대상자 데이터 기반 실시간 임상 조언 및 계획 추천을 제공합니다. (추후 지원 예정)' },
     dashboard:  { label:'관리자 대시보드', icon:'fa-chart-line', color:'#1976D2', enabled:false,
-      desc:'교수자가 학생 실습 진행 현황을 실시간 모니터링하고 차트를 일괄 관리합니다.' },
-    ai:         { label:'AI 채팅 어시스턴트', icon:'fa-robot', color:'#7C3AED', enabled:false,
-      desc:'Google Gemini 연동 AI가 환자 데이터 기반 실시간 임상 가이드를 제공합니다.' },
-    calc:       { label:'데이터 자동 계산', icon:'fa-calculator', color:'#059669', enabled:true,
-      desc:'PI, Calculus rate 등 복잡한 임상 지표를 자동 연산합니다.' },
-    photo:      { label:'멀티미디어 사진 업로드', icon:'fa-camera', color:'#D97706', enabled:false,
-      desc:'구강 내외 사진, 방사선 사진 등 시각 자료를 차트에 첨부합니다.' },
-    profEval:   { label:'교수 평가', icon:'fa-user-graduate', color:'#0F766E', enabled:false,
-      desc:'교수 서명란, P/F 평가, 사유 입력란이 포함된 교수 평가 모듈을 차트에 추가합니다.' },
+      desc:'교수자가 학생 실습 진행 현황을 실시간 모니터링하고 KPI·섹션별 진행률을 한눈에 확인합니다.' },
     survey:     { label:'사전문진 링크 생성', icon:'fa-link', color:'#9333EA', enabled:false,
-      desc:'대상자가 내원 전 스마트폰으로 문진을 작성할 수 있는 개인 링크를 생성합니다.' },
+      desc:'대상자가 내원 전 스마트폰으로 문진을 작성할 수 있는 개인 전용 링크를 생성합니다.' },
     reservation:{ label:'예약 시스템 연동', icon:'fa-calendar-check', color:'#DC2626', enabled:false,
       desc:'대상자 예약부터 차트 작성까지 원스톱 연결 (추후 지원 예정).' }
   }
@@ -497,16 +484,22 @@ function bindStep1() {
 }
 
 // ── STEP 2 ─────────────────────────────────────────────────────────────
+// 섹션 키 배열 — 추후 섹션 추가/제거 시 이 배열만 수정
+const SECTION_KEYS = ['s1','s2','s3','s4','s5','s6','s7','s8'];
+
 function renderStep2() {
+  const totalSecs = SECTION_KEYS.length;
+  const selectedCount = SECTION_KEYS.filter(k => state.sections[k]?.selected).length;
   let html = `
   <div class="step-header">
     <div class="step-tag"><i class="fa-solid fa-2"></i> STEP. 2</div>
     <h1>차트 섹션을 선택하세요</h1>
-    <p>포함할 섹션을 선택하고, 각 섹션 내 세부 항목도 개별적으로 설정할 수 있습니다.</p>
+    <p>Hy-STEP의 8개 섹션을 선택하고, 각 섹션 내 소분류 항목도 개별 설정할 수 있습니다.<br/>
+       사용자가 선택한 섹션만 포함되며, 번호는 선택 순서대로 자동 재정렬됩니다.</p>
   </div>
   <div class="card" style="padding:16px 20px;margin-bottom:12px;">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <span style="font-size:14px;color:var(--gray);">선택된 섹션: <strong style="color:var(--navy);" id="selectedCount">${Object.values(state.sections).filter(s=>s.selected).length}</strong> / 9개</span>
+      <span style="font-size:14px;color:var(--gray);">선택된 섹션: <strong style="color:var(--navy);" id="selectedCount">${selectedCount}</strong> / ${totalSecs}개</span>
       <div style="display:flex;gap:8px;">
         <button onclick="selectAllSections(true)" style="padding:6px 14px;border-radius:8px;border:1px solid var(--gray-mid);background:var(--white);font-size:13px;cursor:pointer;font-weight:600;color:var(--blue);">전체 선택</button>
         <button onclick="selectAllSections(false)" style="padding:6px 14px;border-radius:8px;border:1px solid var(--gray-mid);background:var(--white);font-size:13px;cursor:pointer;font-weight:600;color:var(--gray);">전체 해제</button>
@@ -515,124 +508,133 @@ function renderStep2() {
   </div>
   `;
 
-  for (let i = 1; i <= 9; i++) {
-    const sec = state.sections[i];
+  SECTION_KEYS.forEach((key, idx) => {
+    const sec = state.sections[key];
+    const displayNum = idx + 1; // 자동 채번: 배열 순서 기반
     const itemKeys = Object.keys(sec.items);
     const selectedItems = itemKeys.filter(k => sec.items[k]).length;
     html += `
-    <div class="section-card ${sec.selected?'selected':''}" id="secCard${i}">
-      <div class="section-header" onclick="toggleSection(${i})">
+    <div class="section-card ${sec.selected?'selected':''}" id="secCard_${key}">
+      <div class="section-header" onclick="toggleSection('${key}')">
         <div class="section-left">
-          <div class="section-num" id="secNum${i}">S${i}</div>
+          <div class="section-num" id="secNum_${key}" style="${sec.selected?'background:var(--blue);color:white;':''}">S${displayNum}</div>
           <div class="section-info">
-            <h4>Section ${i} · ${sec.name}</h4>
-            <span>${sec.eng} · 세부항목 ${selectedItems}/${itemKeys.length}개</span>
+            <h4>Section ${displayNum} · ${sec.name}</h4>
+            <span>${sec.eng} · 소분류 ${selectedItems}/${itemKeys.length}개</span>
           </div>
         </div>
         <div class="section-right">
-          <button class="expand-btn" id="expandBtn${i}" onclick="event.stopPropagation();expandSection(${i})">
+          <button class="expand-btn" id="expandBtn_${key}" onclick="event.stopPropagation();expandSection('${key}')">
             <i class="fa-solid fa-chevron-down"></i>
           </button>
           <label class="toggle-switch" onclick="event.stopPropagation()">
-            <input type="checkbox" ${sec.selected?'checked':''} id="secToggle${i}"
-              onchange="onSectionToggle(${i},this.checked)"/>
+            <input type="checkbox" ${sec.selected?'checked':''} id="secToggle_${key}"
+              onchange="onSectionToggle('${key}',this.checked)"/>
             <span class="toggle-slider"></span>
           </label>
         </div>
       </div>
-      <div class="section-items" id="secItems${i}">
+      <div class="section-items" id="secItems_${key}">
         <div class="items-grid">
           ${itemKeys.map(k => `
             <label class="item-check">
               <input type="checkbox" ${sec.items[k]?'checked':''}
-                onchange="onItemToggle(${i},'${k}',this.checked)"/>
+                onchange="onItemToggle('${key}','${k.replace(/'/g,"\\'")}',this.checked)"/>
               ${k}
             </label>
           `).join('')}
         </div>
       </div>
     </div>`;
-  }
+  });
   return html;
 }
 
 function bindStep2() { updateNextBtn(); }
 
-function toggleSection(i) {
-  const sec = state.sections[i];
+function toggleSection(key) {
+  const sec = state.sections[key];
   sec.selected = !sec.selected;
-  document.getElementById(`secToggle${i}`).checked = sec.selected;
-  document.getElementById(`secCard${i}`).classList.toggle('selected', sec.selected);
-  document.getElementById(`secNum${i}`).style.background = sec.selected ? 'var(--blue)' : '';
-  document.getElementById(`secNum${i}`).style.color = sec.selected ? 'white' : '';
+  const toggle = document.getElementById(`secToggle_${key}`);
+  const card   = document.getElementById(`secCard_${key}`);
+  const num    = document.getElementById(`secNum_${key}`);
+  if (toggle) toggle.checked = sec.selected;
+  if (card)   card.classList.toggle('selected', sec.selected);
+  if (num)    { num.style.background = sec.selected ? 'var(--blue)' : ''; num.style.color = sec.selected ? 'white' : ''; }
   updateCount();
 }
-function onSectionToggle(i, checked) {
-  state.sections[i].selected = checked;
-  document.getElementById(`secCard${i}`).classList.toggle('selected', checked);
+function onSectionToggle(key, checked) {
+  state.sections[key].selected = checked;
+  const card = document.getElementById(`secCard_${key}`);
+  if (card) card.classList.toggle('selected', checked);
   updateCount();
 }
-function expandSection(i) {
-  const items = document.getElementById(`secItems${i}`);
-  const btn = document.getElementById(`expandBtn${i}`);
-  const open = items.classList.toggle('open');
+function expandSection(key) {
+  const items = document.getElementById(`secItems_${key}`);
+  const btn   = document.getElementById(`expandBtn_${key}`);
+  const open  = items.classList.toggle('open');
   btn.innerHTML = open ? '<i class="fa-solid fa-chevron-up"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
 }
-function onItemToggle(i, key, checked) {
-  state.sections[i].items[key] = checked;
+function onItemToggle(key, itemKey, checked) {
+  if (state.sections[key] && state.sections[key].items.hasOwnProperty(itemKey)) {
+    state.sections[key].items[itemKey] = checked;
+  }
 }
 function selectAllSections(val) {
-  for (let i = 1; i <= 9; i++) {
-    state.sections[i].selected = val;
-    const toggle = document.getElementById(`secToggle${i}`);
-    const card = document.getElementById(`secCard${i}`);
+  SECTION_KEYS.forEach(key => {
+    state.sections[key].selected = val;
+    const toggle = document.getElementById(`secToggle_${key}`);
+    const card   = document.getElementById(`secCard_${key}`);
     if (toggle) toggle.checked = val;
-    if (card) card.classList.toggle('selected', val);
-  }
+    if (card)   card.classList.toggle('selected', val);
+  });
   updateCount();
 }
 function updateCount() {
   const el = document.getElementById('selectedCount');
-  if (el) el.textContent = Object.values(state.sections).filter(s=>s.selected).length;
+  if (el) el.textContent = SECTION_KEYS.filter(k => state.sections[k]?.selected).length;
   updateNextBtn();
 }
 
 // ── STEP 3 ─────────────────────────────────────────────────────────────
 function renderStep3() {
   const addonColors = {
-    dashboard:'linear-gradient(135deg,#1976D2,#42A5F5)',
-    ai:'linear-gradient(135deg,#7C3AED,#A78BFA)',
-    calc:'linear-gradient(135deg,#059669,#34D399)',
     photo:'linear-gradient(135deg,#D97706,#FCD34D)',
     profEval:'linear-gradient(135deg,#0F766E,#2DD4BF)',
+    ai:'linear-gradient(135deg,#7C3AED,#A78BFA)',
+    dashboard:'linear-gradient(135deg,#1976D2,#42A5F5)',
     survey:'linear-gradient(135deg,#9333EA,#C084FC)',
     reservation:'linear-gradient(135deg,#DC2626,#F87171)'
   };
   const badges = {
-    dashboard:'부가기능', ai:'부가기능', calc:'기본 포함', photo:'부가기능',
-    profEval:'부가기능', survey:'부가기능', reservation:'추후 지원'
+    photo:'부가기능', profEval:'부가기능', ai:'추후 지원',
+    dashboard:'부가기능', survey:'부가기능', reservation:'추후 지원'
   };
+  const disabled = { ai: true, reservation: true };
 
   let html = `
   <div class="step-header">
     <div class="step-tag"><i class="fa-solid fa-3"></i> STEP. 3</div>
     <h1>부가기능을 선택하세요</h1>
-    <p>기본 차트 외에 추가할 기능을 선택하세요. 각 기능은 추후 선택형 과금 패키지로 제공될 예정입니다.</p>
+    <p>기본 차트 외에 추가할 기능을 선택하세요.<br/>
+       <strong>구강 사진 관리</strong>와 <strong>교수 평가 패널</strong>은 즉시 활성화 가능합니다.</p>
   </div>
   <div class="card" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);">
     <div style="display:flex;align-items:flex-start;gap:12px;">
       <i class="fa-solid fa-circle-info" style="color:#D97706;margin-top:2px;"></i>
       <p style="font-size:13px;color:#92400E;line-height:1.7;">
-        <strong>안내:</strong> 관리자 대시보드, AI 채팅 어시스턴트, 사진 업로드, 교수 평가, 사전문진 링크 생성, 예약 시스템 연동은 추후 <strong>선택형 구독 패키지</strong>로 제공될 예정입니다. 현재는 포함 여부만 선택해주세요.
+        <strong>안내:</strong> AI 임상 가이드 · 예약 시스템 연동은 추후 지원 예정입니다. 나머지 부가기능은 선택 시 차트에 즉시 반영됩니다.
       </p>
     </div>
   </div>
   `;
 
-  const circleNums = ['②','③','④','⑤','⑥','⑦','⑧'];
-  Object.entries(state.addons).forEach(([key, addon], idx) => {
-    const badgeClass = addon.enabled ? 'badge-addon' : 'badge-future';
-    const badgeLabel = addon.enabled ? (badges[key] === '기본 포함' ? '기본 포함' : '선택됨') : badges[key];
+  const addonKeys = Object.keys(state.addons);
+  addonKeys.forEach((key, idx) => {
+    const addon = state.addons[key];
+    const isDisabled = !!disabled[key];
+    const badgeClass = isDisabled ? 'badge-future' : (addon.enabled ? 'badge-addon' : 'badge-future');
+    const badgeLabel = isDisabled ? badges[key] : (addon.enabled ? '선택됨' : badges[key]);
     html += `
     <div class="addon-card ${addon.enabled?'active':''}" id="addonCard_${key}">
       <div class="addon-header">
@@ -641,14 +643,14 @@ function renderStep3() {
             <i class="fa-solid ${addon.icon}"></i>
           </div>
           <div class="addon-info">
-            <h4>${circleNums[idx]} ${addon.label}</h4>
+            <h4>${addon.label}</h4>
             <p>${addon.desc}</p>
             <span class="addon-badge ${badgeClass}" id="addonBadge_${key}">${badgeLabel}</span>
           </div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" ${addon.enabled?'checked':''} id="addonToggle_${key}"
-            ${key==='reservation'?'disabled':''}
+            ${isDisabled?'disabled':''}
             onchange="onAddonToggle('${key}',this.checked)"/>
           <span class="toggle-slider"></span>
         </label>
@@ -668,7 +670,7 @@ function onAddonToggle(key, checked) {
   const badge = document.getElementById(`addonBadge_${key}`);
   if (card) card.classList.toggle('active', checked);
   if (badge) {
-    const defaultLabels = {dashboard:'부가기능',ai:'부가기능',calc:'기본 포함',photo:'부가기능',profEval:'부가기능',survey:'부가기능',reservation:'추후 지원'};
+    const defaultLabels = {photo:'부가기능',profEval:'부가기능',ai:'추후 지원',dashboard:'부가기능',survey:'부가기능',reservation:'추후 지원'};
     badge.textContent = checked ? '선택됨' : defaultLabels[key];
     badge.className = 'addon-badge ' + (checked ? 'badge-addon' : 'badge-future');
   }
@@ -676,14 +678,16 @@ function onAddonToggle(key, checked) {
 
 // ── STEP 4 ─────────────────────────────────────────────────────────────
 function renderStep4() {
-  const selectedSections = Object.entries(state.sections).filter(([,s])=>s.selected);
+  const selectedSections = SECTION_KEYS.filter(k => state.sections[k]?.selected);
   const enabledAddons = Object.entries(state.addons).filter(([,a])=>a.enabled);
+  // 선택된 섹션의 소분류 총 개수
+  const totalItems = selectedSections.reduce((sum, k) => sum + Object.values(state.sections[k].items).filter(Boolean).length, 0);
 
   return `
   <div class="step-header">
     <div class="step-tag"><i class="fa-solid fa-4"></i> STEP. 4</div>
     <h1>구성을 확인하고 신청하세요</h1>
-    <p>선택하신 차트 구성을 최종 확인하세요. 미리보기로 실제 동작을 확인할 수도 있습니다.</p>
+    <p>선택하신 차트 구성을 최종 확인하세요. 미리보기로 실제 동작하는 차트를 확인할 수 있습니다.</p>
   </div>
 
   <div class="preview-box">
@@ -698,7 +702,11 @@ function renderStep4() {
     </div>
     <div class="preview-row">
       <span class="preview-key">선택 섹션</span>
-      <span class="preview-val">${selectedSections.length} / 9개</span>
+      <span class="preview-val">${selectedSections.length} / 8개</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-key">포함 소분류</span>
+      <span class="preview-val">총 ${totalItems}개 항목</span>
     </div>
     <div class="preview-row">
       <span class="preview-key">부가기능</span>
@@ -709,8 +717,9 @@ function renderStep4() {
   <div class="card">
     <div class="card-title"><i class="fa-solid fa-layer-group"></i> 선택된 섹션</div>
     <div class="summary-chips">
-      ${selectedSections.map(([i,s]) => `<span class="chip section-chip">Section ${i}</span>`).join('')}
+      ${selectedSections.map((k, i) => `<span class="chip section-chip">Section ${i+1}. ${state.sections[k].name}</span>`).join('')}
     </div>
+    ${selectedSections.length === 0 ? '<p style="font-size:13px;color:var(--gray);">선택된 섹션이 없습니다.</p>' : ''}
   </div>
 
   ${enabledAddons.length > 0 ? `
@@ -724,11 +733,12 @@ function renderStep4() {
   <div class="card">
     <div class="card-title"><i class="fa-solid fa-eye"></i> 미리보기</div>
     <p style="font-size:14px;color:var(--gray);margin-bottom:16px;line-height:1.7;">
-      실제 차트가 어떻게 보이는지 미리 확인해보세요.<br/>
-      <strong>대상자 정보는 임시 고정값</strong>(홍길동 / 2000.01.01 / 010-1234-5678)으로 표시되며, 데이터는 저장되지 않습니다.
+      선택한 옵션 기반의 실제 차트를 미리 확인해보세요.<br/>
+      <strong>모든 섹션 + 모든 소분류 선택 시</strong> 업로드된 Hy-STEP 차트와 동일한 구성이 표시됩니다.<br/>
+      대상자 정보는 임시 데모값으로 표시되며, 데이터는 저장되지 않습니다.
     </p>
     <button onclick="openPreview()" style="display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:10px;background:rgba(25,118,210,0.08);color:var(--blue);border:1.5px solid rgba(25,118,210,0.2);font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;">
-      <i class="fa-solid fa-arrow-up-right-from-square"></i> 별도 탭에서 미리보기 열기
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> 별도 탭에서 차트 미리보기
     </button>
   </div>
 
@@ -769,16 +779,22 @@ function renderStep4() {
   `;
 }
 
+// (legacy orphan removed)
+
 function openPreview() {
-  const params = encodeURIComponent(JSON.stringify({
+  // 선택된 섹션 키 배열 전달 — chart.html에서 SECTIONS 필터링에 사용
+  const selectedSectionKeys = SECTION_KEYS.filter(k => state.sections[k]?.selected);
+  const config = {
     schoolName: state.schoolName,
     grades: state.grades,
-    sections: Object.fromEntries(
-      Object.entries(state.sections).map(([k,v]) => [k, { selected: v.selected, items: v.items }])
+    sections: selectedSectionKeys,
+    sectionItems: Object.fromEntries(
+      selectedSectionKeys.map(k => [k, Object.keys(state.sections[k].items).filter(i => state.sections[k].items[i])])
     ),
     addons: Object.fromEntries(Object.entries(state.addons).map(([k,v]) => [k, v.enabled]))
-  }));
-  window.open(`/preview?config=${params}`, '_blank');
+  };
+  const params = encodeURIComponent(JSON.stringify(config));
+  window.open(`/chart?config=${params}`, '_blank');
 }
 
 async function submitOrder() {
@@ -805,9 +821,13 @@ async function submitOrder() {
     schoolName: state.schoolName,
     grades: state.grades,
     sections: Object.fromEntries(
-      Object.entries(state.sections)
-        .filter(([,s]) => s.selected)
-        .map(([k,s]) => [k, { name: s.name, items: Object.fromEntries(Object.entries(s.items).filter(([,v])=>v)) }])
+      SECTION_KEYS
+        .filter(k => state.sections[k]?.selected)
+        .map((k, i) => [k, {
+          displayNum: i + 1,
+          name: state.sections[k].name,
+          items: Object.fromEntries(Object.entries(state.sections[k].items).filter(([,v])=>v))
+        }])
     ),
     addons: Object.fromEntries(Object.entries(state.addons).map(([k,v]) => [k, v.enabled])),
     contact: { name: contactName, org: contactOrg, email: contactEmail, phone: contactPhone }
@@ -836,13 +856,13 @@ function showSuccess(orderId) {
     <h2>신청이 완료되었습니다! 🎉</h2>
     <p>
       <strong>${state.schoolName}</strong> 전용 차트 생성 신청이 접수되었습니다.<br/>
-      담당자가 확인 후 학교 전용 링크를 안내드립니다.
+      담당자가 확인 후 학교 전용 Hy-STEP 차트 링크를 안내드립니다.
     </p>
     <div class="order-id-box">${orderId}</div>
     <div class="btn-success-group">
       <a href="/" class="btn-success btn-success-outline"><i class="fa-solid fa-house"></i> 홈으로</a>
       <button class="btn-success btn-success-primary" onclick="openPreview()">
-        <i class="fa-solid fa-eye"></i> 미리보기 열기
+        <i class="fa-solid fa-eye"></i> 차트 미리보기
       </button>
     </div>
   </div>`;
@@ -905,7 +925,7 @@ function updateNextBtn() {
     const ok = state.schoolName.length > 0 && state.grades.length > 0;
     btn.disabled = !ok;
   } else if (state.currentStep === 2) {
-    const ok = Object.values(state.sections).some(s => s.selected);
+    const ok = SECTION_KEYS.some(k => state.sections[k]?.selected);
     btn.disabled = !ok;
   } else {
     btn.disabled = false;

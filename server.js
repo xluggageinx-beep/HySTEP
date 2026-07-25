@@ -223,6 +223,7 @@ app.get('/builder', (req, res) => res.sendFile(path.join(__dirname, 'public', 'b
 app.get('/preview', (req, res) => res.sendFile(path.join(__dirname, 'public', 'preview.html')));
 app.get('/about', (req, res) => res.sendFile(path.join(__dirname, 'public', 'about.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/chart', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chart.html')));
 
 app.listen(PORT, () => {
   console.log(`\n🚀 EZ-STEP 빌더 서버 시작!`);
