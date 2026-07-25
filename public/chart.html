@@ -1,14 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<title>Hy-STEP · 치위생 전자 차트</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hy-STEP — Dental Hygiene Chart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
 /* ============ Hy-STEP Chart — Design System Styles ============ */
 :root {
   --primary: #2A6FDB;
@@ -2333,153 +2335,135 @@ input, textarea, select { font-family: inherit; }
 .nav-item { gap: 8px; }
 .nav-item .sign-dot { margin-right: 2px; }
 
+/* ===== Fix #6: Radio chip — no dot, centered text ===== */
+.radio-chip .dot { display: none !important; }
+.radio-chip { justify-content: center !important; }
 
-/* Additional styles for features added in chart.html */
-body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; }
+/* ===== Fix #23/#24: Review status dot colors ===== */
+.sign-dot.empty   { background: transparent; border: 2px solid var(--ink-300); }
+.sign-dot.wip     { background: #3B82F6; border: 2px solid #2563EB; }
+.sign-dot.review  { background: #F59E0B; border: 2px solid #D97706; }
+.sign-dot.done    { background: #22C55E; border: 2px solid #16A34A; }
 
-/* Btn styles referenced in JSX */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border-radius: 8px;
-  border: 1px solid var(--border); background: var(--surface);
-  color: var(--ink-700); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all 0.12s;
-  white-space: nowrap;
-}
-.btn:hover { background: var(--surface-100); }
-.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
-.btn.primary:hover { background: var(--primary-600); }
-.btn.photo { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 600; }
-.btn.photo:hover { background: #059669; }
-.btn.sm { padding: 5px 10px; font-size: 11.5px; border-radius: 6px; }
-.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+/* ===== Fix #25: Professor eval panel brighter background ===== */
+.prof-panel { background: #F0F7FF !important; border-color: #BFDBFE !important; }
+.prof-panel .pp-head { background: #E0EFFF !important; }
 
-/* Card styles */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--pad-card);
-  margin-bottom: var(--gap-card);
-}
-.card-eyebrow {
-  font-size: 10.5px; font-weight: 700; color: var(--ink-400);
-  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
-}
-.card-title {
-  font-size: 16px; font-weight: 700; color: var(--ink-900); letter-spacing: -0.01em;
-}
+/* ===== Rich text editor ===== */
+.rich-toolbar { display:flex; align-items:center; gap:4px; padding:6px 10px; background:var(--surface-50); border:1px solid var(--border); border-bottom:none; border-radius:8px 8px 0 0; flex-wrap:wrap; }
+.rich-toolbar .grp { display:flex; gap:2px; }
+.rich-toolbar .sep { width:1px; height:18px; background:var(--border); margin:0 4px; }
+.rt-btn { padding:4px 8px; border:1px solid transparent; border-radius:5px; background:none; cursor:pointer; font-size:12px; color:var(--ink-700); font-family:inherit; }
+.rt-btn:hover { background:var(--surface); border-color:var(--border); }
+.rt-btn.b { font-weight:700; }
+.rt-hl { width:20px; height:20px; border-radius:4px; border:1px solid var(--border); cursor:pointer; }
+.rt-editor { padding:14px 16px; border:1px solid var(--border); border-radius:0 0 8px 8px; background:var(--surface); min-height:200px; font-family:inherit; font-size:13.5px; line-height:1.7; }
+.rt-editor:focus { outline:none; border-color:var(--primary-100); }
+.rt-editor[data-placeholder]:empty:before { content:attr(data-placeholder); color:var(--ink-300); pointer-events:none; }
+.rt-editor mark.hl-y { background:#FEF3C7; }
+.rt-editor mark.hl-g { background:#D1FAE5; }
+.rt-editor mark.hl-b { background:#DBEAFE; }
+.rt-editor mark.hl-p { background:#FCE7F3; }
 
-/* Sub-section wrapper */
-.sub-section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--pad-card);
-  margin-bottom: var(--gap-card);
-}
-.sub-section-head {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 16px;
-}
-.sub-section-head .left { display: flex; flex-direction: column; gap: 2px; }
-.sub-section-head .badge {
-  display: inline-block;
-  font-size: 10px; font-weight: 700;
-  color: var(--primary); background: var(--primary-50);
-  padding: 2px 8px; border-radius: 999px;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.sub-section-head .title { font-size: 15px; font-weight: 700; color: var(--ink-900); }
-.sub-section-head .sub { font-size: 12px; color: var(--ink-500); margin-top: 2px; }
+/* ===== Prescan page styles ===== */
+.etc-input { margin-top:6px; padding:5px 10px; font-size:12px; }
 
-/* Progress bar helper */
-.progress-bar {
-  height: 4px; background: var(--surface-100); border-radius: 999px; overflow: hidden;
-}
-.progress-bar > span {
-  display: block; height: 100%;
-  background: linear-gradient(90deg, var(--primary), #6366F1);
-  border-radius: 999px;
-  transition: width 0.3s;
-}
+/* ===== Plan table improvements ===== */
+.plan-table { display:flex; flex-direction:column; gap:0; }
+.plan-section { margin-bottom:0; }
+.plan-section-title { display:flex; align-items:center; gap:8px; padding:10px 16px; background:var(--primary-50); border:1px solid var(--primary-100); border-radius:8px 8px 0 0; font-weight:700; font-size:13.5px; color:var(--primary-dark,var(--primary)); }
+.plan-section-title .idx { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; background:var(--primary); color:#fff; border-radius:50%; font-size:12px; flex-shrink:0; }
+.plan-section-title em { font-style:normal; font-weight:400; font-size:12px; color:var(--ink-500); margin-left:4px; }
+.plan-row { display:grid; grid-template-columns:100px 1fr 260px; border:1px solid var(--border); border-top:none; }
+.plan-cat { padding:12px 14px; font-weight:700; font-size:12.5px; color:var(--ink-700); background:var(--surface-50); border-right:1px solid var(--border); display:flex; align-items:flex-start; }
+.plan-items { padding:10px 14px; border-right:1px solid var(--border); }
+.plan-item { margin-bottom:6px; }
+.plan-check { display:flex; align-items:flex-start; gap:6px; cursor:pointer; font-size:13px; }
+.plan-details { padding:10px 14px; }
+.plan-details-label { font-size:10.5px; color:var(--ink-500); margin-bottom:4px; }
+.tooth-tag { display:inline-block; padding:1px 5px; background:var(--primary-50); border:1px solid var(--primary-100); border-radius:4px; font-size:10.5px; color:var(--primary); font-weight:600; }
 
-/* Combi-row-labels height fix */
-.combi-row-labels .row-label { min-height: 22px; }
-</style>
+/* ===== Section progress ===== */
+.sec-progress-label { font-size:11px; color:var(--ink-500); }
+.sec-progress-pct { font-size:11px; font-weight:700; color:var(--primary); }
+
+/* ===== Next section button tooltip ===== */
+.next-sec-btn { position:fixed; bottom:24px; right:24px; z-index:100; }
+
+/* ===== Security note ===== */
+.data-key-badge { display:inline-block; padding:2px 8px; background:var(--surface-50); border:1px solid var(--border); border-radius:6px; font-size:10px; font-family:ui-monospace,monospace; color:var(--ink-500); }
+
+/* ===== Remove density floater (fix #30) ===== */
+/* Density floater was removed from JSX */
+
+  </style>
 </head>
 <body>
-<div id="root"></div>
+  <div id="root"></div>
 
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+  <!-- Security & data isolation layer -->
+  <script>
 
-<!-- 1. header.jsx: Icon + Header (must be first) -->
-<script type="text/babel">
-/* Top header with breadcrumbs and action buttons */
+/* ============================================================
+   Hy-STEP Data Isolation & Security Layer
+   - Each chart instance has a unique CHART_KEY (from URL or generated)
+   - All localStorage reads/writes are namespaced under CHART_KEY
+   - Patient data is keyed by phone number when reservation package active
+   ============================================================ */
+(function() {
+  // Derive chart key from URL path or query param
+  const urlKey = new URLSearchParams(location.search).get('key') ||
+                 location.pathname.split('/').filter(Boolean).slice(-1)[0] || 'default';
+  window.__CHART_KEY = 'hystem:' + urlKey;
 
-const Icon = ({ name, size = 16 }) => {
-  const paths = {
-    save: <path d="M17 21v-8H7v8M7 3v5h8m4-5H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4Z" />,
-    camera: <><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></>,
-    list: <><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>,
-    edit: <><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></>,
-    check: <polyline points="20 6 9 17 4 12"/>,
-    plus: <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
-    trash: <><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></>,
-    link: <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>,
-    qr: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 20h3"/></>,
-    close: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
-    upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
-    chevron: <polyline points="9 18 15 12 9 6" />,
+  // Namespaced storage API
+  window.__store = {
+    set: (k, v) => {
+      try { localStorage.setItem(window.__CHART_KEY + ':' + k, JSON.stringify(v)); } catch(e) {}
+      window.dispatchEvent(new CustomEvent('hy-step-change', { detail: { key: k } }));
+    },
+    get: (k, fallback) => {
+      try {
+        const raw = localStorage.getItem(window.__CHART_KEY + ':' + k);
+        return raw != null ? JSON.parse(raw) : fallback;
+      } catch(e) { return fallback; }
+    },
+    remove: (k) => { try { localStorage.removeItem(window.__CHART_KEY + ':' + k); } catch(e) {} },
+    // Patient-keyed store (by phone number)
+    forPatient: (phone) => {
+      const pKey = window.__CHART_KEY + ':patient:' + (phone || 'anon');
+      return {
+        set: (k, v) => { try { localStorage.setItem(pKey + ':' + k, JSON.stringify(v)); } catch(e) {} },
+        get: (k, fb) => { try { const r = localStorage.getItem(pKey+':'+k); return r!=null?JSON.parse(r):fb; } catch(e) { return fb; } },
+      };
+    },
   };
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      {paths[name]}
-    </svg>
-  );
-};
 
-const Header = ({ current, onOpenPhoto }) => {
-  const sectionOnly = window.SECTIONS.filter(s => s.id !== 'dashboard');
-  const section = window.SECTIONS.find(s => s.id === current);
-  const secIdx = section ? sectionOnly.findIndex(s => s.id === section.id) : -1;
-  return (
-    <header className="header">
-      <div className="crumbs">
-        <span>대상자 차트</span>
-        <span className="sep">›</span>
-        <span>김민서</span>
-        <span className="sep">›</span>
-        <span className="current">{section ? (secIdx >= 0 ? `Section ${secIdx + 1}. ${section.name}` : section.name) : '대시보드'}</span>
-        <span className="time">2회차 · 2026.07.20 14:30</span>
-      </div>
-      <div className="header-actions">
-        <button className="btn">
-          <Icon name="list" size={14} />
-          <span>목록으로</span>
-        </button>
-        <button className="btn photo" onClick={onOpenPhoto}>
-          <Icon name="camera" size={14} />
-          <span>Photo</span>
-        </button>
-        <button className="btn primary" onClick={() => window.__saveChart && window.__saveChart()}>
-          <Icon name="save" size={14} />
-          <span>저장하기</span>
-        </button>
-      </div>
-    </header>
-  );
-};
+  // Persist current section across refresh
+  const savedSection = window.__store.get('current', 'dashboard');
+  window.__initialSection = savedSection;
 
-Object.assign(window, { Header, Icon });
+  console.log('[Hy-STEP] Chart key:', window.__CHART_KEY);
+})();
 
-</script>
+  </script>
 
-<!-- 2. shared.jsx: PatientPanel, SectionStickyHeader, SubSection, etc. -->
-<script type="text/babel">
+  <!-- Config filter -->
+  <script>
+    (function() {
+      const ALL_SECTION_KEYS = ['s1','s2','s3','s4','s5','s6','s7','s8'];
+      var cfg = null;
+      try { cfg = JSON.parse(decodeURIComponent(new URLSearchParams(location.search).get('config') || 'null')); } catch(e){}
+      var filtered = cfg && cfg.sections ? ALL_SECTION_KEYS.filter(k => cfg.sections.includes(k)) : ALL_SECTION_KEYS;
+      window.__CONFIG = cfg || {};
+      window.__ACTIVE_KEYS = filtered;
+      window.__HAS_DASHBOARD = !cfg || cfg.dashboard !== false;
+      window.__HAS_RESERVATION = !!(cfg && cfg.addons && cfg.addons.includes && cfg.addons.includes('reservation'));
+    })();
+  </script>
+
+  <!-- 1. Shared utilities & components -->
+  <script type="text/babel">
 /* Shared UI atoms: patient panel, professor read-only panel, radio, checkbox groups, etc. */
 
 const PatientPanel = () => {
@@ -2495,7 +2479,7 @@ const PatientPanel = () => {
   ];
   return (
     <div className="patient-panel">
-      <button className="patient-edit" title="대상자 정보 수정" onClick={() => window.__openPatientEdit && window.__openPatientEdit()}>
+      <button className="patient-edit" title="대상자 정보 수정">
         <Icon name="edit" size={14} />
       </button>
       <div className="patient-head">
@@ -2595,7 +2579,7 @@ const SectionStickyHeader = ({ sectionId, ko, en, progress = 0, subsections = []
       </div>
       {subsections.length > 0 && (
         <div className="ss-subs">
-          <span className="ss-subs-l">소분류 바로가기</span>
+          <span className="ss-subs-l"></span>
           {subsections.map((s, i) => (
             <button key={s.id} className="ss-sub-chip" onClick={() => jump(s.id)}>
               <span className="ss-sub-idx">{idx + 1}-{i + 1}</span>
@@ -2616,7 +2600,7 @@ const RadioGroup = ({ options, value, onChange, name }) => (
         className={`radio-chip ${value === o ? 'active' : ''}`}
         onClick={() => onChange && onChange(o)}
       >
-        <span className="dot" />
+        
         {o}
       </button>
     ))}
@@ -2688,166 +2672,72 @@ const SubSection = ({ id, label, title, sub, children, right }) => (
 
 Object.assign(window, { PatientPanel, SectionHero, SectionStickyHeader, RadioGroup, CheckGroup, ProfPanel, StatusPill, SubSection, REVIEW_STATES });
 
-</script>
+  </script>
 
-<!-- 3. Config parsing + sidebar.jsx: SECTIONS array + Sidebar component -->
-<script type="text/babel">
+  <!-- 2. Header -->
+  <script type="text/babel">
+/* Top header with breadcrumbs and action buttons */
 
-/* ========= Config Parsing (from builder URL query) ========= */
-const _configRaw = new URLSearchParams(location.search).get('config');
-const _config = _configRaw ? JSON.parse(decodeURIComponent(_configRaw)) : null;
-const _selectedSections = _config && Array.isArray(_config.sections) ? _config.sections : null;
-/* When _selectedSections is set, only those sections are shown;
-   their display numbers are derived from array order automatically
-   because SECTIONS array is filtered before window assignment. */
-
-/* Sidebar — data-driven section list. Section index (1..N) is derived from array order
-   so sections can be re-mixed later without hardcoded numbers.
-   Sign status dots: 
-     - green  = 서명 업로드 완료
-     - white  = 서명 요청 전 (미업로드)
-     - gray   = 서명 요청 후 · 대기 중
-*/
-
-const SECTIONS = [
-  { id: 'dashboard', name: '대시보드',            en: 'Overview',                progress: 62, signStatus: null,     status: 'wip' },
-  { id: 's1',        name: '초진 및 대상자 사정', en: 'Initial Interview',       progress: 100, signStatus: 'signed', status: 'done' },
-  { id: 's2',        name: '임상 검사',           en: 'Clinical Examination',    progress: 85, signStatus: 'pending', status: 'wip' },
-  { id: 's3',        name: '구강위생 지수',       en: 'Oral Hygiene Index',      progress: 66, signStatus: 'pending', status: 'wip' },
-  { id: 's4',        name: '치위생 진단',         en: 'DH Diagnosis',            progress: 40, signStatus: 'unsent', status: 'wip' },
-  { id: 's5',        name: '치위생 계획',         en: 'DH Care Plan',            progress: 20, signStatus: 'unsent', status: 'wip' },
-  { id: 's6',        name: '수행 기록',           en: 'Intervention Record',     progress: 0,  signStatus: 'unsent', status: 'empty' },
-  { id: 's7',        name: '치위생 평가',         en: 'DH Evaluation',           progress: 0,  signStatus: 'unsent', status: 'empty' },
-  { id: 's8',        name: '추적 관리 및 권고',   en: 'Follow-up',               progress: 0,  signStatus: 'unsent', status: 'empty' },
-];
-
-const SignDot = ({ status }) => {
-  // status: 'signed' (green) | 'pending' (gray) | 'unsent' (white outlined)
-  const map = {
-    signed:  { title: '교수 서명 업로드 완료' },
-    pending: { title: '서명 요청 후 · 대기 중' },
-    unsent:  { title: '서명 요청 전' },
+const Icon = ({ name, size = 16 }) => {
+  const paths = {
+    save: <path d="M17 21v-8H7v8M7 3v5h8m4-5H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4Z" />,
+    camera: <><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></>,
+    list: <><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></>,
+    edit: <><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></>,
+    check: <polyline points="20 6 9 17 4 12"/>,
+    plus: <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    trash: <><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></>,
+    link: <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>,
+    qr: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h4v4h-4zM14 20h3"/></>,
+    close: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+    upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
+    chevron: <polyline points="9 18 15 12 9 6" />,
   };
-  if (!status) return <span className="sign-dot placeholder" />;
-  return <span className={`sign-dot ${status}`} title={map[status]?.title} />;
-};
-
-const Sidebar = ({ current, onChange }) => {
-  const SECTIONS = window.SECTIONS;
-  const sectionOnly = SECTIONS.filter(s => s.id !== 'dashboard');
-  const overall = Math.round(sectionOnly.reduce((a, s) => a + s.progress, 0) / sectionOnly.length);
-
-  const handleDownload = (format) => {
-    // Trigger the print flow (browser save-as-PDF for pdf; naive HTML dump for html)
-    if (format === 'pdf') {
-      window.print();
-    } else {
-      // simple html snapshot download
-      const html = '<!doctype html><meta charset="utf-8"><title>Hy-STEP Chart Export</title>' + document.documentElement.outerHTML;
-      const blob = new Blob([html], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'hy-step-chart.html';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-  };
-
   return (
-    <aside className="sidebar">
-      <div className="sidebar-brand">
-        <img src="assets/hy-step-logo.png" alt="Hy-STEP" />
-      </div>
-
-      <div className="mini-patient">
-        <div className="row1">
-          <span className="name">김민서</span>
-          <span className="visit">2차 내원</span>
-        </div>
-        <div className="meta">여성 · 만 28세</div>
-        <div className="progress-mini">
-          <div className="label"><span>전체 진행률</span><b>{overall}%</b></div>
-          <div className="bar"><span style={{ width: overall + '%' }} /></div>
-        </div>
-      </div>
-
-      <nav className="nav-scroll">
-        <div className="nav-heading">Chart Sections</div>
-        {SECTIONS.map((s, i) => {
-          const isSection = s.id !== 'dashboard';
-          // Auto-derive display index from array position (dashboard skipped)
-          const idxLabel = isSection ? String(sectionOnly.findIndex(x => x.id === s.id) + 1) : '';
-          return (
-            <button
-              key={s.id}
-              className={`nav-item ${current === s.id ? 'active' : ''}`}
-              onClick={() => onChange(s.id)}
-              title={isSection ? `Section ${idxLabel} · 교수 서명: ${s.signStatus === 'signed' ? '완료' : s.signStatus === 'pending' ? '대기' : '요청 전'}` : ''}
-            >
-              {isSection ? <SignDot status={s.signStatus} /> : <span className="sign-dot placeholder" />}
-              <span className="idx">{idxLabel}</span>
-              <span className="name">{s.name}</span>
-              <span className="pct">{s.id === 'dashboard' ? '' : `${s.progress}%`}</span>
-            </button>
-          );
-        })}
-
-        {/* Download buttons */}
-        <div className="nav-download">
-          <div className="nav-download-l">차트 파일 다운로드</div>
-          <div className="nav-download-row">
-            <button className="btn sm" onClick={() => handleDownload('pdf')}>
-              <Icon name="save" size={12} /> PDF
-            </button>
-            <button className="btn sm" onClick={() => handleDownload('html')}>
-              <Icon name="save" size={12} /> HTML
-            </button>
-          </div>
-          <div className="nav-download-hint">
-            대상자 정보 · 섹션 1-8 · 교수 평가 전체 포함
-          </div>
-        </div>
-
-        {/* Sign-status legend */}
-        <div className="sign-legend">
-          <div className="sl-title">교수 서명 상태</div>
-          <div className="sl-row"><SignDot status="signed" /><span>업로드 완료</span></div>
-          <div className="sl-row"><SignDot status="pending" /><span>요청 후 대기</span></div>
-          <div className="sl-row"><SignDot status="unsent" /><span>요청 전</span></div>
-        </div>
-
-        <div className="nav-heading" style={{ marginTop: 12 }}>Design System</div>
-        <button className={`nav-item ${current === 'components' ? 'active' : ''}`} onClick={() => onChange('components')}>
-          <span className="sign-dot placeholder" />
-          <span className="idx"></span>
-          <span className="name">공용 컴포넌트</span>
-          <span className="pct"></span>
-        </button>
-        <button className={`nav-item ${current === 'photo' ? 'active' : ''}`} onClick={() => onChange('photo')}>
-          <span className="sign-dot placeholder" />
-          <span className="idx"></span>
-          <span className="name">Photo 모달</span>
-          <span className="pct"></span>
-        </button>
-      </nav>
-
-      <div className="sidebar-footer">
-        <div className="avatar">JM</div>
-        <div className="who">
-          <b>이지민</b>
-          <span>2023560031</span>
-        </div>
-      </div>
-    </aside>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {paths[name]}
+    </svg>
   );
 };
 
-Object.assign(window, { Sidebar, SECTIONS, SignDot });
+const Header = ({ current, onOpenPhoto }) => {
+  const sectionOnly = window.SECTIONS.filter(s => s.id !== 'dashboard');
+  const section = window.SECTIONS.find(s => s.id === current);
+  const secIdx = section ? sectionOnly.findIndex(s => s.id === section.id) : -1;
+  return (
+    <header className="header">
+      <div className="crumbs">
+        <span>대상자 차트</span>
+        <span className="sep">›</span>
+        <span>김민서</span>
+        <span className="sep">›</span>
+        <span className="current">{section ? (secIdx >= 0 ? `Section ${secIdx + 1}. ${section.name}` : section.name) : '대시보드'}</span>
+        <span className="time">2회차 · 2026.07.20 14:30</span>
+      </div>
+      <div className="header-actions">
+        <button className="btn">
+          <Icon name="list" size={14} />
+          <span>목록으로</span>
+        </button>
+        <button className="btn photo" onClick={onOpenPhoto}>
+          <Icon name="camera" size={14} />
+          <span>Photo</span>
+        </button>
+        <button className="btn primary">
+          <Icon name="save" size={14} />
+          <span>저장하기</span>
+        </button>
+      </div>
+    </header>
+  );
+};
 
-</script>
+Object.assign(window, { Header, Icon });
 
-<!-- 4. tooth-diagram.jsx: ToothIconDiagram, ToothCard, ToothChart2Row, ToothDiagram, ToothPicker -->
-<script type="text/babel">
+  </script>
+
+  <!-- 3. Tooth diagram (old, renamed) -->
+  <script type="text/babel">
 /* Tooth Chart — 2-row grid layout (16 upper, 16 lower).
    Each tooth is a soft rounded shape (incisor / premolar / molar silhouette),
    NO outline, muted fills. Chart symbols (Ex, G.I, C, Cw, P.Cr etc) overlay
@@ -3033,10 +2923,10 @@ const ToothPicker = ({ selected = [], disabled = [], onToggle }) => {
 
 Object.assign(window, { ToothDiagram, ToothPicker, ToothChart2Row, ToothCard, ToothIconDiagram, DEFAULT_TOOTH_STATE });
 
-</script>
+  </script>
 
-<!-- 5. tooth-chart-new.jsx: ToothIcon (new), NotationChart, CombinedChart, CalculusChart -->
-<script type="text/babel">
+  <!-- 4. Tooth chart new -->
+  <script type="text/babel">
 /* New Tooth Chart:
    - 2-row layout (upper row, lower row), no arch
    - Each tooth is a soft-filled shape (incisor/premolar/molar), no outline
@@ -3131,9 +3021,13 @@ const NotationChart = ({ notationMap = {}, missingSet = new Set(), onCellClick }
         return (
           <div key={n} className="tooth-cell" onClick={() => onCellClick && onCellClick(n)}>
             <div className="tooth-num">{n}</div>
-            <div className="tooth-body">
+            <div className="tooth-body" style={!isUpper ? { transform: 'scaleY(-1)' } : undefined}>
               <ToothIcon category={cat} missing={missing} />
-              <NotationOverlay code={code} isUpper={isUpper} />
+              {code && (
+                <div style={!isUpper ? { transform: 'scaleY(-1)', position: 'absolute', inset: 0 } : { position: 'absolute', inset: 0 }}>
+                  <NotationOverlay code={code} isUpper={isUpper} />
+                </div>
+              )}
             </div>
           </div>
         );
@@ -3344,131 +3238,169 @@ const CombinedChart = ({ notationMap = {}, missingSet = new Set() }) => {
   );
 };
 
-/* ============ Calculus Chart (X-shaped 4 surface per tooth) ============ */
+/* ============ Calculus Chart — 6-cell per tooth (Buccal×3 / Lingual×3) ============ */
 const CalculusChart = ({ notationMap = {}, missingSet = new Set() }) => {
-  // Sample calculus dots per tooth. Each tooth has 4 surfaces (F=facial, L=lingual, M=mesial, D=distal).
-  // We render an X-shaped 4-triangle grid ABOVE and BELOW each tooth for supra/sub distinction.
-  const supra = {
-    13: [1,0,0,0], 12: [1,1,0,0], 11: [1,0,1,0], 21: [1,1,0,0], 22: [1,0,0,0],
-    26: [0,1,0,0], 27: [0,1,0,0],
-  };
-  const sub = {
-    43: [0,0,1,0], 42: [1,1,0,0], 41: [1,1,1,0], 31: [1,1,1,0], 32: [1,0,1,0], 33: [1,0,0,0],
+  // State: { toothNum: { buccal: [0/1,0/1,0/1], lingual: [0/1,0/1,0/1] } }
+  const [calData, setCalData] = React.useState({
+    13: { buccal:[1,0,0], lingual:[0,0,0] },
+    12: { buccal:[1,1,0], lingual:[0,0,0] },
+    11: { buccal:[1,0,1], lingual:[0,0,0] },
+    21: { buccal:[1,1,0], lingual:[0,0,0] },
+    22: { buccal:[1,0,0], lingual:[0,0,0] },
+    26: { buccal:[0,1,0], lingual:[0,1,0] },
+    27: { buccal:[0,1,0], lingual:[0,1,0] },
+    43: { buccal:[0,0,0], lingual:[0,0,1] },
+    42: { buccal:[1,1,0], lingual:[0,0,0] },
+    41: { buccal:[1,1,1], lingual:[0,0,0] },
+    31: { buccal:[1,1,1], lingual:[0,0,0] },
+    32: { buccal:[1,0,1], lingual:[0,0,0] },
+    33: { buccal:[1,0,0], lingual:[0,0,0] },
+  });
+  const toggleCal = (n, surface, i) => {
+    setCalData(prev => {
+      const t = prev[n] || { buccal:[0,0,0], lingual:[0,0,0] };
+      const arr = [...(t[surface]||[0,0,0])];
+      arr[i] = arr[i] ? 0 : 1;
+      return { ...prev, [n]: { ...t, [surface]: arr } };
+    });
   };
 
-  // A 4-triangle X block: facial (top), lingual (bottom), mesial (left), distal (right)
-  const XBlock = ({ arr }) => (
-    <svg viewBox="0 0 24 24" width="24" height="24">
-      <rect x="1" y="1" width="22" height="22" fill="#fff" stroke="#E5E9F0" />
-      <line x1="1" y1="1" x2="23" y2="23" stroke="#E5E9F0" strokeWidth="0.8" />
-      <line x1="23" y1="1" x2="1" y2="23" stroke="#E5E9F0" strokeWidth="0.8" />
-      {arr && arr[0] ? <circle cx="12" cy="5" r="1.8" fill="#DC2626" /> : null}
-      {arr && arr[1] ? <circle cx="12" cy="19" r="1.8" fill="#DC2626" /> : null}
-      {arr && arr[2] ? <circle cx="5" cy="12" r="1.8" fill="#DC2626" /> : null}
-      {arr && arr[3] ? <circle cx="19" cy="12" r="1.8" fill="#DC2626" /> : null}
-    </svg>
-  );
+  const [calAmount, setCalAmount] = React.useState('Simple');
+  const [calLoc, setCalLoc] = React.useState('Both');
+  const [calNote, setCalNote] = React.useState('전치부 순면 치석 2/3 이상(총생) - shy');
 
-  const renderCol = (n, isUpper) => {
-    const cat = toothCategory(n);
-    const missing = missingSet.has(n);
-    const code = notationMap[n];
+  // A strip of 3 clickable cells
+  const CalStrip3 = ({ n, surface }) => {
+    const arr = (calData[n] && calData[n][surface]) || [0,0,0];
     return (
-      <div key={n} className="combi-col">
-        {isUpper ? (
-          <>
-            <div className="cal-strip"><XBlock arr={supra[n]} /></div>
-            <div className="tooth-cell no-hover">
-              <div className="tooth-num">{n}</div>
-              <div className="tooth-body">
-                <ToothIcon category={cat} missing={missing} />
-                <NotationOverlay code={code} />
-              </div>
-            </div>
-            <div className="cal-strip"><XBlock arr={sub[n]} /></div>
-          </>
-        ) : (
-          <>
-            <div className="cal-strip"><XBlock arr={sub[n]} /></div>
-            <div className="tooth-cell no-hover">
-              <div className="tooth-body">
-                <ToothIcon category={cat} missing={missing} />
-                <NotationOverlay code={code} />
-              </div>
-              <div className="tooth-num">{n}</div>
-            </div>
-            <div className="cal-strip"><XBlock arr={supra[n]} /></div>
-          </>
-        )}
+      <div className="strip strip-pd-3" style={{ cursor:'pointer' }}>
+        {[0,1,2].map(i => (
+          <div key={i} className="pd-cell" onClick={() => toggleCal(n, surface, i)}
+            style={{ background: arr[i] ? '#DC2626' : undefined, minWidth:14 }}>
+            {arr[i] ? <span style={{ color:'#fff', fontSize:10, fontWeight:700 }}>●</span>
+                    : <span style={{ color:'var(--ink-300)', fontSize:10 }}>·</span>}
+          </div>
+        ))}
       </div>
     );
   };
 
-  // Count calculus rate
-  let totalSurfaces = 0, dottedSurfaces = 0;
-  [...Object.values(supra), ...Object.values(sub)].forEach(arr => {
-    arr.forEach(v => { totalSurfaces++; if (v) dottedSurfaces++; });
+  const renderUpperCol = (n) => {
+    const cat = toothCategory(n);
+    const missing = missingSet.has(n);
+    const code = notationMap[n];
+    return (
+      <div key={n} className="combi-col-new">
+        <CalStrip3 n={n} surface="buccal" />
+        <div className="tooth-slot upper">
+          <div className="tooth-num-upper">{n}</div>
+          <div className="tooth-body">
+            <ToothIcon category={cat} missing={missing} />
+            {code && <div style={{position:'absolute',inset:0}}><NotationOverlay code={code} isUpper={true} /></div>}
+          </div>
+        </div>
+        <CalStrip3 n={n} surface="lingual" />
+      </div>
+    );
+  };
+
+  const renderLowerCol = (n) => {
+    const cat = toothCategory(n);
+    const missing = missingSet.has(n);
+    const code = notationMap[n];
+    return (
+      <div key={n} className="combi-col-new">
+        <CalStrip3 n={n} surface="lingual" />
+        <div className="tooth-slot lower">
+          <div className="tooth-body" style={{ transform:'scaleY(-1)' }}>
+            <ToothIcon category={cat} missing={missing} />
+            {code && <div style={{transform:'scaleY(-1)',position:'absolute',inset:0}}><NotationOverlay code={code} isUpper={false} /></div>}
+          </div>
+          <div className="tooth-num-lower">{n}</div>
+        </div>
+        <CalStrip3 n={n} surface="buccal" />
+      </div>
+    );
+  };
+
+  // Stats
+  const allTeeth = [...TEETH_UPPER, ...TEETH_LOWER].filter(n => !missingSet.has(n));
+  let dotted = 0, total = allTeeth.length * 6;
+  allTeeth.forEach(n => {
+    const t = calData[n] || { buccal:[0,0,0], lingual:[0,0,0] };
+    [...(t.buccal||[]), ...(t.lingual||[])].forEach(v => { if (v) dotted++; });
   });
-  const rate = 19.64;
+  const rate = total > 0 ? (dotted / total * 100) : 0;
 
   return (
     <div>
-      <div className="combined-chart">
-        <div className="combi-row">
-          {TEETH_UPPER.map(n => renderCol(n, true))}
+      <div className="combined-chart-v2">
+        <div className="combined-legend">
+          <span><span style={{display:'inline-block',width:10,height:10,background:'#DC2626',borderRadius:'50%',marginRight:4}} /> 치석 있음 (클릭 토글)</span>
+          <span>Buccal×3 / Lingual×3 per tooth</span>
+        </div>
+        <div className="combi-grid">
+          <div className="combi-row-labels">
+            <div className="row-label">Buccal</div>
+            <div className="row-label big">상악</div>
+            <div className="row-label">Lingual</div>
+          </div>
+          <div className="combi-cols">
+            {TEETH_UPPER.map(renderUpperCol)}
+          </div>
         </div>
         <div className="occlusal-line" />
-        <div className="combi-row">
-          {TEETH_LOWER.map(n => renderCol(n, false))}
+        <div className="combi-grid">
+          <div className="combi-row-labels">
+            <div className="row-label">Lingual</div>
+            <div className="row-label big">하악</div>
+            <div className="row-label">Buccal</div>
+          </div>
+          <div className="combi-cols">
+            {TEETH_LOWER.map(renderLowerCol)}
+          </div>
         </div>
       </div>
 
-      <div style={{ marginTop: 18, padding: 16, background: 'var(--surface-50)', borderRadius: 10, border: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
+      <div style={{ marginTop:18, padding:16, background:'var(--surface-50)', borderRadius:10, border:'1px solid var(--border)' }}>
+        <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:10 }}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700 }}>치석 평가 (Calculus Assessment)</div>
-            <div style={{ fontSize: 11, color: 'var(--ink-500)' }}>Calculus 수 / (총 치아 수 × 6) × 100</div>
+            <div style={{ fontSize:13, fontWeight:700 }}>치석 평가 (Calculus Assessment)</div>
+            <div style={{ fontSize:11, color:'var(--ink-500)' }}>Calculus 수 / (활성 치아 × 6) × 100</div>
           </div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--primary)', fontVariantNumeric: 'tabular-nums' }}>
-            {rate.toFixed(2)}<span style={{ fontSize: 14 }}>%</span>
+          <div style={{ fontSize:24, fontWeight:700, color:'var(--primary)', fontVariantNumeric:'tabular-nums' }}>
+            {rate.toFixed(2)}<span style={{ fontSize:14 }}>%</span>
           </div>
         </div>
-        <div className="grid-2" style={{ gap: 16 }}>
+        <div className="grid-2" style={{ gap:16 }}>
           <div>
             <label className="field-label">치석 양 (Calculus Amount)</label>
-            <div className="radio-group">
-              <button className="radio-chip active" style={{ background: '#22C55E', borderColor: '#22C55E' }}><span className="dot" />Simple</button>
-              <button className="radio-chip">Moderate</button>
-              <button className="radio-chip">Heavy</button>
-            </div>
+            <RadioGroup options={['Simple','Moderate','Heavy']} value={calAmount} onChange={setCalAmount} />
           </div>
           <div>
             <label className="field-label">치석 위치 (Calculus Location)</label>
-            <div className="radio-group">
-              <button className="radio-chip">Sub.</button>
-              <button className="radio-chip">Supra.</button>
-              <button className="radio-chip active">Both</button>
-            </div>
+            <RadioGroup options={['Sub.','Supra.','Both']} value={calLoc} onChange={setCalLoc} />
           </div>
         </div>
-        <div style={{ marginTop: 12 }}>
+        <div style={{ marginTop:12 }}>
           <label className="field-label">치석 평가 소견 (Calculus Narrative)</label>
-          <textarea className="textarea" style={{ minHeight: 44 }} defaultValue="전치부 순면 치석 2/3 이상(총생) - shy" />
+          <textarea className="textarea" style={{ minHeight:44 }}
+            value={calNote} onChange={e=>setCalNote(e.target.value)} />
         </div>
       </div>
     </div>
   );
 };
 
+
 Object.assign(window, {
   ToothIcon, NotationChart, CombinedChart, CalculusChart,
   toothCategory, TEETH_UPPER, TEETH_LOWER
 });
+  </script>
 
-</script>
-
-<!-- 6. pi-chart.jsx: PIChart, PITrend -->
-<script type="text/babel">
+  <!-- 5. PI Chart -->
+  <script type="text/babel">
 /* PI Chart — X-shape 4 quadrants per tooth, big grid.
    Reference: last attached image with 상악(Maxilla) row and 하악(Mandible) row.
 */
@@ -3554,7 +3486,7 @@ const PIChart = ({ data = {}, missingSet = new Set(), onToggle }) => {
   );
 };
 
-/* Multi-visit trend — line chart with area fill, grid, target line, delta chips */
+/* Multi-visit trend — dual-row horizontal bar comparison + vertical target line + delta chip */
 const PITrend = ({
   points = [
     { label: '1회차', v: 58.93, date: '07.06' },
@@ -3564,37 +3496,24 @@ const PITrend = ({
   ],
   target = 20,
 }) => {
-  const W = 640, H = 220;
-  const padL = 40, padR = 20, padT = 20, padB = 40;
-  const iw = W - padL - padR;
-  const ih = H - padT - padB;
-  const maxY = 70;
-  const yTicks = [0, 20, 40, 60];
+  const actual = points.filter(p => p.v != null);
+  const maxVal = Math.max(target * 1.5, ...actual.map(p => p.v), 70);
 
-  const xAt = (i) => padL + (points.length === 1 ? iw / 2 : (i / (points.length - 1)) * iw);
-  const yAt = (v) => padT + ih - (v / maxY) * ih;
+  // Delta chip: latest vs previous visit
+  const latestDelta = actual.length >= 2
+    ? actual[actual.length-1].v - actual[actual.length-2].v : null;
 
-  const actual = points.map((p, i) => ({ ...p, i })).filter(p => p.v != null);
-  const linePath = actual.map((p, k) => `${k === 0 ? 'M' : 'L'} ${xAt(p.i).toFixed(1)},${yAt(p.v).toFixed(1)}`).join(' ');
-  const areaPath = actual.length >= 2
-    ? `${linePath} L ${xAt(actual[actual.length - 1].i).toFixed(1)},${yAt(0)} L ${xAt(actual[0].i).toFixed(1)},${yAt(0)} Z`
-    : '';
+  // Target line position (%)
+  const targetPct = (target / maxVal) * 100;
 
-  // Projected (dashed) line from last actual point to future planned points
-  const lastActual = actual[actual.length - 1];
-  const plannedFuture = points.map((p, i) => ({ ...p, i })).filter(p => p.i > (lastActual?.i ?? -1) && (p.target != null));
-  const projPath = lastActual && plannedFuture.length
-    ? `M ${xAt(lastActual.i)},${yAt(lastActual.v)} ` + plannedFuture.map(p => `L ${xAt(p.i)},${yAt(p.target)}`).join(' ')
-    : '';
-
-  const latestDelta = actual.length >= 2 ? actual[actual.length - 1].v - actual[actual.length - 2].v : null;
+  const BAR_COLORS = ['#3B82F6','#22C55E','#F59E0B','#8B5CF6'];
 
   return (
-    <div className="card" style={{ margin: 0 }}>
+    <div className="card" style={{ margin:0 }}>
       <div className="card-head">
         <div>
-          <div className="card-title">O'Leary Index 회차별 추이</div>
-          <div className="card-sub">회차가 진행될수록 감소하는 것이 목표입니다. 목표선(20%) 이하 유지 필요.</div>
+          <div className="card-title">O\'Leary Index 회차별 비교</div>
+          <div className="card-sub">막대 길이가 짧아질수록 치태 관리가 향상됨. 목표선({target}%) 이하 유지 목표.</div>
         </div>
         {latestDelta != null && (
           <div className={`trend-delta ${latestDelta < 0 ? 'good' : 'bad'}`}>
@@ -3604,65 +3523,493 @@ const PITrend = ({
         )}
       </div>
 
-      <div className="trend-wrap">
-        <svg viewBox={`0 0 ${W} ${H}`} className="trend-svg" preserveAspectRatio="none">
-          {/* horizontal grid + Y ticks */}
-          {yTicks.map(t => (
-            <g key={t}>
-              <line x1={padL} y1={yAt(t)} x2={W - padR} y2={yAt(t)} className="trend-grid" />
-              <text x={padL - 8} y={yAt(t) + 4} className="trend-ylabel">{t}%</text>
-            </g>
-          ))}
+      <div style={{ padding:'12px 16px', position:'relative' }}>
+        {/* Column headers */}
+        <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, color:'var(--ink-400)', marginBottom:8, paddingLeft:56 }}>
+          <span>0%</span>
+          <span style={{marginLeft:'auto', color:'var(--danger)', fontWeight:600}}>목표 {target}%</span>
+          <span style={{marginLeft:4}}>{Math.round(maxVal)}%</span>
+        </div>
 
-          {/* target line */}
-          <line x1={padL} y1={yAt(target)} x2={W - padR} y2={yAt(target)} className="trend-target" />
-          <text x={W - padR} y={yAt(target) - 6} className="trend-target-label" textAnchor="end">
-            목표 {target}%
-          </text>
+        {/* Bar rows */}
+        {actual.map((p, i) => {
+          const pct = (p.v / maxVal) * 100;
+          const prevP = i > 0 ? actual[i-1] : null;
+          const delta = prevP ? p.v - prevP.v : null;
+          return (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
+              {/* Label */}
+              <div style={{ width:48, fontSize:11.5, fontWeight:700, color:'var(--ink-700)', flexShrink:0 }}>
+                <div>{p.label}</div>
+                <div style={{ fontSize:10, color:'var(--ink-400)', fontWeight:400 }}>{p.date}</div>
+              </div>
+              {/* Bar track */}
+              <div style={{ flex:1, position:'relative', height:28 }}>
+                {/* Bar */}
+                <div style={{
+                  position:'absolute', left:0, top:4, height:20,
+                  width: `${pct}%`,
+                  background: BAR_COLORS[i % BAR_COLORS.length],
+                  borderRadius:'0 6px 6px 0',
+                  transition:'width 0.5s ease',
+                  opacity: 0.85,
+                }}>
+                  <span style={{
+                    position:'absolute', right:6, top:'50%', transform:'translateY(-50%)',
+                    fontSize:11, fontWeight:700, color:'#fff', whiteSpace:'nowrap',
+                  }}>{p.v.toFixed(1)}%</span>
+                </div>
+                {/* Target vertical line */}
+                <div style={{
+                  position:'absolute', left:`${targetPct}%`, top:0, height:'100%',
+                  width:2, background:'var(--danger)', opacity:0.7,
+                  borderRadius:1,
+                }} />
+              </div>
+              {/* Delta chip */}
+              {delta !== null && (
+                <div style={{
+                  flexShrink:0, fontSize:11, fontWeight:700, padding:'3px 8px',
+                  borderRadius:999, background: delta < 0 ? '#DCFCE7' : '#FEE2E2',
+                  color: delta < 0 ? '#166534' : '#991B1B',
+                }}>
+                  {delta < 0 ? '▼' : '▲'}{Math.abs(delta).toFixed(1)}%p
+                </div>
+              )}
+            </div>
+          );
+        })}
 
-          {/* area under actual */}
-          {areaPath && <path d={areaPath} className="trend-area" />}
-          {/* actual line */}
-          {linePath && <path d={linePath} className="trend-line" />}
-          {/* projected line */}
-          {projPath && <path d={projPath} className="trend-line proj" />}
-
-          {/* points */}
-          {points.map((p, i) => {
-            const cx = xAt(i);
-            const isActual = p.v != null;
-            const val = isActual ? p.v : p.target;
-            if (val == null) return null;
-            return (
-              <g key={i}>
-                <circle cx={cx} cy={yAt(val)} r={isActual ? 5 : 4}
-                  className={`trend-dot ${isActual ? 'actual' : 'planned'}`} />
-                <text x={cx} y={yAt(val) - 12} className={`trend-value ${isActual ? '' : 'planned'}`} textAnchor="middle">
-                  {val.toFixed(1)}%
-                </text>
-                <text x={cx} y={H - padB + 16} className="trend-xlabel" textAnchor="middle">{p.label}</text>
-                <text x={cx} y={H - padB + 30} className="trend-xdate" textAnchor="middle">{p.date}</text>
-              </g>
-            );
-          })}
-        </svg>
+        {/* Planned future rows (ghost) */}
+        {points.filter(p => p.v == null && p.target != null).map((p,i) => {
+          const pct = (p.target / maxVal) * 100;
+          return (
+            <div key={'plan-'+i} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10, opacity:0.4 }}>
+              <div style={{ width:48, fontSize:11.5, fontWeight:700, color:'var(--ink-500)', flexShrink:0 }}>
+                <div>{p.label}</div>
+                <div style={{ fontSize:10, color:'var(--ink-400)', fontWeight:400 }}>{p.date}</div>
+              </div>
+              <div style={{ flex:1, position:'relative', height:28 }}>
+                <div style={{
+                  position:'absolute', left:0, top:4, height:20,
+                  width:`${pct}%`,
+                  background:'#94A3B8',
+                  borderRadius:'0 6px 6px 0',
+                  border:'1px dashed #64748B',
+                }}>
+                  <span style={{ position:'absolute', right:6, top:'50%', transform:'translateY(-50%)', fontSize:11, fontWeight:600, color:'#475569' }}>{p.target}%</span>
+                </div>
+                <div style={{ position:'absolute', left:`${targetPct}%`, top:0, height:'100%', width:2, background:'var(--danger)', opacity:0.7, borderRadius:1 }} />
+              </div>
+              <div style={{ flexShrink:0, fontSize:11, color:'var(--ink-400)', padding:'3px 8px' }}>목표</div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="trend-legend">
         <span><span className="tl-swatch actual" /> 실측</span>
-        <span><span className="tl-swatch planned" /> 목표(예정)</span>
-        <span><span className="tl-swatch target" /> 관리 목표선</span>
+        <span><span style={{ display:'inline-block', width:10, height:2, background:'var(--danger)', marginRight:4, borderRadius:1 }} /> 관리 목표선 ({target}%)</span>
+        <span><span className="tl-swatch planned" /> 예정 목표</span>
       </div>
     </div>
   );
 };
 
 Object.assign(window, { PIChart, PITrend });
+  </script>
 
-</script>
+  <!-- 6. DiseaseTable component -->
+  <script type="text/babel">
 
-<!-- 7. dashboard.jsx: Dashboard -->
-<script type="text/babel">
+/* ===== DiseaseTable — expandable systemic disease rows ===== */
+const DISEASE_DEFS = [
+  { name: '당뇨',           subs: null },
+  { name: '고혈압',          subs: null },
+  { name: '심혈관계 질환',   subs: ['심근경색', '협심증', '심내막염'] },
+  { name: '호흡기 질환',     subs: ['폐렴', '천식', '만성 기관지염'] },
+  { name: '골 질환',        subs: ['골다공증', '관절염', '류마티스'] },
+  { name: '간염',           subs: ['A형', 'B형', 'C형'] },
+  { name: '성병',           subs: null },
+  { name: '임신',           subs: ['초기', '중기', '후기'] },
+  { name: '기타 질환',      subs: null },
+];
+
+const DiseaseTable = ({ diseases, setDiseases }) => {
+  const toggle = (i, key, val) =>
+    setDiseases(prev => prev.map((x, k) => k === i ? { ...x, [key]: val !== undefined ? val : !x[key] } : x));
+  const toggleSub = (i, sub) =>
+    setDiseases(prev => prev.map((x, k) => {
+      if (k !== i) return x;
+      const subs = x.subChecked || [];
+      return { ...x, subChecked: subs.includes(sub) ? subs.filter(s => s !== sub) : [...subs, sub] };
+    }));
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {diseases.map((d, i) => {
+        const def = DISEASE_DEFS[i] || {};
+        return (
+          <div key={i} style={{
+            border: `1px solid ${d.checked ? 'var(--primary-100)' : 'var(--border)'}`,
+            borderRadius: 10,
+            background: d.checked ? 'var(--primary-50)' : 'var(--surface)',
+            overflow: 'hidden',
+            transition: 'all 0.15s',
+          }}>
+            {/* Main row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 130px 100px 100px', alignItems: 'center', gap: 8, padding: '10px 14px' }}>
+              <span className={`chk ${d.checked ? 'on' : ''}`}
+                onClick={() => toggle(i, 'checked')} />
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13.5, color: d.checked ? 'var(--ink-900)' : 'var(--ink-500)' }}>{d.name}</div>
+                {def.subs && !d.checked && (
+                  <div style={{ fontSize: 11, color: 'var(--ink-400)', marginTop: 2 }}>{def.subs.join(' / ')}</div>
+                )}
+              </div>
+              <div>
+                <label style={{ fontSize: 10.5, color: 'var(--ink-400)', display: 'block', marginBottom: 2 }}>진단 시기</label>
+                <input className="input" style={{ padding: '4px 8px', fontSize: 12, opacity: d.checked ? 1 : 0.4 }}
+                  disabled={!d.checked}
+                  value={d.diag || ''} onChange={e => toggle(i, 'diag', e.target.value)}
+                  placeholder="YYYY.MM" />
+              </div>
+              <div>
+                <label style={{ fontSize: 10.5, color: 'var(--ink-400)', display: 'block', marginBottom: 2 }}>현재 치료</label>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {['예','아니요'].map(opt => (
+                    <button key={opt}
+                      disabled={!d.checked}
+                      onClick={() => toggle(i, 'tx', opt)}
+                      style={{
+                        flex: 1, padding: '4px 6px', borderRadius: 6, border: '1px solid',
+                        fontSize: 11, fontWeight: 600, cursor: d.checked ? 'pointer' : 'default',
+                        background: d.tx === opt ? (opt==='예' ? 'var(--primary)' : 'var(--danger)') : 'var(--surface)',
+                        borderColor: d.tx === opt ? (opt==='예' ? 'var(--primary)' : 'var(--danger)') : 'var(--border)',
+                        color: d.tx === opt ? '#fff' : 'var(--ink-500)',
+                        opacity: d.checked ? 1 : 0.4,
+                      }}
+                    >{opt}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: 10.5, color: 'var(--ink-400)', display: 'block', marginBottom: 2 }}>약물 복용</label>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {['예','아니요'].map(opt => (
+                    <button key={opt}
+                      disabled={!d.checked}
+                      onClick={() => toggle(i, 'med', opt)}
+                      style={{
+                        flex: 1, padding: '4px 6px', borderRadius: 6, border: '1px solid',
+                        fontSize: 11, fontWeight: 600, cursor: d.checked ? 'pointer' : 'default',
+                        background: d.med === opt ? (opt==='예' ? 'var(--primary)' : 'var(--ink-400)') : 'var(--surface)',
+                        borderColor: d.med === opt ? (opt==='예' ? 'var(--primary)' : 'var(--ink-400)') : 'var(--border)',
+                        color: d.med === opt ? '#fff' : 'var(--ink-500)',
+                        opacity: d.checked ? 1 : 0.4,
+                      }}
+                    >{opt}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Expanded details when checked */}
+            {d.checked && (
+              <div style={{ padding: '0 14px 12px', borderTop: '1px solid var(--border)', paddingTop: 10 }}>
+                {def.subs && (
+                  <div style={{ marginBottom: 8 }}>
+                    <label style={{ fontSize: 11, color: 'var(--ink-500)', marginBottom: 5, display: 'block', fontWeight: 600 }}>세부 병명</label>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {def.subs.map(sub => (
+                        <label key={sub} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
+                          <span className={`chk ${(d.subChecked||[]).includes(sub) ? 'on' : ''}`}
+                            onClick={() => toggleSub(i, sub)} style={{ width: 14, height: 14, flexShrink: 0 }} />
+                          <span style={{ fontSize: 12, color: 'var(--ink-700)' }}>{sub}</span>
+                        </label>
+                      ))}
+                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
+                        <span className={`chk ${(d.subChecked||[]).includes('기타') ? 'on' : ''}`}
+                          onClick={() => toggleSub(i, '기타')} style={{ width: 14, height: 14, flexShrink: 0 }} />
+                        <span style={{ fontSize: 12, color: 'var(--ink-700)' }}>기타</span>
+                        {(d.subChecked||[]).includes('기타') && (
+                          <input className="input" style={{ width: 120, padding: '3px 8px', fontSize: 11.5 }}
+                            placeholder="세부 내용" value={d.subEtc||''} onChange={e => toggle(i, 'subEtc', e.target.value)} />
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                )}
+                <div className="grid-2" style={{ gap: '8px 16px' }}>
+                  <div>
+                    <label style={{ fontSize: 11, color: 'var(--ink-500)', marginBottom: 3, display: 'block', fontWeight: 600 }}>비고</label>
+                    <input className="input" style={{ fontSize: 12 }} value={d.memo||''} onChange={e => toggle(i, 'memo', e.target.value)} placeholder="검사 수치, 특이사항 등" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+Object.assign(window, { DiseaseTable });
+
+  </script>
+
+  <!-- 7. Prescan components -->
+  <script type="text/babel">
+
+/* ===== 사전문진 Page & Link Management ===== */
+const PrescanLinkManager = ({ onOpenPrescan }) => {
+  const [links, setLinks] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem('hy-step:prescan-links') || '[]'); } catch { return []; }
+  });
+  const [copied, setCopied] = React.useState(null);
+
+  const generateLink = () => {
+    const id = 'A-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).slice(2,8);
+    const link = { id, url: `${location.origin}/prescan/${id}`, issued: new Date().toLocaleDateString('ko'), status: '미응답', expires: new Date(Date.now()+7*864e5).toLocaleDateString('ko') };
+    const next = [...links, link];
+    setLinks(next);
+    localStorage.setItem('hy-step:prescan-links', JSON.stringify(next));
+  };
+
+  const expireLink = (id) => {
+    const next = links.map(l => l.id === id ? {...l, status:'만료'} : l);
+    setLinks(next);
+    localStorage.setItem('hy-step:prescan-links', JSON.stringify(next));
+  };
+
+  const copyLink = (url, id) => {
+    navigator.clipboard.writeText(url).catch(() => {});
+    setCopied(id);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  const latestActive = links.filter(l => l.status !== '만료').slice(-1)[0];
+
+  return (
+    <div>
+      {latestActive && (
+        <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap',
+          padding:'10px 14px', background:'var(--surface-50)', border:'1px solid var(--border)', borderRadius:10, marginBottom:12 }}>
+          <div style={{ fontFamily:'ui-monospace,monospace', fontSize:12, color:'var(--ink-700)',
+            background:'var(--surface)', padding:'6px 10px', borderRadius:6, border:'1px solid var(--border)',
+            flex:1, minWidth:200, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+            {latestActive.url}
+          </div>
+          <div style={{ display:'flex', gap:12, fontSize:11.5, color:'var(--ink-500)', flexShrink:0 }}>
+            <span>발급 <b style={{color:'var(--ink-900)'}}>{latestActive.issued}</b></span>
+            <span>응답 <b style={{color: latestActive.status==='응답완료' ? 'var(--ok)' : 'var(--warn)', fontWeight:700}}>{latestActive.status}</b></span>
+            <span>만료 <b style={{color:'var(--ink-900)'}}>{latestActive.expires}</b></span>
+          </div>
+          <div style={{ display:'flex', gap:6, flexShrink:0 }}>
+            <button className="btn sm" onClick={() => copyLink(latestActive.url, latestActive.id)}>
+              <Icon name="link" size={11}/>{copied===latestActive.id ? '복사됨!' : '링크 복사'}
+            </button>
+            <button className="btn sm" onClick={() => onOpenPrescan && onOpenPrescan(latestActive.id)}><Icon name="qr" size={11}/>미리보기</button>
+            <button className="btn sm" style={{color:'var(--ink-400)'}} onClick={() => expireLink(latestActive.id)}>링크 만료</button>
+          </div>
+        </div>
+      )}
+      <button className="btn sm" onClick={generateLink}><Icon name="plus" size={12}/>새 링크 생성</button>
+      {links.length > 1 && (
+        <div style={{ marginTop:10 }}>
+          <div style={{ fontSize:11, color:'var(--ink-500)', marginBottom:6 }}>이전 링크</div>
+          {links.slice(0,-1).reverse().map(l => (
+            <div key={l.id} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 10px',
+              background:'var(--surface)', border:'1px solid var(--border)', borderRadius:8, marginBottom:4, fontSize:11.5 }}>
+              <span style={{ fontFamily:'monospace', color:'var(--ink-500)', flex:1, overflow:'hidden', textOverflow:'ellipsis' }}>{l.url}</span>
+              <span style={{ color: l.status==='만료' ? 'var(--ink-400)' : 'var(--ok)', fontWeight:600 }}>{l.status}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* Full prescan page — mirrors Section1 interior content without sticky header & sidebar */
+const PrescanPage = ({ onSubmit, prefill }) => {
+  const [dentalVisit, setDentalVisit] = React.useState(prefill?.dentalVisit || '');
+  const [ortho, setOrtho] = React.useState(prefill?.ortho || '');
+  const [brushTimes, setBrushTimes] = React.useState(prefill?.brushTimes || []);
+  const [brushDur, setBrushDur] = React.useState(prefill?.brushDur || '');
+  const [smoke, setSmoke] = React.useState(prefill?.smoke || '비흡연');
+  const [tools, setTools] = React.useState(prefill?.tools || []);
+  const [toolsEtc, setToolsEtc] = React.useState(prefill?.toolsEtc || '');
+  const [symptoms, setSymptoms] = React.useState(prefill?.symptoms || []);
+  const [symptomsEtc, setSymptomsEtc] = React.useState(prefill?.symptomsEtc || '');
+  const [visitDetail, setVisitDetail] = React.useState(prefill?.visitDetail || '');
+
+  const anxietyQs = ['치과 예약이 있을 때','치과 대기실에 앉아 있을 때','치료용 의자에 앉을 때','치아 스케일링을 받을 때','치아를 삭제(드릴)받을 때'];
+  const anxietyLabels = ['전혀 없음','약간','보통','강함','매우 강함'];
+  const [anxiety, setAnxiety] = React.useState(prefill?.anxiety || [0,0,0,0,0]);
+  const anxietyTotal = anxiety.reduce((a,b)=>a+b,0);
+
+  const diseases = DISEASE_DEFS.map(d => d.name);
+  const [disChecked, setDisChecked] = React.useState(prefill?.disChecked || {});
+  const [disMemo, setDisMemo] = React.useState(prefill?.disMemo || {});
+
+  const toolOptions = ['치실','치간칫솔','구강양치액(가글)','워터픽','없음','기타'];
+  const symptomOptions = ['치아 파절','치통','잇몸 출혈','혀/뺨 통증','구취','구강 악습관','구강건조','기타'];
+
+  const handleSubmit = () => {
+    const data = { dentalVisit, visitDetail, ortho, brushTimes, brushDur, smoke, tools, toolsEtc, symptoms, symptomsEtc, anxiety, disChecked, disMemo, submittedAt: new Date().toISOString() };
+    localStorage.setItem('hy-step:prescan-data', JSON.stringify(data));
+    onSubmit && onSubmit(data);
+  };
+
+  return (
+    <div style={{ maxWidth:800, margin:'0 auto', padding:'32px 24px', fontFamily:'inherit' }}>
+      <div style={{ textAlign:'center', marginBottom:32 }}>
+        <img src="/images/hystem-logo.png" alt="Hy-STEP" style={{ height:48, marginBottom:16 }} onError={e=>{e.target.style.display='none'}} />
+        <h2 style={{ fontSize:22, fontWeight:800, color:'var(--ink-900)', margin:'0 0 6px' }}>사전 문진표</h2>
+        <p style={{ fontSize:13.5, color:'var(--ink-500)', margin:0 }}>아래 질문에 솔직하게 답변해 주세요. 입력하신 내용은 담당 치위생사에게 전달됩니다.</p>
+      </div>
+
+      {/* Q1: 치과 방문 */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:20, marginBottom:16 }}>
+        <div style={{ fontSize:13, fontWeight:700, color:'var(--primary)', marginBottom:12 }}>Q1. 치과 방문 경험</div>
+        <label className="field-label">최근 1년 내 치과 방문 여부</label>
+        <RadioGroup options={['예','아니오']} value={dentalVisit} onChange={setDentalVisit} />
+        {dentalVisit==='예' && (
+          <div style={{ marginTop:10 }}>
+            <label className="field-label">진료 내용</label>
+            <textarea className="textarea" value={visitDetail} onChange={e=>setVisitDetail(e.target.value)} placeholder="진료받은 내용을 입력하세요" />
+          </div>
+        )}
+        <div style={{ marginTop:16 }}>
+          <label className="field-label">현재 교정 여부</label>
+          <RadioGroup options={['교정장치','유지장치','아니오']} value={ortho} onChange={setOrtho} />
+        </div>
+      </div>
+
+      {/* Q2: 칫솔질 */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:20, marginBottom:16 }}>
+        <div style={{ fontSize:13, fontWeight:700, color:'var(--primary)', marginBottom:12 }}>Q2. 건강행태 · 칫솔질 습관</div>
+        <label className="field-label">칫솔질 시간대 (복수 선택)</label>
+        <CheckGroup options={['아침식사 전','아침식사 후','점심식사 후','저녁식사 후','간식 후','하지 않음']} value={brushTimes} onChange={setBrushTimes} />
+        <div className="grid-3" style={{ marginTop:14 }}>
+          <div>
+            <label className="field-label">1회 칫솔질 시간</label>
+            <RadioGroup options={['1분 미만','1-2분','3분 이상']} value={brushDur} onChange={setBrushDur} />
+          </div>
+          <div>
+            <label className="field-label">흡연</label>
+            <RadioGroup options={['비흡연','현재 흡연','과거 흡연']} value={smoke} onChange={setSmoke} />
+          </div>
+        </div>
+        <div style={{ marginTop:14 }}>
+          <label className="field-label">구강관리용품 (복수 선택)</label>
+          <CheckGroup options={toolOptions} value={tools} onChange={setTools} />
+          {tools.includes('기타') && <input className="input etc-input" placeholder="기타 항목" value={toolsEtc} onChange={e=>setToolsEtc(e.target.value)} />}
+        </div>
+      </div>
+
+      {/* Q3: 증상 */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:20, marginBottom:16 }}>
+        <div style={{ fontSize:13, fontWeight:700, color:'var(--primary)', marginBottom:12 }}>Q3. 현재 증상 및 불편감</div>
+        <CheckGroup options={symptomOptions} value={symptoms} onChange={setSymptoms} />
+        {symptoms.includes('기타') && <input className="input etc-input" placeholder="기타 증상" value={symptomsEtc} onChange={e=>setSymptomsEtc(e.target.value)} />}
+      </div>
+
+      {/* Q4: 불안도 */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:20, marginBottom:16 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}>
+          <div style={{ fontSize:13, fontWeight:700, color:'var(--primary)' }}>Q4. 구강불안도 (Dental Anxiety Scale)</div>
+          <div className="scale-total">{anxietyTotal}<span style={{ fontSize:11, opacity:0.6 }}>/25</span></div>
+        </div>
+        {anxietyQs.map((q, qi) => (
+          <div key={qi} className="scale-row">
+            <div className="q">{q}</div>
+            <div className="scale-opts">
+              {anxietyLabels.map((l, i) => (
+                <button key={i} className={`scale-opt ${anxiety[qi]===i+1?'active':''}`}
+                  onClick={() => { const n=[...anxiety]; n[qi]=i+1; setAnxiety(n); }}>
+                  <div style={{ fontWeight:700, fontSize:13 }}>{i+1}</div>
+                  <div style={{ marginTop:2, opacity:0.85 }}>{l}</div>
+                </button>
+              ))}
+            </div>
+            <div style={{ width:24, fontSize:12, fontWeight:700, color:'var(--primary)' }}>{anxiety[qi]||'—'}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Q5: 전신질환 */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:12, padding:20, marginBottom:24 }}>
+        <div style={{ fontSize:13, fontWeight:700, color:'var(--primary)', marginBottom:12 }}>Q5. 전신질환 병력 (해당하는 항목 체크)</div>
+        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+          {DISEASE_DEFS.map((d, i) => (
+            <div key={i} style={{ border:`1px solid ${disChecked[d.name] ? 'var(--primary-100)' : 'var(--border)'}`, borderRadius:8, padding:'10px 14px', background: disChecked[d.name]?'var(--primary-50)':'var(--surface)' }}>
+              <label style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer' }}>
+                <span className={`chk ${disChecked[d.name]?'on':''}`} onClick={() => setDisChecked(p=>({...p,[d.name]:!p[d.name]}))} />
+                <span style={{ fontWeight:600, fontSize:13 }}>{d.name}</span>
+                {d.subs && <span style={{ fontSize:11, color:'var(--ink-400)' }}> ({d.subs.join('/')})</span>}
+              </label>
+              {disChecked[d.name] && (
+                <div style={{ marginTop:8, paddingLeft:22 }}>
+                  <input className="input" style={{ fontSize:12 }} value={disMemo[d.name]||''} onChange={e=>setDisMemo(p=>({...p,[d.name]:e.target.value}))} placeholder="진단 시기, 현재 상태, 복용 약물 등" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button className="btn primary" style={{ width:'100%', padding:'14px', fontSize:15, fontWeight:700 }} onClick={handleSubmit}>
+        <Icon name="check" size={16}/> 문진 제출하기
+      </button>
+    </div>
+  );
+};
+
+/* Modal wrapper */
+const PrescanModal = ({ open, onClose, prescanId }) => {
+  if (!open) return null;
+  const [submitted, setSubmitted] = React.useState(false);
+  const handleSubmit = (data) => {
+    // Sync prescan data back to chart section 1
+    window.__prescanData = data;
+    window.dispatchEvent(new CustomEvent('prescan-submitted', { detail: data }));
+    setSubmitted(true);
+    setTimeout(() => { onClose(); setSubmitted(false); }, 2000);
+  };
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" style={{ maxWidth:840, maxHeight:'92vh' }} onClick={e=>e.stopPropagation()}>
+        <div className="modal-head">
+          <div>
+            <h3>사전문진 미리보기</h3>
+            <div style={{ fontSize:11.5, color:'var(--ink-500)', marginTop:2 }}>대상자에게 전달되는 화면입니다. 실제 응답은 링크를 통해 접수됩니다.</div>
+          </div>
+          <button className="close" onClick={onClose}><Icon name="close" size={14}/></button>
+        </div>
+        <div className="modal-body" style={{ padding:0, overflowY:'auto' }}>
+          {submitted ? (
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minHeight:300, gap:16 }}>
+              <div style={{ fontSize:48 }}>✅</div>
+              <div style={{ fontSize:18, fontWeight:700 }}>문진 제출 완료!</div>
+              <div style={{ fontSize:13, color:'var(--ink-500)' }}>입력한 내용이 차트에 자동 반영됩니다.</div>
+            </div>
+          ) : (
+            <PrescanPage onSubmit={handleSubmit} prefill={window.__prescanData} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { PrescanLinkManager, PrescanPage, PrescanModal, DISEASE_DEFS });
+
+  </script>
+
+  <!-- 8. Dashboard -->
+  <script type="text/babel">
 /* Dashboard — KPI 4장 + 섹션 진행 카드 + 최근활동/우측 위젯 */
 
 const SYSTEMIC_CONDITIONS = ['당뇨', '고혈압']; // 있는 질병만. 없으면 []
@@ -3804,14 +4151,15 @@ const Dashboard = ({ onOpenSection }) => {
 
 Object.assign(window, { Dashboard });
 
-</script>
+  </script>
 
-<!-- 8. sections-1-4.jsx: Section1, Section2, Section3, Section4 -->
-<script type="text/babel">
+  <!-- 9. Sections 1-4 -->
+  <script type="text/babel">
 /* Section 1-4 representative components */
 
 /* ============= Section 1 — Initial Interview ============= */
 const Section1 = () => {
+  const [prescanOpen, setPrescanOpen] = React.useState({ open: false, id: null });
   const [dentalVisit, setDentalVisit] = React.useState('예');
   const [ortho, setOrtho] = React.useState('교정장치');
   const [brushTimes, setBrushTimes] = React.useState(['아침식사 후', '저녁식사 후']);
@@ -3834,17 +4182,19 @@ const Section1 = () => {
   const anxietyTotal = anxiety.reduce((a, b) => a + b, 0);
 
   // Systemic disease list (moved here from Section 2)
-  const [diseases, setDiseases] = React.useState([
-    { name: '당뇨',        checked: true,  diag: '2022.03', tx: '예', med: '예', memo: 'HbA1c 6.8' },
-    { name: '고혈압',       checked: true,  diag: '2020.11', tx: '예', med: '예', memo: '' },
-    { name: '심혈관계 질환', checked: false, sub: '심근경색 / 협심증 / 심내막염' },
-    { name: '호흡기 질환',   checked: false, sub: '폐렴 / 천식 / 만성 기관지염' },
-    { name: '골 질환',      checked: false, sub: '골다공증 / 관절염 / 류마티스' },
-    { name: '간염',        checked: false, sub: 'A형 / B형 / C형' },
-    { name: '성병',        checked: false, sub: '' },
-    { name: '임신',        checked: false, sub: '초기 / 중기 / 후기' },
-    { name: '기타 질환',    checked: false, sub: '' },
-  ]);
+  const [diseases, setDiseases] = React.useState(
+    (window.DISEASE_DEFS || [
+      { name: '당뇨' },
+      { name: '고혈압' },
+      { name: '심혈관계 질환', subs: ['심근경색','협심증','심내막염'] },
+      { name: '호흡기 질환',  subs: ['폐렴','천식','만성 기관지염'] },
+      { name: '골 질환',      subs: ['골다공증','관절염','류마티스'] },
+      { name: '간염',          subs: ['A형','B형','C형'] },
+      { name: '성병' },
+      { name: '임신',          subs: ['초기','중기','후기'] },
+      { name: '기타 질환' },
+    ]).map(d => ({ ...d, checked: false, tx: null, med: null, diag: '', memo: '', subChecked: [] }))
+  );
 
   const [meds, setMeds] = React.useState([
     { name: '메트포르민 500mg', systemic: '경미한 위장 불편감 가능', oral: '구강 건조, 금속성 미각 보고됨' },
@@ -3875,33 +4225,10 @@ const Section1 = () => {
         대상자의 병력·건강행태·구강불안도 등을 문진하고, 사전문진 링크를 통해 대상자가 직접 응답할 수 있습니다.
       </div>
 
-      {/* 사전문진 링크 관리 — 슬림 스트립 */}
+      {/* 사전문진 링크 관리 — 동작 컴포넌트 */}
       <SubSection id="s1-sub-1" label="사전문진" title="사전문진 링크 관리"
         sub="발급된 링크를 통해 대상자가 직접 응답한 후 자동 반영됩니다.">
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
-          padding: '10px 14px',
-          background: 'var(--surface-50)', border: '1px solid var(--border)',
-          borderRadius: 10,
-        }}>
-          <div style={{
-            fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 12,
-            color: 'var(--ink-700)', background: 'var(--surface)',
-            padding: '6px 10px', borderRadius: 6, border: '1px solid var(--border)',
-            flex: 1, minWidth: 220,
-          }}>
-            hy-step.dh.ac.kr/pre/A-20260720-14-x7f92
-          </div>
-          <div style={{ display: 'flex', gap: 14, fontSize: 11.5, color: 'var(--ink-500)' }}>
-            <span>발급 <b style={{ color: 'var(--ink-900)', fontWeight: 600 }}>07.20</b></span>
-            <span>응답 <b style={{ color: 'var(--ok)', fontWeight: 700 }}>완료</b></span>
-            <span>만료 <b style={{ color: 'var(--ink-900)', fontWeight: 600 }}>07.27</b></span>
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button className="btn sm">링크 생성</button>
-            <button className="btn ghost sm">링크 만료</button>
-          </div>
-        </div>
+        <PrescanLinkManager onOpenPrescan={(id) => setPrescanOpen({ open: true, id })} />
       </SubSection>
 
       {/* 치과 방문 경험 */}
@@ -4018,40 +4345,9 @@ const Section1 = () => {
       </SubSection>
 
       {/* Systemic diseases (moved from Section 2) */}
-      <SubSection id="s1-sub-6" label="Q5" title="전신질환 병력"
-        sub="체크된 행만 세부 입력이 활성화됩니다.">
-        <div style={{ overflowX: 'auto' }}>
-          <table className="table" style={{ minWidth: 800 }}>
-            <thead>
-              <tr>
-                <th className="col-check"></th>
-                <th style={{ width: 180 }}>질환</th>
-                <th style={{ width: 110 }}>진단 시기</th>
-                <th style={{ width: 90 }}>현재 치료</th>
-                <th style={{ width: 90 }}>약물 복용</th>
-                <th>비고</th>
-              </tr>
-            </thead>
-            <tbody>
-              {diseases.map((d, i) => (
-                <tr key={i} className={d.checked ? '' : 'disabled'}>
-                  <td className="col-check">
-                    <span className={`chk ${d.checked ? 'on' : ''}`}
-                      onClick={() => setDiseases(prev => prev.map((x, k) => k === i ? { ...x, checked: !x.checked } : x))} />
-                  </td>
-                  <td>
-                    <div style={{ fontWeight: 600, color: d.checked ? 'var(--ink-900)' : 'var(--ink-400)' }}>{d.name}</div>
-                    {d.sub && <div style={{ fontSize: 11, color: 'var(--ink-400)', marginTop: 2 }}>{d.sub}</div>}
-                  </td>
-                  <td>{d.checked ? d.diag : '—'}</td>
-                  <td>{d.checked ? <span className="tag blue" style={{ fontSize: 10.5 }}>{d.tx}</span> : '—'}</td>
-                  <td>{d.checked ? <span className="tag blue" style={{ fontSize: 10.5 }}>{d.med}</span> : '—'}</td>
-                  <td style={{ fontSize: 12, color: 'var(--ink-500)' }}>{d.checked ? d.memo : ''}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            <SubSection id="s1-sub-6" label="Q5" title="전신질환 병력"
+        sub="질환 체크 시 세부 항목이 활성화됩니다.">
+        <DiseaseTable diseases={diseases} setDiseases={setDiseases} />
       </SubSection>
 
       {/* 치과 주의사항 */}
@@ -4061,7 +4357,7 @@ const Section1 = () => {
 
       {/* 복용 약물 */}
       <SubSection id="s1-sub-8" label="Q7" title="복용 약물 및 약물 부작용"
-        right={<button className="btn sm"><Icon name="plus" size={12} />약물 추가</button>}>
+        right={<button className="btn sm" onClick={() => setMeds(prev => [...prev, { name: '', systemic: '', oral: '' }])}><Icon name="plus" size={12} />약물 추가</button>}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {meds.map((m, i) => (
             <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 14 }}>
@@ -4086,6 +4382,8 @@ const Section1 = () => {
       </SubSection>
 
       <ProfPanel content="문진 응답이 성실하며 치과 불안도가 중등도(14점)로 확인됩니다. 다음 회차 스케일링 전 심호흡·설명 시간을 5분 이상 확보하고, 예후 관찰 시 잇몸 출혈 부위를 우선 사진 기록해 주세요." />
+
+      <PrescanModal open={prescanOpen.open} onClose={() => setPrescanOpen({ open: false, id: null })} prescanId={prescanOpen.id} />
     </div>
   );
 };
@@ -4303,8 +4601,7 @@ const Section2 = () => {
       </SubSection>
 
       {/* 치식 차팅 하단 — 교수님께 요청/질문 */}
-      <SubSection id="s2-sub-4" label="Note" title="교수님께 요청/질문 사항"
-        sub="예: #35 교합면 우식 확인 필요, 구강 내 특정 병변 의심됨 등">
+      <SubSection id="s2-sub-4" label="Note" title="Note">
         <textarea className="textarea prof-inquiry" placeholder="교수님께 확인 요청하거나 질문할 내용을 자유롭게 작성하세요…"
           style={{ minHeight: 56 }} />
       </SubSection>
@@ -4481,186 +4778,35 @@ const Section4 = () => {
 
 Object.assign(window, { Section1, Section2, Section3, Section4 });
 
-</script>
+  </script>
 
-<!-- 9. sections-5-8.jsx: Section5, Section6, Section7, Section8, ConfettiBurst -->
-<script type="text/babel">
-/* Sections 5-8 representative components */
+  <!-- 10. Sections 5-8 (new) -->
+  <script type="text/babel">
 
-/* ============= Section 5 — Care Plan ============= */
-const Section5 = () => {
-  const [visit, setVisit] = React.useState('1회차');
-  const [checked, setChecked] = React.useState({
-    'self-brush': true,
-    'self-tools': true,
-    'edu-checkup': true,
-    'sys-related': true,
-    'caries-fluor': true,
-    'caries-solute': true,
-    'perio-scaling': true,
-    'perio-post': true,
-    'refer-dr': true,
-  });
-  const toggle = (k) => setChecked(prev => ({ ...prev, [k]: !prev[k] }));
-
-  const subsections = [
-    { id: 's5-sub-1', label: '치위생 관리 계획표' },
-  ];
-
+/* ============= Section 5 — Care Plan (Form1 + Form2) ============= */
+const ToothSelector = ({ label, selected, onToggle }) => {
+  const upper = [17,16,15,14,13,12,11,21,22,23,24,25,26,27];
+  const lower = [47,46,45,44,43,42,41,31,32,33,34,35,36,37];
+  const btn = (n) => (
+    <button key={n} onClick={() => onToggle(n)}
+      style={{
+        width:24, height:22, borderRadius:3, border:'1px solid',
+        fontSize:9, fontWeight:600, cursor:'pointer',
+        background: selected.includes(n) ? 'var(--primary)' : '#fff',
+        borderColor: selected.includes(n) ? 'var(--primary)' : 'var(--border)',
+        color: selected.includes(n) ? '#fff' : 'var(--ink-500)',
+      }}>{n}</button>
+  );
   return (
-    <div>
-      <SectionStickyHeader sectionId="s5" ko="치위생 계획" en="Dental Hygiene Care Plan"
-        progress={20} subsections={subsections} defaultReviewState="wip" />
-
-      <div className="doc-lead">
-        자가관리와 전문가 관리 계획을 하나의 표에서 통합적으로 작성합니다.
-      </div>
-
-      <SubSection id="s5-sub-1" label="Plan Table" title="치위생 관리 계획표"
-        sub="항목 체크 → 세부 내용 기입 순으로 작성합니다."
-        right={
-          <div className="tabs">
-            {['1회차', '2회차', '3회차'].map(v => (
-              <button key={v} className={`tab ${visit === v ? 'active' : ''}`} onClick={() => setVisit(v)}>{v}</button>
-            ))}
-          </div>
-        }>
-        <div className="plan-table">
-          {/* ===== 자가관리 ===== */}
-          <div className="plan-section">
-            <div className="plan-section-title">
-              <span className="idx">①</span>
-              <span>자가관리 <em>Self-care Management</em></span>
-            </div>
-
-            <PlanRow
-              cat="자가실천"
-              items={[
-                { key: 'self-brush', label: '칫솔질 교육',
-                  extra: (
-                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 6 }}>
-                      <CheckGroup options={['Rolling', 'Bass', '1회/1주', '2회/1부', '3회 이상/1부']} value={['Bass', '2회/1부']} onChange={()=>{}} />
-                    </div>
-                  )
-                },
-                { key: 'self-tools', label: '구강관리용품 추천 및 사용법 교육',
-                  extra: (
-                    <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
-                      <CheckGroup options={['치실', '치간칫솔', '구강양치액', '1회/1주', '2회/1부', '3회 이상/1부']} value={['치실', '치간칫솔']} onChange={()=>{}} />
-                    </div>
-                  )
-                },
-              ]}
-              details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{ minHeight: 80 }} defaultValue="Modified Bass 시연 · 치간칫솔 SS 사이즈 사용법 지도. 취침 전 치실 매일 사용 강조." />}
-              checked={checked}
-              toggle={toggle}
-            />
-
-            <PlanRow
-              cat="교육사항"
-              items={[
-                { key: 'edu-checkup', label: '정기적 치과검진 권고' },
-                { key: 'edu-smoke', label: '흡연 관련 구강보건교육' },
-                { key: 'edu-drink', label: '음주 관련 구강보건교육' },
-                { key: 'edu-nutri', label: '영양 관련 구강보건교육' },
-                { key: 'edu-etc', label: '기타 교육사항', extra: (<input className="input" style={{ marginTop: 6, padding: '5px 10px', fontSize: 12 }} placeholder="내용" />) },
-              ]}
-              details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{ minHeight: 80 }} defaultValue="6개월 정기검진 안내. 스낵/설탕 함유 음료 섭취 후 물 헹구기 지도." />}
-              checked={checked}
-              toggle={toggle}
-            />
-
-            <PlanRow
-              cat="전신질환자"
-              items={[
-                { key: 'sys-related', label: '전신질환 관련 보건교육',
-                  extra: (
-                    <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
-                      <CheckGroup options={['질환정보', '식이관련', '구강관리방법']} value={['질환정보', '구강관리방법']} onChange={()=>{}} />
-                    </div>
-                  )
-                },
-              ]}
-              details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{ minHeight: 60 }} defaultValue="당뇨: 혈당 관리와 치주염의 상호작용. 매 식후 15분 이내 칫솔질 권장." />}
-              detailsLabel="이론적 배경 (근거출처 및 내용)"
-              checked={checked}
-              toggle={toggle}
-            />
-          </div>
-
-          {/* ===== 전문가관리 ===== */}
-          <div className="plan-section">
-            <div className="plan-section-title">
-              <span className="idx">②</span>
-              <span>전문가 관리 <em>Professional Care</em></span>
-            </div>
-
-            <PlanRow
-              cat="우식관리"
-              items={[
-                { key: 'caries-fluor', label: '치면열구전색' },
-                { key: 'caries-solute', label: '불소도포',
-                  extra: (
-                    <div style={{ marginTop: 6 }}>
-                      <CheckGroup options={['불소겔', '불소이온', '불소바니쉬', '기타']} value={['불소바니쉬']} onChange={()=>{}} />
-                    </div>
-                  )
-                },
-              ]}
-              teethSelectorHint
-              details={<textarea className="textarea" placeholder="세부 내용" style={{ minHeight: 60 }} defaultValue="16, 26, 36, 46 열구전색 계획. 불소바니쉬는 전악 3개월 간격 도포." />}
-              checked={checked}
-              toggle={toggle}
-            />
-
-            <PlanRow
-              cat="치주관리"
-              items={[
-                { key: 'perio-scaling', label: '치석제거' },
-                { key: 'perio-pro', label: '전문가 치면세균막 관리',
-                  extra: (
-                    <div style={{ marginTop: 6 }}>
-                      <CheckGroup options={['와타나베칫솔질', 'Rubber cup', 'Bristle brush', 'Eva tip 이용 PMTC', 'Flossing']} value={['Rubber cup', 'Eva tip 이용 PMTC']} onChange={()=>{}} />
-                    </div>
-                  )
-                },
-                { key: 'perio-cx', label: '항균제 적용',
-                  extra: (
-                    <div style={{ marginTop: 6 }}>
-                      <CheckGroup options={['Chlorhexidine', 'Listerine', '기타']} value={['Chlorhexidine']} onChange={()=>{}} />
-                    </div>
-                  )
-                },
-                { key: 'perio-post', label: '치주치료 후 지각과민증 완화를 위한 처치',
-                  extra: (
-                    <div style={{ marginTop: 6 }}>
-                      <CheckGroup options={['불소바니쉬', '기타']} value={['불소바니쉬']} onChange={()=>{}} />
-                    </div>
-                  )
-                },
-              ]}
-              teethSelectorHint
-              details={<textarea className="textarea" placeholder="세부 내용" style={{ minHeight: 60 }} defaultValue="전악 스케일링 및 상하악 대구치 SRP. 시술 후 지각과민 부위 불소 바니쉬 도포." />}
-              checked={checked}
-              toggle={toggle}
-            />
-
-            <PlanRow
-              cat="기타"
-              items={[
-                { key: 'refer-dr', label: '전문의 의뢰', extra: <input className="input" style={{ marginTop: 6, padding: '5px 10px', fontSize: 12 }} placeholder="의뢰 내용" defaultValue="치아우식증 치료실 의뢰됨" /> },
-                { key: 'refer-etc', label: '기타', extra: <input className="input" style={{ marginTop: 6, padding: '5px 10px', fontSize: 12 }} placeholder="내용" /> },
-              ]}
-              details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{ minHeight: 60 }} defaultValue="26번 우식 진행 소견 → 보존과 의뢰. 위상차 재확인 후 필요시 SRP 재계획." />}
-              detailsLabel="이론적 배경 (근거출처 및 내용)"
-              checked={checked}
-              toggle={toggle}
-            />
-          </div>
+    <div style={{ marginTop:8 }}>
+      {label && <div style={{ fontSize:10.5, color:'var(--ink-500)', marginBottom:3, fontWeight:600 }}>{label}</div>}
+      <div style={{ display:'flex', gap:1, flexWrap:'nowrap', overflowX:'auto', paddingBottom:2 }}>{upper.map(btn)}</div>
+      <div style={{ display:'flex', gap:1, flexWrap:'nowrap', overflowX:'auto', paddingTop:2 }}>{lower.map(btn)}</div>
+      {selected.length > 0 && (
+        <div style={{ marginTop:4, display:'flex', gap:3, flexWrap:'wrap' }}>
+          {selected.sort((a,b)=>a-b).map(n=><span key={n} className="tooth-tag">#{n}</span>)}
         </div>
-      </SubSection>
-
-      <ProfPanel content="자가관리·전문가 관리 계획이 세밀하게 구조화되어 있으며, 목표별 치아 번호와 이론적 배경이 명확합니다." />
+      )}
     </div>
   );
 };
@@ -4675,96 +4821,600 @@ const PlanRow = ({ cat, items, details, detailsLabel, checked, toggle, teethSele
             <span className={`chk ${checked[it.key] ? 'on' : ''}`} onClick={() => toggle(it.key)} />
             <span>{it.label}</span>
           </label>
-          {it.extra}
+          {checked[it.key] && it.extra}
         </div>
       ))}
-      {teethSelectorHint && (
-        <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: 11.5, color: 'var(--ink-500)' }}>대상 치아:</span>
-          {[16, 26, 36, 46].map(t => <span key={t} className="tooth-tag">#{t}</span>)}
-          <button className="btn sm" style={{ padding: '3px 8px', fontSize: 11 }}>치식 팝업</button>
+      {teethSelectorHint && checked && Object.values(checked).some(Boolean) && (
+        <div style={{ marginTop:6 }}>
+          <span style={{ fontSize:11, color:'var(--ink-500)' }}>대상 치아 (치아 번호 클릭):</span>
         </div>
       )}
     </div>
     <div className="plan-details">
-      <div className="plan-details-label">{detailsLabel || '세부 구강보건교육 내용'}</div>
+      {detailsLabel && <div className="plan-details-label">{detailsLabel}</div>}
       {details}
     </div>
   </div>
 );
 
-/* ============= Section 6 — Intervention Record ============= */
-const Section6 = () => {
-  const subsections = [
-    { id: 's6-sub-1', label: '자유 서식 에디터' },
-  ];
-  return (
-    <div>
-      <SectionStickyHeader sectionId="s6" ko="치위생 수행 기록" en="Dental Hygiene Intervention Record"
-        progress={0} subsections={subsections} defaultReviewState="empty" />
+/* ---- Form 1: full form with tooth selectors ---- */
+const Section5Form1 = ({ visit }) => {
+  const [checked, setChecked] = React.useState({
+    'self-brush':true, 'self-tools':true, 'edu-checkup':true,
+    'sys-related':false, 'caries-fluor':true, 'caries-fluor2':false,
+    'perio-scaling':true, 'perio-pro':true, 'perio-cx':false, 'perio-post':true,
+    'refer-dr':false, 'refer-etc':false,
+  });
+  const toggle = k => setChecked(prev => ({...prev, [k]: !prev[k]}));
 
-      <div className="doc-lead">
-        자유서식(양식 1)과 구조화 입력(양식 2)을 상황에 맞게 사용하세요.
+  const [cariesTeeth, setCariesTeeth] = React.useState([16,26,36,46]);
+  const [perioTeeth, setPerioTeeth] = React.useState([14,15,24,25]);
+  const toggleCaries = n => setCariesTeeth(prev => prev.includes(n)?prev.filter(x=>x!==n):[...prev,n]);
+  const togglePerio = n => setPerioTeeth(prev => prev.includes(n)?prev.filter(x=>x!==n):[...prev,n]);
+
+  const [brushMethod, setBrushMethod] = React.useState([]);
+  const [toolSubs, setToolSubs] = React.useState([]);
+  const [fluorType, setFluorType] = React.useState([]);
+  const [proMethod, setProMethod] = React.useState([]);
+  const [antiBac, setAntiBac] = React.useState([]);
+
+  return (
+    <div className="plan-table">
+      {/* 자가관리 */}
+      <div className="plan-section">
+        <div className="plan-section-title"><span className="idx">①</span><span>자가관리 <em>Self-care Management</em></span></div>
+        <PlanRow cat="자가실천"
+          items={[
+            { key:'self-brush', label:'칫솔질 교육',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['Rolling','Bass','1회/1주','2회/1부','3회 이상/1부']} value={brushMethod} onChange={setBrushMethod} />
+                </div>
+              )
+            },
+            { key:'self-tools', label:'구강관리용품 추천 및 사용법 교육',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['치실','치간칫솔','구강양치액','1회/1주','2회/1부','3회 이상/1부']} value={toolSubs} onChange={setToolSubs} />
+                </div>
+              )
+            },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{minHeight:80}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="교육사항"
+          items={[
+            { key:'edu-checkup', label:'정기적 치과검진 권고' },
+            { key:'edu-smoke',   label:'흡연 관련 구강보건교육' },
+            { key:'edu-drink',   label:'음주 관련 구강보건교육' },
+            { key:'edu-nutri',   label:'영양 관련 구강보건교육' },
+            { key:'edu-etc',     label:'기타 교육사항:', extra:<input className="input" style={{marginTop:6,padding:'4px 8px',fontSize:12}} placeholder="내용"/> },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{minHeight:80}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="전신질환자②"
+          items={[
+            { key:'sys-related', label:'전신질환 관련 보건교육',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['질환정보','식이관련','구강관리방법','기타']} value={[]} onChange={()=>{}} />
+                  <label style={{display:'flex',alignItems:'center',gap:6,marginTop:6,cursor:'pointer'}}>
+                    <span className="chk" /> <span style={{fontSize:12}}>전문가 의뢰</span>
+                  </label>
+                </div>
+              )
+            },
+          ]}
+          details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{minHeight:60}} />}
+          detailsLabel="이론적 배경 (근거출처 및 내용)"
+          checked={checked} toggle={toggle}
+        />
       </div>
 
-      <SubSection id="s6-sub-1" label="Form 1" title="양식 1 — 자유 서식 에디터"
+      {/* 전문가관리 */}
+      <div className="plan-section">
+        <div className="plan-section-title"><span className="idx">②</span><span>전문가 관리 <em>Professional Care</em></span></div>
+        <PlanRow cat="우식관리"
+          items={[
+            { key:'caries-fluor', label:'치면열구전색',
+              extra:<ToothSelector selected={cariesTeeth} onToggle={toggleCaries} />
+            },
+            { key:'caries-fluor2', label:'불소도포',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['불소겔','불소이온','불소바니쉬','기타']} value={fluorType} onChange={setFluorType} />
+                  <ToothSelector selected={[]} onToggle={()=>{}} />
+                </div>
+              )
+            },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 내용" style={{minHeight:80}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="치주관리"
+          items={[
+            { key:'perio-scaling', label:'치석제거',
+              extra:<ToothSelector selected={perioTeeth} onToggle={togglePerio} />
+            },
+            { key:'perio-pro', label:'전문가 치면세균막 관리',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['와타나베칫솔질','Rubber cup','Bristle brush','Eva tip 이용 PMTC','Flossing']} value={proMethod} onChange={setProMethod} />
+                  <ToothSelector selected={[]} onToggle={()=>{}} />
+                </div>
+              )
+            },
+            { key:'perio-cx', label:'항균제 적용',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['Chlorhexidine','Listerine','기타']} value={antiBac} onChange={setAntiBac} />
+                  {antiBac.includes('기타') && <input className="input" style={{marginTop:4,padding:'4px 8px',fontSize:12}} placeholder="기타"/>}
+                  <ToothSelector selected={[]} onToggle={()=>{}} />
+                </div>
+              )
+            },
+            { key:'perio-post', label:'치주치료 후 지각과민증 완화를 위한 처치',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['불소바니쉬','기타']} value={[]} onChange={()=>{}} />
+                  {false && <input className="input" style={{marginTop:4,padding:'4px 8px',fontSize:12}} placeholder="기타"/>}
+                  <ToothSelector selected={[]} onToggle={()=>{}} />
+                </div>
+              )
+            },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 내용" style={{minHeight:80}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="기타"
+          items={[
+            { key:'refer-dr',  label:'전문의 의뢰:', extra:<input className="input" style={{marginTop:6,padding:'4px 8px',fontSize:12}} placeholder="의뢰 내용"/> },
+            { key:'refer-etc', label:'기타:',        extra:<input className="input" style={{marginTop:6,padding:'4px 8px',fontSize:12}} placeholder="내용"/> },
+          ]}
+          details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{minHeight:60}} />}
+          detailsLabel="이론적 배경 (근거출처 및 내용)"
+          checked={checked} toggle={toggle}
+        />
+      </div>
+    </div>
+  );
+};
+
+/* ---- Form 2: simplified, no tooth selectors ---- */
+const Section5Form2 = ({ visit }) => {
+  const [checked, setChecked] = React.useState({
+    'self-brush':true,'self-tools':false,'edu-checkup':true,
+    'sys-related':false,'caries-fluor':true,'caries-fluor2':false,
+    'perio-scaling':true,'perio-pro':false,'perio-cx':false,'perio-post':false,
+    'refer-dr':false,'refer-etc':false,
+  });
+  const toggle = k => setChecked(prev => ({...prev, [k]: !prev[k]}));
+
+  return (
+    <div className="plan-table">
+      <div className="plan-section">
+        <div className="plan-section-title"><span className="idx">①</span><span>자가관리 <em>Self-care Management</em></span></div>
+        <PlanRow cat="자가실천"
+          items={[
+            { key:'self-brush', label:'칫솔질 교육' },
+            { key:'self-tools', label:'구강관리용품 추천 및 사용법 교육' },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{minHeight:80}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="교육사항"
+          items={[
+            { key:'edu-checkup', label:'정기적 치과검진 권고' },
+            { key:'edu-smoke',   label:'흡연 관련 구강보건교육' },
+            { key:'edu-drink',   label:'음주 관련 구강보건교육' },
+            { key:'edu-nutri',   label:'영양 관련 구강보건교육' },
+            { key:'edu-etc',     label:'기타 교육사항:', extra:<input className="input" style={{marginTop:6,padding:'4px 8px',fontSize:12}} placeholder="내용"/> },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 구강보건교육 내용" style={{minHeight:80}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="전신질환자②"
+          items={[
+            { key:'sys-related', label:'전신질환 관련 보건교육',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['질환정보','식이관련','구강관리방법']} value={[]} onChange={()=>{}} />
+                </div>
+              )
+            },
+          ]}
+          details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{minHeight:60}} />}
+          detailsLabel="이론적 배경 (근거출처 및 내용)"
+          checked={checked} toggle={toggle}
+        />
+      </div>
+
+      <div className="plan-section">
+        <div className="plan-section-title"><span className="idx">③</span><span>전문가 관리 <em>Professional Care</em></span></div>
+        <PlanRow cat="우식관리"
+          items={[
+            { key:'caries-fluor', label:'치면열구전색' },
+            { key:'caries-fluor2', label:'불소도포',
+              extra:<CheckGroup options={['불소겔','불소이온','불소바니쉬','기타']} value={[]} onChange={()=>{}} />
+            },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 내용" style={{minHeight:60}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="치주관리"
+          items={[
+            { key:'perio-scaling', label:'치석제거' },
+            { key:'perio-pro', label:'전문가 치면세균막 관리',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['와타나베칫솔질','Rubber cup','Bristle brush','Eva tip 이용 PMTC','Flossing']} value={[]} onChange={()=>{}} />
+                </div>
+              )
+            },
+            { key:'perio-cx', label:'항균제 적용',
+              extra:(
+                <div style={{marginTop:6}}>
+                  <CheckGroup options={['Chlorhexidine','Listerine','기타']} value={[]} onChange={()=>{}} />
+                </div>
+              )
+            },
+            { key:'perio-post', label:'치주치료 후 지각과민증 완화를 위한 처치',
+              extra:<CheckGroup options={['불소바니쉬','기타']} value={[]} onChange={()=>{}} />
+            },
+          ]}
+          details={<textarea className="textarea" placeholder="세부 내용" style={{minHeight:60}} />}
+          checked={checked} toggle={toggle}
+        />
+        <PlanRow cat="기타"
+          items={[
+            { key:'refer-dr',  label:'전문의 의뢰:', extra:<input className="input" style={{marginTop:6,padding:'4px 8px',fontSize:12}} placeholder="의뢰 내용"/> },
+            { key:'refer-etc', label:'기타:',        extra:<input className="input" style={{marginTop:6,padding:'4px 8px',fontSize:12}} placeholder="내용"/> },
+          ]}
+          details={<textarea className="textarea" placeholder="이론적 배경 (근거출처 및 내용)" style={{minHeight:60}} />}
+          detailsLabel="이론적 배경 (근거출처 및 내용)"
+          checked={checked} toggle={toggle}
+        />
+      </div>
+    </div>
+  );
+};
+
+const Section5 = () => {
+  const [visit, setVisit] = React.useState('1회차');
+  const [formType, setFormType] = React.useState('form1');
+  const subsections = [{ id:'s5-sub-1', label:'치위생 관리 계획표' }];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s5" ko="치위생 계획" en="Dental Hygiene Care Plan"
+        progress={20} subsections={subsections} defaultReviewState="wip" />
+      <div className="doc-lead">자가관리와 전문가 관리 계획을 하나의 표에서 통합적으로 작성합니다.</div>
+
+      <SubSection id="s5-sub-1" label="Plan Table" title="치위생 관리 계획표"
+        sub="항목 체크 → 세부 내용 기입 순으로 작성합니다."
         right={
-          <div className="tabs">
-            <button className="tab active">양식 1</button>
-            <button className="tab">양식 2</button>
+          <div style={{display:'flex', gap:10, alignItems:'center'}}>
+            <div className="tabs" style={{marginRight:6}}>
+              {['양식1','양식2'].map(f => (
+                <button key={f} className={`tab ${formType===(f==='양식1'?'form1':'form2')?'active':''}`}
+                  onClick={()=>setFormType(f==='양식1'?'form1':'form2')}>{f}</button>
+              ))}
+            </div>
+            <div className="tabs">
+              {['1회차','2회차','3회차'].map(v => (
+                <button key={v} className={`tab ${visit===v?'active':''}`} onClick={()=>setVisit(v)}>{v}</button>
+              ))}
+            </div>
           </div>
         }>
-        <div className="rich-toolbar">
-          <div className="grp">
-            <button className="rt-btn b" title="굵게">B</button>
-            <button className="rt-btn i" title="기울임">I</button>
-            <button className="rt-btn u" title="밑줄">U</button>
-          </div>
-          <div className="sep" />
-          <div className="grp">
-            <button className="rt-btn">H1</button>
-            <button className="rt-btn">H2</button>
-            <button className="rt-btn" style={{ fontSize: 11 }}>본문</button>
-          </div>
-          <div className="sep" />
-          <div className="grp" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: 'var(--ink-400)' }}>형광펜</span>
-            <span className="rt-hl" style={{ background: '#FEF08A' }} />
-            <span className="rt-hl" style={{ background: '#BEF264' }} />
-            <span className="rt-hl" style={{ background: '#BAE6FD' }} />
-            <span className="rt-hl" style={{ background: '#FBCFE8' }} />
-            <button className="rt-btn" style={{ fontSize: 11 }}>✕</button>
-          </div>
-          <div className="sep" />
-          <div className="grp" style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: 'var(--ink-400)' }}>글자색</span>
-            <span className="rt-color" style={{ background: '#DC2626' }} />
-            <span className="rt-color" style={{ background: '#2A6FDB' }} />
-            <span className="rt-color" style={{ background: '#10B981' }} />
-            <span className="rt-color" style={{ background: '#0F172A' }} />
-          </div>
-          <div className="sep" />
-          <div className="grp">
-            <button className="rt-btn" title="기호 삽입">Ω</button>
-            <button className="rt-btn" title="목록">•</button>
-            <button className="rt-btn" title="번호목록">1.</button>
-          </div>
-        </div>
-        <div className="rt-editor">
-          <h3>2회차 스케일링 수행 기록</h3>
-          <p><b>일시:</b> 2026.07.20 14:30–16:00 (90분) · <b>담당:</b> 정하윤</p>
-          <h4>1. 사전 준비</h4>
-          <p>혈압 <mark className="hl-y">138/88 mmHg</mark>, 혈당 142 mg/dL (식후 1시간 30분). 대상자와 오늘 수행 절차 및 예상 감각(진동·차가움)에 대해 설명하고 <mark className="hl-b">서면 동의</mark> 확인.</p>
-          <h4>2. 수행 내용</h4>
-          <p>· 초음파 스케일러(모드 P, 강도 3)로 상·하악 전악 <b>SRP</b> 시행<br/>
-             · <span style={{ color: '#DC2626' }}>16, 26, 46 부위</span> 인접면 집중 관리<br/>
-             · Air-polishing (Erythritol) 30초 × 4분면</p>
-          <h4>3. 대상자 반응 및 다음 계획</h4>
-          <p>중간 휴식 2회 요청. 종료 후 통증·불편감 없음. 다음 내원 시 <mark className="hl-g">치실 시연 재확인</mark> 계획.</p>
-        </div>
+        {formType==='form1' ? <Section5Form1 visit={visit} /> : <Section5Form2 visit={visit} />}
       </SubSection>
 
-      <ProfPanel content="스케일링 프로토콜 준수 상태가 양호하며 대상자 반응 기록이 상세합니다." />
+      <ProfPanel content="자가관리·전문가 관리 계획이 세밀하게 구조화되어 있습니다." />
+    </div>
+  );
+};
+
+
+/* ============= Section 6 — Intervention Record (Form1 + Form2) ============= */
+const RichEditor = ({ id, placeholder, defaultVal }) => {
+  const ref = React.useRef(null);
+  const exec = (cmd, val) => { document.execCommand(cmd, false, val || null); ref.current && ref.current.focus(); };
+  const insertHL = (cls) => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount) {
+      const range = sel.getRangeAt(0);
+      const mark = document.createElement('mark');
+      mark.className = cls;
+      try { range.surroundContents(mark); } catch(e) { exec('insertHTML', `<mark class="${cls}">${sel.toString()}</mark>`); }
+      sel.removeAllRanges();
+    }
+  };
+  React.useEffect(() => {
+    if (ref.current && defaultVal) ref.current.innerHTML = defaultVal;
+  }, []);
+
+  return (
+    <div>
+      <div className="rich-toolbar">
+        <div className="grp">
+          <button className="rt-btn b" title="굵게" onClick={()=>exec('bold')}><b>B</b></button>
+          <button className="rt-btn i" title="기울기" onClick={()=>exec('italic')}><i>I</i></button>
+          <button className="rt-btn u" title="밑줄" onClick={()=>exec('underline')}><u>U</u></button>
+        </div>
+        <div className="sep"/>
+        <div className="grp" style={{gap:4}}>
+          <span style={{fontSize:10.5, color:'var(--ink-500)', paddingRight:2}}>형광펜</span>
+          {[['hl-y','#FEF3C7'],['hl-g','#D1FAE5'],['hl-b','#DBEAFE'],['hl-p','FCE7F3']].map(([cls,bg])=>(
+            <button key={cls} className="rt-hl" style={{background:bg||('#'+cls.slice(3))}} title={cls} onClick={()=>insertHL(cls)} />
+          ))}
+        </div>
+        <div className="sep"/>
+        <div className="grp">
+          <button className="rt-btn" title="글머리" onClick={()=>exec('insertUnorderedList')}>• 목록</button>
+          <button className="rt-btn" title="번호목록" onClick={()=>exec('insertOrderedList')}>1. 목록</button>
+        </div>
+        <div className="sep"/>
+        <div className="grp">
+          <button className="rt-btn" title="실행취소" onClick={()=>exec('undo')}>↩</button>
+          <button className="rt-btn" title="다시실행" onClick={()=>exec('redo')}>↪</button>
+        </div>
+      </div>
+      <div id={id} ref={ref} className="rt-editor" contentEditable suppressContentEditableWarning
+        style={{minHeight:200, outline:'none'}}
+        data-placeholder={placeholder}
+      />
+    </div>
+  );
+};
+
+/* ---- Form 2: structured multi-visit table ---- */
+const Section6Form2 = () => {
+  const [goals, setGoals] = React.useState([{ id:1, text:'' }]);
+  const addGoal = () => setGoals(prev => [...prev, { id: Date.now(), text:'' }]);
+  const removeGoal = id => setGoals(prev => prev.filter(g=>g.id!==id));
+  const updateGoal = (id, text) => setGoals(prev => prev.map(g=>g.id===id?{...g,text}:g));
+
+  const VISITS = ['1차','2차','3차'];
+
+  // Each row: { key, cat, subcat, items:[] }
+  // items have { key, label, subs:[], hasTeeth, treatBtn }
+  const ROWS = [
+    { key:'self-prac', cat:'자가관리①', subcat:'자가실천', items:[
+      { key:'sp1', label:'환자 맞춤형 칫솔질 교육', subs:[] },
+      { key:'sp2', label:'환자 맞춤형 구강관리용품 교육', subs:[] },
+      { key:'sp3', label:'기타', subs:[], isEtc:true },
+    ]},
+    { key:'edu', cat:'자기관리①', subcat:'교육사항', items:[
+      { key:'edu1', label:'정기적 치과검진 권고', subs:[] },
+      { key:'edu2', label:'흡연관련 구강보건교육', subs:[] },
+      { key:'edu3', label:'음주관련 구강보건교육', subs:[] },
+      { key:'edu4', label:'영양관련 구강보건교육', subs:[] },
+      { key:'edu5', label:'기타', subs:[], isEtc:true },
+    ]},
+    { key:'systemic', cat:'전신질환자②', subcat:'전신질환자②', isLong:true, items:[
+      { key:'sys1', label:'전신질환자 (구강보건교육)', subs:[] },
+    ]},
+    { key:'caries', cat:'전문가관리④', subcat:'우식관리', items:[
+      { key:'c1', label:'치면열구전색', treatBtn:true },
+      { key:'c2', label:'불소도포', subs:['불소겔','불소이온','불소바니쉬'], treatBtn:true },
+    ]},
+    { key:'perio', cat:'전문가관리④', subcat:'치주관리', items:[
+      { key:'p1', label:'치석제거', treatBtn:true },
+      { key:'p2', label:'전문가 치면세균막 관리', subs:['와타나베칫솔질','Rubber cup','Bristle brush','Eva tip 이용 PMTC','Flossing'], treatBtn:true },
+      { key:'p3', label:'항균제 적용', subs:['Chlorhexidine','Listerine','기타'], treatBtn:true },
+      { key:'p4', label:'치주치료 후 지각과민증 완화 처치', subs:['불소바니쉬','기타'], treatBtn:true },
+    ]},
+    { key:'refer', cat:'전문가의뢰⑤', subcat:'전문가의뢰', items:[
+      { key:'r1', label:'전문의 의뢰', subs:['치아우식증 치료팀','치주질환 치료팀'], isEtc:true },
+    ]},
+  ];
+
+  // State: checked items, sub-selections, notes per visit
+  const [itemChecked, setItemChecked] = React.useState({});
+  const [itemSubs, setItemSubs] = React.useState({});
+  const [notes, setNotes] = React.useState({});  // key: `${rowKey}-${visitIdx}` → text
+  const [etcVals, setEtcVals] = React.useState({});
+  const [memo, setMemo] = React.useState('');
+
+  const toggleItem = (key) => setItemChecked(p => ({...p,[key]:!p[key]}));
+  const toggleSub = (key, sub) => setItemSubs(p => ({...p,[key]: (p[key]||[]).includes(sub) ? (p[key]||[]).filter(s=>s!==sub) : [...(p[key]||[]),sub]}));
+  const setNote = (key, v) => setNotes(p=>({...p,[key]:v}));
+
+  // Group rows by cat for merged cells
+  const catGroups = {};
+  ROWS.forEach((r,i) => { if (!catGroups[r.cat]) catGroups[r.cat] = []; catGroups[r.cat].push(i); });
+
+  return (
+    <div>
+      {/* Goal setting */}
+      <div style={{ background:'#FFFEF0', border:'1px solid #FDE68A', borderRadius:12, padding:18, marginBottom:18 }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+          <div style={{ fontSize:13, fontWeight:700, color:'#92400E' }}>
+            ◎ 대상자의 구강건강증진을 위한 목표설정 <span style={{fontWeight:400,fontSize:12}}>(구체적으로)</span>
+          </div>
+          <button className="btn sm" onClick={addGoal}><Icon name="plus" size={12}/>+ 목표 추가</button>
+        </div>
+        {goals.map((g,gi) => (
+          <div key={g.id} style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:8, padding:10, marginBottom:8, position:'relative' }}>
+            <div style={{ fontSize:11.5, fontWeight:700, color:'var(--primary)', marginBottom:6 }}>○ 목표 {gi+1}</div>
+            {goals.length > 1 && (
+              <button onClick={()=>removeGoal(g.id)} style={{ position:'absolute', top:8, right:8, background:'none', border:'none', color:'var(--ink-400)', cursor:'pointer', fontSize:16 }}>×</button>
+            )}
+            <textarea className="textarea" style={{minHeight:40}} placeholder="목표 내용 입력..."
+              value={g.text} onChange={e=>updateGoal(g.id,e.target.value)} />
+          </div>
+        ))}
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:8, fontSize:12, color:'var(--ink-500)' }}>
+          <span>※ 본인은 작성자(학생)와 함께 구강건강증진 목표를 설정하였음으로, 이에 동의합니다.</span>
+          <span style={{marginLeft:'auto'}}>대상자 성명: <input className="input" style={{display:'inline',width:80,padding:'3px 8px',fontSize:12}}/></span>
+        </div>
+      </div>
+
+      {/* Main table */}
+      <div style={{ overflowX:'auto' }}>
+        <table className="table" style={{ minWidth:900, borderCollapse:'separate', borderSpacing:0 }}>
+          <thead>
+            <tr style={{ background:'var(--primary-50)' }}>
+              <th style={{ width:80, textAlign:'center' }}>구분</th>
+              <th style={{ width:260 }}>항목</th>
+              <th colSpan={3} style={{ textAlign:'center' }}>세부 내용</th>
+            </tr>
+            <tr style={{ background:'var(--surface-50)' }}>
+              <th></th>
+              <th></th>
+              {VISITS.map(v => <th key={v} style={{ width:160, textAlign:'center' }}>{v}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {ROWS.map((row, rowIdx) => {
+              const isFirstInCat = catGroups[row.cat][0] === rowIdx;
+              const catRowSpan = catGroups[row.cat].length;
+              return row.items.map((item, itemIdx) => (
+                <tr key={item.key} style={{ background: itemChecked[item.key] ? 'rgba(42,111,219,0.03)' : 'transparent' }}>
+                  {/* Cat cell — only on first item of first row in cat */}
+                  {rowIdx === catGroups[row.cat][0] && itemIdx === 0 && (
+                    <td rowSpan={ROWS.filter(r=>r.cat===row.cat).reduce((s,r)=>s+r.items.length,0)}
+                      style={{ textAlign:'center', fontWeight:700, fontSize:12, verticalAlign:'middle', background:'var(--surface-50)', borderRight:'1px solid var(--border)', color:'var(--primary)' }}>
+                      {row.cat}
+                    </td>
+                  )}
+                  {/* Subcat — first item in row */}
+                  {itemIdx === 0 && row.items.length > 1 ? (
+                    <td rowSpan={row.items.length} style={{ verticalAlign:'top', borderRight:'1px solid var(--border)', paddingTop:10 }}>
+                      <div style={{ fontWeight:700, fontSize:12, color:'var(--ink-700)', marginBottom:6 }}>{row.subcat}</div>
+                      {/* First item checkbox */}
+                      <label style={{ display:'flex', alignItems:'flex-start', gap:6, cursor:'pointer', marginBottom:6 }}>
+                        <span className={`chk ${itemChecked[item.key]?'on':''}`} onClick={()=>toggleItem(item.key)} style={{flexShrink:0, marginTop:2}}/>
+                        <span style={{ fontSize:12.5, color: itemChecked[item.key]?'var(--ink-900)':'var(--ink-600)', fontWeight: itemChecked[item.key]?600:400 }}>{item.label}</span>
+                      </label>
+                      {itemChecked[item.key] && item.subs && item.subs.length > 0 && (
+                        <div style={{ paddingLeft:20, display:'flex', flexWrap:'wrap', gap:4, marginBottom:4 }}>
+                          {item.subs.map(s => (
+                            <label key={s} style={{ display:'inline-flex', alignItems:'center', gap:4, cursor:'pointer' }}>
+                              <span className={`chk ${(itemSubs[item.key]||[]).includes(s)?'on':''}`} onClick={()=>toggleSub(item.key,s)} style={{width:12,height:12}}/>
+                              <span style={{fontSize:11}}>{s}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                      {item.isEtc && itemChecked[item.key] && (
+                        <input className="input" style={{ marginTop:4, padding:'4px 8px', fontSize:11.5 }} placeholder="기타 내용"
+                          value={etcVals[item.key]||''} onChange={e=>setEtcVals(p=>({...p,[item.key]:e.target.value}))}/>
+                      )}
+                    </td>
+                  ) : itemIdx === 0 ? (
+                    /* Single item row — combined subcat+item */
+                    <td style={{ verticalAlign:'top', borderRight:'1px solid var(--border)' }}>
+                      <label style={{ display:'flex', alignItems:'flex-start', gap:6, cursor:'pointer' }}>
+                        <span className={`chk ${itemChecked[item.key]?'on':''}`} onClick={()=>toggleItem(item.key)} style={{flexShrink:0, marginTop:2}}/>
+                        <span style={{ fontSize:12.5, color: itemChecked[item.key]?'var(--ink-900)':'var(--ink-600)', fontWeight:600 }}>{item.label}</span>
+                      </label>
+                      {itemChecked[item.key] && item.subs && item.subs.length > 0 && (
+                        <div style={{ paddingLeft:20, display:'flex', flexWrap:'wrap', gap:4, marginTop:4 }}>
+                          {item.subs.map(s => (
+                            <label key={s} style={{ display:'inline-flex', alignItems:'center', gap:4, cursor:'pointer' }}>
+                              <span className={`chk ${(itemSubs[item.key]||[]).includes(s)?'on':''}`} onClick={()=>toggleSub(item.key,s)} style={{width:12,height:12}}/>
+                              <span style={{fontSize:11}}>{s}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                      {item.isEtc && itemChecked[item.key] && (
+                        <input className="input" style={{ marginTop:4, padding:'4px 8px', fontSize:11.5 }} placeholder="기타 내용"
+                          value={etcVals[item.key]||''} onChange={e=>setEtcVals(p=>({...p,[item.key]:e.target.value}))}/>
+                      )}
+                    </td>
+                  ) : (
+                    /* Subsequent items in same row's subcat — just item cell */
+                    <td style={{ verticalAlign:'top', borderRight:'1px solid var(--border)' }}>
+                      <label style={{ display:'flex', alignItems:'flex-start', gap:6, cursor:'pointer' }}>
+                        <span className={`chk ${itemChecked[item.key]?'on':''}`} onClick={()=>toggleItem(item.key)} style={{flexShrink:0, marginTop:2}}/>
+                        <span style={{ fontSize:12.5, color: itemChecked[item.key]?'var(--ink-900)':'var(--ink-600)' }}>{item.label}</span>
+                      </label>
+                      {itemChecked[item.key] && item.subs && item.subs.length > 0 && (
+                        <div style={{ paddingLeft:20, display:'flex', flexWrap:'wrap', gap:4, marginTop:4 }}>
+                          {item.subs.map(s => (
+                            <label key={s} style={{ display:'inline-flex', alignItems:'center', gap:4, cursor:'pointer' }}>
+                              <span className={`chk ${(itemSubs[item.key]||[]).includes(s)?'on':''}`} onClick={()=>toggleSub(item.key,s)} style={{width:12,height:12}}/>
+                              <span style={{fontSize:11}}>{s}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                  )}
+                  {/* Visit cells */}
+                  {VISITS.map((v,vi) => (
+                    <td key={v} style={{ verticalAlign:'top', padding:6 }}>
+                      {item.treatBtn ? (
+                        <button style={{
+                          width:'100%', padding:'6px 0', borderRadius:6, border:'1px solid var(--primary)',
+                          background: itemChecked[item.key] ? 'var(--primary)' : 'var(--surface)',
+                          color: itemChecked[item.key] ? '#fff' : 'var(--ink-400)',
+                          fontSize:11.5, fontWeight:600, cursor:'pointer',
+                        }}>처치</button>
+                      ) : (
+                        <textarea style={{
+                          width:'100%', minHeight:46, padding:'4px 6px', fontSize:11.5,
+                          border:'1px solid var(--border)', borderRadius:6, resize:'vertical',
+                          fontFamily:'inherit', background:'var(--surface)',
+                        }} placeholder="세부 내용..."
+                          value={notes[`${item.key}-${vi}`]||''}
+                          onChange={e=>setNote(`${item.key}-${vi}`, e.target.value)} />
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ));
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div style={{ marginTop:16 }}>
+        <label className="field-label">비고/특이사항</label>
+        <textarea className="textarea" style={{ minHeight:60 }} value={memo} onChange={e=>setMemo(e.target.value)} placeholder="세부 내용..." />
+      </div>
+    </div>
+  );
+};
+
+const Section6 = () => {
+  const [formType, setFormType] = React.useState('form1');
+  const subsections = [{ id:'s6-sub-1', label:'수행 기록' }];
+
+  return (
+    <div>
+      <SectionStickyHeader sectionId="s6" ko="수행 기록" en="Intervention Record"
+        progress={0} subsections={subsections} defaultReviewState="empty" />
+      <div className="doc-lead">치위생 계획에 따른 실제 수행 내용을 기록합니다.</div>
+
+      <SubSection id="s6-sub-1" label="Record" title="수행 기록"
+        right={
+          <div className="tabs">
+            {['양식1','양식2'].map(f => (
+              <button key={f} className={`tab ${formType===(f==='양식1'?'form1':'form2')?'active':''}`}
+                onClick={()=>setFormType(f==='양식1'?'form1':'form2')}>{f}</button>
+            ))}
+          </div>
+        }>
+        {formType === 'form1' ? (
+          <div>
+            <div style={{ display:'flex', gap:10, marginBottom:10 }}>
+              {['1회차','2회차','3회차'].map(v => (
+                <button key={v} className="btn sm">{v}</button>
+              ))}
+            </div>
+            <RichEditor id="s6-editor-1" placeholder="수행 내용을 자유롭게 작성하세요..."
+              defaultVal="<h3>수행 기록 — 1회차</h3><h4>자가관리 교육</h4><p>Modified Bass 시연 및 치간칫솔 사용법 교육.</p><h4>전문가 처치</h4><p>전악 스케일링 완료. #14, 15, 24, 25 SRP 시행. 불소바니쉬 전악 도포.</p>" />
+          </div>
+        ) : (
+          <Section6Form2 />
+        )}
+      </SubSection>
+      <ProfPanel content="수행 기록이 구체적으로 작성되었습니다. 처치 내용과 교육 내용이 잘 분리되어 있습니다." />
     </div>
   );
 };
@@ -4960,15 +5610,15 @@ const ConfettiBurst = () => {
 
 Object.assign(window, { Section5, Section6, Section7, Section8, ConfettiBurst });
 
-</script>
+  </script>
 
-<!-- 10. photo-and-components.jsx: PhotoModal, ComponentsShowcase, PhotoPage -->
-<script type="text/babel">
+  <!-- 11. Photo & components -->
+  <script type="text/babel">
 /* Photo Modal preview + Shared Components showcase */
 
 const PhotoModal = ({ open, onClose }) => {
   const [visit, setVisit] = React.useState('2회차');
-  const [method, setMethod] = React.useState('6매법');
+  const [method, setMethod] = React.useState('5매법');
   if (!open) return null;
 
   return (
@@ -5213,94 +5863,193 @@ const PhotoPage = ({ onOpenPhoto }) => {
 
 Object.assign(window, { PhotoModal, ComponentsShowcase, PhotoPage });
 
-</script>
+  </script>
 
-<!-- 11. PatientEditModal -->
-<script type="text/babel">
+  <!-- 12. Sidebar -->
+  <script type="text/babel">
+/* Sidebar — data-driven section list. Section index (1..N) is derived from array order
+   so sections can be re-mixed later without hardcoded numbers.
+   Sign status dots: 
+     - green  = 서명 업로드 완료
+     - white  = 서명 요청 전 (미업로드)
+     - gray   = 서명 요청 후 · 대기 중
+*/
 
-/* ========= Patient Edit Modal ========= */
-const PatientEditModal = ({ open, onClose }) => {
-  const [form, setForm] = React.useState({
-    name: '김민서',
-    dob: '1997.03.14',
-    gender: '여성',
-    address: '서울특별시 성북구 안암로 145',
-    job: '대학원생',
-    route: '지인 소개',
-    reason: '스케일링·잇몸 관리 상담',
-  });
-  if (!open) return null;
-  const set = (k) => (e) => setForm(prev => ({...prev, [k]: e.target.value}));
+const SECTIONS = [
+  { id: 'dashboard', name: '대시보드',            en: 'Overview',                progress: 62, signStatus: null,     status: 'wip' },
+  { id: 's1',        name: '초진 및 대상자 사정', en: 'Initial Interview',       progress: 100, signStatus: 'done',   status: 'done' },
+  { id: 's2',        name: '임상 검사',           en: 'Clinical Examination',    progress: 85, signStatus: 'wip',   status: 'wip' },
+  { id: 's3',        name: '구강위생 지수',       en: 'Oral Hygiene Index',      progress: 66, signStatus: 'wip',   status: 'wip' },
+  { id: 's4',        name: '치위생 진단',         en: 'DH Diagnosis',            progress: 40, signStatus: 'empty', status: 'wip' },
+  { id: 's5',        name: '치위생 계획',         en: 'DH Care Plan',            progress: 20, signStatus: 'empty', status: 'wip' },
+  { id: 's6',        name: '수행 기록',           en: 'Intervention Record',     progress: 0,  signStatus: 'empty', status: 'empty' },
+  { id: 's7',        name: '치위생 평가',         en: 'DH Evaluation',           progress: 0,  signStatus: 'empty', status: 'empty' },
+  { id: 's8',        name: '추적 관리 및 권고',   en: 'Follow-up',               progress: 0,  signStatus: 'empty', status: 'empty' },
+];
+
+const SignDot = ({ status }) => {
+  // status aligned with review status machine:
+  // 'empty' (gray outline) | 'wip' (blue) | 'review' (orange/yellow) | 'done' (green)
+  // Legacy: 'signed' → 'done', 'pending' → 'review', 'unsent' → 'empty'
+  const normalize = s => ({signed:'done', pending:'review', unsent:'empty'}[s] || s || 'empty');
+  const ns = normalize(status);
+  const map = {
+    empty:  { title: '미작성' },
+    wip:    { title: '작성 중' },
+    review: { title: '평가 요청' },
+    done:   { title: '평가 완료' },
+  };
+  if (!status) return <span className="sign-dot empty" />;
+  return <span className={`sign-dot ${ns}`} title={map[ns]?.title} />;
+};
+
+const Sidebar = ({ current, onChange }) => {
+  const sectionOnly = SECTIONS.filter(s => s.id !== 'dashboard');
+  const overall = Math.round(sectionOnly.reduce((a, s) => a + s.progress, 0) / sectionOnly.length);
+
+  const handleDownload = (format) => {
+    // Full chart export: renders all sections sequentially into a print container
+    if (format === 'pdf') {
+      // Show all sections print-mode
+      const style = document.createElement('style');
+      style.id = 'print-all-style';
+      style.textContent = `
+        @media print {
+          .sidebar, .app-header, .next-sec-btn, .main > .main-inner > div:not(.print-all-container) { display: none !important; }
+          .print-all-container { display: block !important; }
+          .print-section { page-break-after: always; page-break-inside: avoid; padding: 24px; }
+          .print-section:last-child { page-break-after: auto; }
+          @page { margin: 1.5cm; size: A4; }
+        }
+        .print-all-container { display: none; }
+      `;
+      document.head.appendChild(style);
+      // Create print container with all sections
+      const container = document.createElement('div');
+      container.className = 'print-all-container';
+      // Mount each section
+      const sectionKeys = (window.SECTIONS || []).filter(s => s.id !== 'dashboard').map(s => s.id);
+      container.innerHTML = `<div style="text-align:center;padding:32px;"><img src="/images/hystem-logo.png" style="height:48px" /><h1 style="margin-top:16px">Hy-STEP 치위생 차트</h1></div>`;
+      sectionKeys.forEach(key => {
+        const div = document.createElement('div');
+        div.className = 'print-section';
+        div.dataset.section = key;
+        div.innerHTML = `<div id="print-${key}"></div>`;
+        container.appendChild(div);
+      });
+      document.querySelector('.main-inner').appendChild(container);
+      // Render sections into print container via React portals approach
+      sectionKeys.forEach(key => {
+        const el = document.getElementById(`print-${key}`);
+        if (el && window.__sectionComponents && window.__sectionComponents[key]) {
+          ReactDOM.createRoot(el).render(React.createElement(window.__sectionComponents[key]));
+        }
+      });
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => {
+          container.remove();
+          document.getElementById('print-all-style')?.remove();
+        }, 1000);
+      }, 600);
+    } else {
+      // HTML export: full page snapshot
+      const html = '<!doctype html><html><meta charset="utf-8"><title>Hy-STEP Chart Export</title>' + document.documentElement.outerHTML + '</html>';
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'hy-step-chart.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  };
+
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: 560 }} onClick={e => e.stopPropagation()}>
-        <div className="modal-head">
-          <div>
-            <h3>대상자 정보 수정</h3>
-            <div style={{ fontSize: 12, color: 'var(--ink-500)', marginTop: 2 }}>잠금 항목(술자·타임)은 수정할 수 없습니다.</div>
-          </div>
-          <button className="close" onClick={onClose}><Icon name="close" size={14} /></button>
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <img src="/images/hystem-logo.png" alt="Hy-STEP" />
+      </div>
+
+      <div className="mini-patient">
+        <div className="row1">
+          <span className="name">김민서</span>
+          <span className="visit">2차 내원</span>
         </div>
-        <div className="modal-body">
-          <div className="grid-2" style={{ gap: '14px 20px' }}>
-            <div>
-              <label className="field-label">이름</label>
-              <input className="input" value={form.name} onChange={set('name')} />
-            </div>
-            <div>
-              <label className="field-label">생년월일</label>
-              <input className="input" value={form.dob} onChange={set('dob')} placeholder="예: 1997.03.14" />
-            </div>
-            <div>
-              <label className="field-label">성별</label>
-              <div className="radio-group">
-                {['남성','여성','기타'].map(g => (
-                  <button key={g} className={`radio-chip ${form.gender===g?'active':''}`} onClick={() => setForm(p=>({...p,gender:g}))}>
-                    <span className="dot"/>
-                    {g}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="field-label">직업</label>
-              <input className="input" value={form.job} onChange={set('job')} />
-            </div>
-            <div style={{ gridColumn: '1/-1' }}>
-              <label className="field-label">주소</label>
-              <input className="input" value={form.address} onChange={set('address')} />
-            </div>
-            <div>
-              <label className="field-label">내원 경로</label>
-              <input className="input" value={form.route} onChange={set('route')} />
-            </div>
-            <div>
-              <label className="field-label">방문이유</label>
-              <input className="input" value={form.reason} onChange={set('reason')} />
-            </div>
-            <div style={{ background: 'var(--surface-100)', borderRadius: 8, padding: '10px 14px', gridColumn: '1/-1' }}>
-              <div style={{ fontSize: 11.5, color: 'var(--ink-500)', marginBottom: 4 }}>🔒 수정 불가 항목</div>
-              <div className="grid-2" style={{ gap: '6px 20px' }}>
-                <div><span style={{ fontSize: 11, color: 'var(--ink-400)' }}>술자</span><div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-700)' }}>이지민 (2023560031)</div></div>
-                <div><span style={{ fontSize: 11, color: 'var(--ink-400)' }}>타임</span><div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-700)' }}>2026.07.20 14:30</div></div>
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
-            <button className="btn" onClick={onClose}>취소</button>
-            <button className="btn primary" onClick={onClose}><Icon name="check" size={14}/>저장</button>
-          </div>
+        <div className="meta">여성 · 만 28세</div>
+        <div className="progress-mini">
+          <div className="label"><span>전체 진행률</span><b>{overall}%</b></div>
+          <div className="bar"><span style={{ width: overall + '%' }} /></div>
         </div>
       </div>
-    </div>
+
+      <nav className="nav-scroll">
+        <div className="nav-heading">Chart Sections</div>
+        {SECTIONS.map((s, i) => {
+          const isSection = s.id !== 'dashboard';
+          // Auto-derive display index from array position (dashboard skipped)
+          const idxLabel = isSection ? String(sectionOnly.findIndex(x => x.id === s.id) + 1) : '';
+          return (
+            <button
+              key={s.id}
+              className={`nav-item ${current === s.id ? 'active' : ''}`}
+              onClick={() => onChange(s.id)}
+              title={isSection ? `Section ${idxLabel} · 교수 서명: ${s.signStatus === 'signed' ? '완료' : s.signStatus === 'pending' ? '대기' : '요청 전'}` : ''}
+            >
+              {isSection ? <SignDot status={s.signStatus} /> : <span className="sign-dot placeholder" />}
+              <span className="idx">{idxLabel}</span>
+              <span className="name">{s.name}</span>
+              <span className="pct">{s.id === 'dashboard' ? '' : `${s.progress}%`}</span>
+            </button>
+          );
+        })}
+
+        {/* Download buttons */}
+        <div className="nav-download">
+          <div className="nav-download-l">차트 파일 다운로드</div>
+          <div className="nav-download-row">
+            <button className="btn sm" onClick={() => handleDownload('pdf')}>
+              <Icon name="save" size={12} /> PDF
+            </button>
+            <button className="btn sm" onClick={() => handleDownload('html')}>
+              <Icon name="save" size={12} /> HTML
+            </button>
+          </div>
+
+        </div>
+
+
+        <div className="nav-heading" style={{ marginTop: 12 }}>Design System</div>
+        <button className={`nav-item ${current === 'components' ? 'active' : ''}`} onClick={() => onChange('components')}>
+          <span className="sign-dot placeholder" />
+          <span className="idx"></span>
+          <span className="name">공용 컴포넌트</span>
+          <span className="pct"></span>
+        </button>
+        <button className={`nav-item ${current === 'photo' ? 'active' : ''}`} onClick={() => onChange('photo')}>
+          <span className="sign-dot placeholder" />
+          <span className="idx"></span>
+          <span className="name">Photo 모달</span>
+          <span className="pct"></span>
+        </button>
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="avatar">JM</div>
+        <div className="who">
+          <b>이지민</b>
+          <span>2023560031</span>
+        </div>
+      </div>
+    </aside>
   );
 };
-Object.assign(window, { PatientEditModal });
 
-</script>
+Object.assign(window, { Sidebar, SECTIONS, SignDot });
 
-<!-- 12. app.jsx: App, DensityFloater (must be last) -->
-<script type="text/babel">
+  </script>
+
+  <!-- 13. App -->
+  <script type="text/babel">
 /* Main App: layout + routing between sections */
 
 const { useState, useEffect } = React;
@@ -5308,31 +6057,44 @@ const { useState, useEffect } = React;
 const App = () => {
   const [current, setCurrent] = useState(() => localStorage.getItem('hy-step:current') || 'dashboard');
   const [photoOpen, setPhotoOpen] = useState(false);
-  const [density, setDensity] = useState(() => localStorage.getItem('hy-step:density') || 'comfortable');
-  const [patientEditOpen, setPatientEditOpen] = useState(false);
-
-  const handleSave = React.useCallback(() => {
-    const saved = { savedAt: new Date().toISOString(), section: current };
-    localStorage.setItem('hy-step:save', JSON.stringify(saved));
-    // Visual feedback
-    const btn = document.querySelector('.btn.primary .save-label');
-    if (btn) { btn.textContent = '저장됨 ✓'; setTimeout(() => { btn.textContent = '저장하기'; }, 2000); }
-    alert('저장되었습니다. (로컬 스토리지에 보관)');
-  }, [current]);
-
   useEffect(() => {
     localStorage.setItem('hy-step:current', current);
-    // Scroll main area to top whenever section changes
+    // Fix #17: Scroll main area to top whenever section changes
     const el = document.querySelector('.main');
     if (el) el.scrollTop = 0;
   }, [current]);
-  useEffect(() => {
-    document.body.dataset.density = density;
-    localStorage.setItem('hy-step:density', density);
-  }, [density]);
 
-  // Tweaks panel
-  const [defaults] = useState({ density: 'comfortable' });
+  // Fix #31: Tab key to cycle sections
+  useEffect(() => {
+    const allKeys = ['dashboard', ...(window.SECTIONS || []).filter(s=>s.id!=='dashboard').map(s=>s.id)];
+    const handler = (e) => {
+      // Only handle Tab when not in input/textarea
+      if (e.key !== 'Tab' || ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) return;
+      if (document.activeElement?.contentEditable === 'true') return;
+      e.preventDefault();
+      setCurrent(prev => {
+        const idx = allKeys.indexOf(prev);
+        const next = e.shiftKey
+          ? allKeys[(idx - 1 + allKeys.length) % allKeys.length]
+          : allKeys[(idx + 1) % allKeys.length];
+        return next;
+      });
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  // Fix #18: Auto-save — any storage update persists
+  useEffect(() => {
+    const handler = () => {
+      const saved = localStorage.getItem('hy-step:save');
+      if (!saved) localStorage.setItem('hy-step:save', new Date().toISOString());
+    };
+    window.addEventListener('hy-step-change', handler);
+    return () => window.removeEventListener('hy-step-change', handler);
+  }, []);
+
+  const [defaults] = useState({});
   useEffect(() => {
     const handler = (e) => {
       const d = e.data;
@@ -5344,17 +6106,6 @@ const App = () => {
     window.parent.postMessage({ type: '__edit_mode_available' }, '*');
     return () => window.removeEventListener('message', handler);
   }, []);
-
-  React.useEffect(() => {
-    window.__saveChart = handleSave;
-    return () => { delete window.__saveChart; };
-  }, [handleSave]);
-
-  // Expose edit opener globally so PatientPanel can trigger without prop drilling
-  React.useEffect(() => {
-    window.__openPatientEdit = () => setPatientEditOpen(true);
-    return () => { delete window.__openPatientEdit; };
-  }, [setPatientEditOpen]);
 
   const renderPage = () => {
     const pageMap = {
@@ -5384,46 +6135,73 @@ const App = () => {
       </main>
 
       <PhotoModal open={photoOpen} onClose={() => setPhotoOpen(false)} />
-      <PatientEditModal open={patientEditOpen} onClose={() => setPatientEditOpen(false)} />
 
-      {/* Density Tweak (accessible even without tweaks toolbar) */}
-      <DensityFloater density={density} setDensity={setDensity} />
+      {/* Fix #31: Next section triangle button */}
+      <NextSectionButton current={current} onChange={setCurrent} />
+
     </div>
   );
 };
 
-/* Simple always-visible density toggle in the bottom-right, styled subtly */
-const DensityFloater = ({ density, setDensity }) => {
+
+
+/* Fix #31: Next section floating button */
+const NextSectionButton = ({ current, onChange }) => {
+  const allKeys = ['dashboard', ...(window.SECTIONS||[]).filter(s=>s.id!=='dashboard').map(s=>s.id)];
+  const idx = allKeys.indexOf(current);
+  const nextKey = allKeys[(idx + 1) % allKeys.length];
+  const nextSection = (window.SECTIONS||[]).find(s=>s.id===nextKey);
+  const nextName = nextKey === 'dashboard' ? '대시보드' : nextSection?.name || nextKey;
   return (
-    <div style={{
-      position: 'fixed', bottom: 20, right: 20,
-      background: '#fff', border: '1px solid var(--border)',
-      borderRadius: 999, padding: 4,
-      display: 'flex', gap: 2, alignItems: 'center',
-      boxShadow: '0 8px 24px rgba(15,23,42,0.08)', zIndex: 50,
-      fontSize: 12,
-    }}>
-      <span style={{ padding: '4px 10px', color: 'var(--ink-500)', fontSize: 11, fontWeight: 500 }}>Density</span>
-      {[
-        { k: 'compact', l: 'Compact' },
-        { k: 'comfortable', l: 'Comfortable' },
-      ].map(o => (
-        <button key={o.k}
-          onClick={() => setDensity(o.k)}
-          style={{
-            padding: '6px 14px', borderRadius: 999, border: 'none', cursor: 'pointer',
-            background: density === o.k ? 'var(--primary)' : 'transparent',
-            color: density === o.k ? '#fff' : 'var(--ink-600)',
-            fontWeight: density === o.k ? 600 : 500, fontSize: 12,
-          }}
-        >{o.l}</button>
-      ))}
-    </div>
+    <button
+      onClick={() => onChange(nextKey)}
+      title={`다음: ${nextName}`}
+      style={{
+        position: 'fixed', bottom: 24, right: 24,
+        width: 48, height: 48,
+        background: 'var(--primary)',
+        border: 'none', borderRadius: 12,
+        cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 4px 16px rgba(42,111,219,0.35)',
+        zIndex: 100,
+        transition: 'transform 0.15s',
+      }}
+      onMouseEnter={e=>e.currentTarget.style.transform='scale(1.08)'}
+      onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}
+    >
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M 2,5 L 9,13 L 16,5 Z" fill="white"/>
+      </svg>
+    </button>
   );
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
-</script>
+  </script>
+
+  <!-- 14. Post-init: wire section components for print export -->
+  <script type="text/babel">
+  (function() {
+    window.__sectionComponents = {
+      s1: window.Section1,
+      s2: window.Section2,
+      s3: window.Section3,
+      s4: window.Section4,
+      s5: window.Section5,
+      s6: window.Section6,
+      s7: window.Section7,
+      s8: window.Section8,
+    };
+    // Override SECTIONS based on active keys from config
+    const ALL_SECTIONS_MAP = {};
+    (window.SECTIONS || []).forEach(s => { ALL_SECTIONS_MAP[s.id] = s; });
+    const filteredSections = ['dashboard', ...(window.__ACTIVE_KEYS || [])].map(k => ALL_SECTIONS_MAP[k]).filter(Boolean);
+    if (filteredSections.length && filteredSections.length !== (window.SECTIONS||[]).length) {
+      Object.defineProperty(window, 'SECTIONS', { get: () => filteredSections, configurable: true });
+    }
+  })();
+  </script>
 </body>
 </html>
