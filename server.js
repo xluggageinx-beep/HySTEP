@@ -224,6 +224,37 @@ app.get('/preview', (req, res) => res.sendFile(path.join(__dirname, 'public', 'p
 app.get('/about', (req, res) => res.sendFile(path.join(__dirname, 'public', 'about.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/chart', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chart.html')));
+app.get('/prescan', (req, res) => res.sendFile(path.join(__dirname, 'public', 'prescan.html')));
+app.get('/prescan/:id', (req, res) => res.sendFile(path.join(__dirname, 'public', 'prescan.html')));
+
+// Prescan data sync API — store prescan response keyed by prescan ID
+const prescanDir = path.join(__dirname, 'orders', 'prescan');
+if (!fs.existsSync(prescanDir)) fs.mkdirSync(prescanDir, { recursive: true });
+
+app.post('/api/prescan/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = { ...req.body, prescanId: id, receivedAt: new Date().toISOString() };
+    fs.writeFileSync(path.join(prescanDir, `${id}.json`), JSON.stringify(data, null, 2));
+    console.log(`[Prescan] Received response for ID: ${id}`);
+    res.json({ success: true });
+  } catch(e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+app.get('/api/prescan/:id', (req, res) => {
+  try {
+    const filePath = path.join(prescanDir, `${req.params.id}.json`);
+    if (fs.existsSync(filePath)) {
+      res.json(JSON.parse(fs.readFileSync(filePath, 'utf8')));
+    } else {
+      res.json(null);
+    }
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`\n🚀 EZ-STEP 빌더 서버 시작!`);
