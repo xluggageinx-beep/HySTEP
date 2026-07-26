@@ -1372,7 +1372,7 @@ document.querySelectorAll('.sb-item[data-page]').forEach(el=>{
 ════════════════════════════════════════════════════════════ */
 async function loadOrders(){
   try {
-    const res = await fetch('/api/orders');
+    const res = await fetch('/api/ez-orders');
     if(!res.ok) throw new Error('API error '+res.status);
     const data = await res.json();
     // normalize — sections는 {"1":{name,items},...} 객체 또는 배열 모두 처리

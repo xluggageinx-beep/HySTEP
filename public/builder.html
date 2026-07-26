@@ -834,7 +834,7 @@ async function submitOrder() {
   };
 
   try {
-    const res = await fetch('/api/submit-order', {
+    const res = await fetch('/api/ez-orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderData)
