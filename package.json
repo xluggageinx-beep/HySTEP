@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "create-school": "node scripts/create-school.js"
+    "dev": "node server.js"
   },
   "keywords": [
     "ez-step",

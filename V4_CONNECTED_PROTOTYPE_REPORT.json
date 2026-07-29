@@ -1,0 +1,409 @@
+{
+  "repository": "xluggageinx-beep/HySTEP",
+  "base_commit": "e12c1c2a9c81c2c9a8ba2362f3e2ed90ec397c27",
+  "classification": {
+    "KEEP": [
+      "v7 repository structure",
+      "all functional and route files",
+      "PrototypeStore and canonical model",
+      "protected files"
+    ],
+    "PATCH": [
+      "public/about.html final product wording",
+      "public/story.html reservation-free product history wording"
+    ],
+    "DEFER": [
+      "all v9 decision register items"
+    ]
+  },
+  "changed_files": [
+    "V4_CONNECTED_PROTOTYPE_REPORT.json",
+    "public/about.html",
+    "public/story.html"
+  ],
+  "deleted_files": [],
+  "route_classification": {
+    "CURRENT": [
+      "index.html",
+      "builder.html",
+      "admin-step.html",
+      "hystep-preview.html",
+      "chart.html",
+      "prescan.html",
+      "about.html",
+      "policy.html",
+      "story.html"
+    ],
+    "REDIRECT": [
+      "admin.html",
+      "preview.html"
+    ],
+    "INTERNAL": [],
+    "REMOVE": []
+  },
+  "canonical_models": [
+    "Quote",
+    "SchoolConfig",
+    "Student",
+    "StudentGroup",
+    "Professor",
+    "ProfessorAssignment",
+    "Participant",
+    "ChartData",
+    "SignatureRequest",
+    "ProfessorEvaluation"
+  ],
+  "repository_interface": [
+    "saveQuote/getQuotes/getQuote/updateQuote",
+    "saveSchool/getSchools/getSchool/createSchoolFromQuote",
+    "saveStudent/getStudents",
+    "saveParticipant/getParticipant/getParticipants",
+    "saveChart/getChart",
+    "requestSignature/withdrawSignature/getSignatureRequests",
+    "signSection/getEvaluations"
+  ],
+  "e2e": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS",
+    "D": "PASS",
+    "E": "PASS (Builder Section OFF disables child UI and ON restores selections in state)",
+    "F": "PASS",
+    "G": "PASS (all FormSchema targets exist and Form OFF maps to subsection only)",
+    "H": "PASS",
+    "I": "BLOCKED (browser runtime failed before launch: ERR_INVALID_PACKAGE_CONFIG at C:\\\\Users\\\\l_jm0\\\\AppData\\\\Local\\\\Temp\\\\package.json; no system-setting workaround attempted)",
+    "J": "PASS (enabled Section config is supplied before chart render; disabled nav/content excluded; saved disabled Section falls back to first enabled; ON restores navigation after reload)",
+    "K": "PASS (/admin.html→/admin-step, /preview.html→/hystep-preview; extensionless server redirects included)",
+    "L": "PASS (removed legacy root files have zero import/script/server/package references)",
+    "M": "PASS (user-visible current source legacy terminology hits 0; protected Function and historical report excluded)"
+  },
+  "checks": {
+    "protected_files_unchanged": true,
+    "chart_existing_body_preserved_with_targeted_runtime_patch": true,
+    "javascript_syntax": true,
+    "duplicate_ids_absent": true,
+    "canonical_store_only_persistence": true,
+    "builder_no_legacy_submit_api": true,
+    "admin_uses_repository": true,
+    "same_chart_roles": true,
+    "signature_rules": true,
+    "section_revision_isolation": true,
+    "form_schema_runtime_mapping": true,
+    "floating_panel_removed": true,
+    "runtime_targets_exist": true,
+    "runtime_targets_unique": true,
+    "runtime_mapping_off_on_logic": true,
+    "participant_school_relation": true,
+    "observer_self_mutation_blocked": true,
+    "observer_scope_reduced": true,
+    "no_interval_polling": true,
+    "admin_auth": true,
+    "navigation_paths": true,
+    "legacy_terms_removed": true,
+    "exact_eight_sections": true,
+    "section_off_removed_at_initial_render": true,
+    "disabled_section_fallback": true,
+    "chart_config_uses_enabled_sections": true,
+    "form_off_hides_only_subsection": true,
+    "reservation_removed_from_builder": true,
+    "reservation_removed_from_server": true,
+    "legacy_admin_redirect_only": true,
+    "legacy_preview_redirect_only": true,
+    "extensionless_redirect_routes": true,
+    "legacy_root_files_removed": true,
+    "legacy_root_references_absent": true,
+    "old_order_api_removed": true,
+    "single_admin_implementation": true,
+    "single_preview_implementation": true,
+    "content_only_change_scope": true
+  },
+  "syntax": {
+    "public/index.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/builder.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/admin-step.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/hystep-preview.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/chart.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/prototype-store.js": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/admin-access-config.js": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/admin-auth-guard.js": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/admin-entry.js": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/chart-integration.js": {
+      "ok": true,
+      "stderr": ""
+    },
+    "server.js": {
+      "ok": true,
+      "stderr": ""
+    }
+  },
+  "duplicate_ids": {},
+  "protected_sha256": {
+    "public/prescan.html": "ac3ada67d5df6e16a5e2c92cb7e1239d1e8efbb25463b30d47f3bfda8b544c46",
+    "functions/api/submit-order.js": "99d2007d497252921602848a4cdb1644e3ce8708b8fa0d82e91e9668706f8d80",
+    "wrangler.toml": "3d470f9b0b5e7d34f7726a97c29742c5c93913d305d7bb7e0c4d7ac579ab1bb8"
+  },
+  "form_runtime_mapping": [
+    {
+      "sectionId": "s1",
+      "section": "초진 및 대상자 사정",
+      "formId": "s1-history",
+      "label": "문진·병력",
+      "runtimeTargets": [
+        "s1-sub-1",
+        "s1-sub-2",
+        "s1-sub-6"
+      ]
+    },
+    {
+      "sectionId": "s1",
+      "section": "초진 및 대상자 사정",
+      "formId": "s1-medication",
+      "label": "복용 약물·주의사항",
+      "runtimeTargets": [
+        "s1-sub-7",
+        "s1-sub-8"
+      ]
+    },
+    {
+      "sectionId": "s1",
+      "section": "초진 및 대상자 사정",
+      "formId": "s1-habits",
+      "label": "구강관리 습관",
+      "runtimeTargets": [
+        "s1-sub-3"
+      ]
+    },
+    {
+      "sectionId": "s1",
+      "section": "초진 및 대상자 사정",
+      "formId": "s1-symptoms",
+      "label": "불편감·증상·불안도",
+      "runtimeTargets": [
+        "s1-sub-4",
+        "s1-sub-5"
+      ]
+    },
+    {
+      "sectionId": "s2",
+      "section": "임상 검사",
+      "formId": "s2-vitals",
+      "label": "전신 상태 측정",
+      "runtimeTargets": [
+        "s2-sub-1"
+      ]
+    },
+    {
+      "sectionId": "s2",
+      "section": "임상 검사",
+      "formId": "s2-general",
+      "label": "구내 검사",
+      "runtimeTargets": [
+        "s2-sub-2"
+      ]
+    },
+    {
+      "sectionId": "s2",
+      "section": "임상 검사",
+      "formId": "s2-dentition",
+      "label": "치식·치아 상태",
+      "runtimeTargets": [
+        "s2-sub-3"
+      ]
+    },
+    {
+      "sectionId": "s2",
+      "section": "임상 검사",
+      "formId": "s2-note",
+      "label": "검사 메모",
+      "runtimeTargets": [
+        "s2-sub-4"
+      ]
+    },
+    {
+      "sectionId": "s3",
+      "section": "구강위생 지수 검사",
+      "formId": "s3-plaque",
+      "label": "치면세균막·O’Leary Index",
+      "runtimeTargets": [
+        "s3-sub-1"
+      ]
+    },
+    {
+      "sectionId": "s3",
+      "section": "구강위생 지수 검사",
+      "formId": "s3-focus",
+      "label": "집중관리 치아",
+      "runtimeTargets": [
+        "s3-sub-3"
+      ]
+    },
+    {
+      "sectionId": "s4",
+      "section": "치위생 진단",
+      "formId": "s4-diagnosis",
+      "label": "위험도·건강행태 종합 판단",
+      "runtimeTargets": [
+        "s4-sub-1"
+      ]
+    },
+    {
+      "sectionId": "s4",
+      "section": "치위생 진단",
+      "formId": "s4-psychology",
+      "label": "성격 특성·협조도",
+      "runtimeTargets": [
+        "s4-sub-2"
+      ]
+    },
+    {
+      "sectionId": "s5",
+      "section": "치위생 계획",
+      "formId": "s5-care-plan",
+      "label": "치위생 관리 계획표",
+      "runtimeTargets": [
+        "s5-sub-1"
+      ]
+    },
+    {
+      "sectionId": "s6",
+      "section": "수행 기록",
+      "formId": "s6-record",
+      "label": "처치·교육·회차별 수행 기록",
+      "runtimeTargets": [
+        "s6-sub-1"
+      ]
+    },
+    {
+      "sectionId": "s7",
+      "section": "치위생 평가",
+      "formId": "s7-visit-evaluation",
+      "label": "내원별 평가 항목",
+      "runtimeTargets": [
+        "s7-sub-1"
+      ]
+    },
+    {
+      "sectionId": "s8",
+      "section": "추적 관리",
+      "formId": "s8-goal",
+      "label": "목표별 달성 평가",
+      "runtimeTargets": [
+        "s8-sub-1"
+      ]
+    },
+    {
+      "sectionId": "s8",
+      "section": "추적 관리",
+      "formId": "s8-self",
+      "label": "치위생관리과정 자가평가",
+      "runtimeTargets": [
+        "s8-sub-2"
+      ]
+    }
+  ],
+  "invalid_runtime_targets": [],
+  "duplicate_runtime_targets": [],
+  "legacy_term_hits": {},
+  "dead_code_removed": [
+    "public/admin.html old /api/orders implementation",
+    "public/preview.html second chart implementation",
+    "server.js old orders/email/deploy command flow",
+    "scripts/create-school.js",
+    "root React/Babel landing implementation",
+    "unused root Hy-STEP logo asset"
+  ],
+  "broken_references": [],
+  "stale_legacy_references": [],
+  "content_audit": [
+    [
+      "예약, 차트, 대시보드, 교수 평가 기능 등을 포함한 운영형 구조",
+      "차트, 교수 대시보드, 교수 평가·서명, AI 어시스턴트를 포함한 학교 맞춤형 디지털 임상실습 구조"
+    ],
+    [
+      "각 학교에 맞춘 독립적인 차트 시스템",
+      "하나의 공통 Hy-STEP에 학교별 Section·기능·운영 구성을 맞춤 적용"
+    ],
+    [
+      "AI 어시스턴트를 통한 임상 판단력 향상",
+      "AI 어시스턴트를 통한 차트 작성과 자기주도 학습 흐름 지원"
+    ],
+    [
+      "관리자 대시보드·학교별 독립 배포 시스템",
+      "교수 대시보드·교수 평가와 서명·학교별 운영 설정"
+    ]
+  ],
+  "responsive_review": {
+    "static_css": "PASS (desktop 4 columns, >=1780px 5, tablet 2–3, mobile 1)",
+    "browser": "BLOCKED (same runtime error as TEST I)",
+    "viewports": [
+      "1440",
+      "1920",
+      "768",
+      "390"
+    ]
+  },
+  "implementation": {
+    "working": [
+      "Builder quote persistence",
+      "Admin quote listing/search/detail and quote-to-school draft",
+      "School settings persistence",
+      "Shared chart state/signature/evaluation persistence",
+      "student/professor same chart route",
+      "refresh/cross-tab adapter events",
+      "Admin session lock",
+      "Section OFF initial render and fallback"
+    ],
+    "shell": [
+      "bulk sign",
+      "PDF/Excel export",
+      "Excel roster import",
+      "student personal AI response",
+      "Inline AI fake suggestion"
+    ],
+    "future": [
+      "real backend/database",
+      "real email delivery",
+      "real PDF/Excel generation",
+      "real authentication/security",
+      "immutable signed snapshots"
+    ],
+    "unresolved": [
+      "backend stack",
+      "pricing/package policy",
+      "tenant URL",
+      "bulk sign final UX"
+    ]
+  },
+  "admin_access": {
+    "file": "public/admin-access-config.js",
+    "variable": "ADMIN_ACCESS_PASSWORD",
+    "password": "0123"
+  }
+}

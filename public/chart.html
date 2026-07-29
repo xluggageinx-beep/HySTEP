@@ -2458,7 +2458,6 @@ input, textarea, select { font-family: inherit; }
       window.__CONFIG = cfg || {};
       window.__ACTIVE_KEYS = filtered;
       window.__HAS_DASHBOARD = !cfg || cfg.dashboard !== false;
-      window.__HAS_RESERVATION = !!(cfg && cfg.addons && cfg.addons.includes && cfg.addons.includes('reservation'));
     })();
   </script>
 
@@ -2526,8 +2525,8 @@ const SectionHero = ({ num, ko, en, right }) => (
 const REVIEW_STATES = [
   { k: 'empty',     label: '미작성' },
   { k: 'wip',       label: '작성 중' },
-  { k: 'requested', label: '평가 요청' },
-  { k: 'done',      label: '평가 완료' },
+  { k: 'requested', label: '서명 대기' },
+  { k: 'done',      label: '서명 완료' },
 ];
 
 const SectionStickyHeader = ({ sectionId, ko, en, progress = 0, subsections = [], defaultReviewState = 'empty', hint }) => {
@@ -5514,7 +5513,7 @@ const Section8 = () => {
 
   return (
     <div>
-      <SectionStickyHeader sectionId="s8" ko="추적 관리 및 권고" en="Follow-up & Recommendations"
+      <SectionStickyHeader sectionId="s8" ko="추적 관리" en="Follow-up Management"
         progress={0} subsections={subsections} defaultReviewState="empty" />
 
       <div className="doc-lead">
@@ -5884,8 +5883,8 @@ const SECTIONS = [
   { id: 's5',        name: '치위생 계획',         en: 'DH Care Plan',            progress: 20, signStatus: 'empty', status: 'wip' },
   { id: 's6',        name: '수행 기록',           en: 'Intervention Record',     progress: 0,  signStatus: 'empty', status: 'empty' },
   { id: 's7',        name: '치위생 평가',         en: 'DH Evaluation',           progress: 0,  signStatus: 'empty', status: 'empty' },
-  { id: 's8',        name: '추적 관리 및 권고',   en: 'Follow-up',               progress: 0,  signStatus: 'empty', status: 'empty' },
-];
+  { id: 's8',        name: '추적 관리',           en: 'Follow-up',               progress: 0,  signStatus: 'empty', status: 'empty' },
+].filter(s => s.id === 'dashboard' || (window.__ACTIVE_KEYS || []).includes(s.id));
 
 const SignDot = ({ status }) => {
   // status aligned with review status machine:
@@ -5896,8 +5895,8 @@ const SignDot = ({ status }) => {
   const map = {
     empty:  { title: '미작성' },
     wip:    { title: '작성 중' },
-    review: { title: '평가 요청' },
-    done:   { title: '평가 완료' },
+    review: { title: '서명 대기' },
+    done:   { title: '서명 완료' },
   };
   if (!status) return <span className="sign-dot empty" />;
   return <span className={`sign-dot ${ns}`} title={map[ns]?.title} />;
@@ -6055,7 +6054,11 @@ Object.assign(window, { Sidebar, SECTIONS, SignDot });
 const { useState, useEffect } = React;
 
 const App = () => {
-  const [current, setCurrent] = useState(() => localStorage.getItem('hy-step:current') || 'dashboard');
+  const [current, setCurrent] = useState(() => {
+    const saved = localStorage.getItem('hy-step:current') || 'dashboard';
+    const allowed = ['dashboard', ...(window.__ACTIVE_KEYS || [])];
+    return allowed.includes(saved) ? saved : ((window.__ACTIVE_KEYS || [])[0] || 'dashboard');
+  });
   const [photoOpen, setPhotoOpen] = useState(false);
   useEffect(() => {
     localStorage.setItem('hy-step:current', current);
@@ -6203,5 +6206,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     }
   })();
   </script>
+<!-- v4 Prototype integration: existing chart body preserved -->
+<script src="/prototype-store.js"></script><script src="/chart-integration.js"></script>
 </body>
 </html>
