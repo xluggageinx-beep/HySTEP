@@ -340,6 +340,10 @@ const state = {
   totalSteps: 4,
   schoolName: '',
   grades: [],
+  applicationYear: new Date().getFullYear() + 1,
+  studentCount: 80,
+  participantCount: 160,
+  operations: { classes:false, practiceTimes:false, multipleProfessors:false, reservation:false },
   // Hy-STEP 8섹션 구조 — 섹션 번호는 배열 순서로 자동 채번 (하드코딩 금지)
   // 소분류(items)도 동일 원칙: 키 순서 = 표시 순서
   sections: {
@@ -382,7 +386,7 @@ const state = {
       '치아 선택 팝업 (대상 치아 번호 반영)': true,
       '양식2 — 구조화 계획표': true
     }},
-    s6: { selected: true, name: '치위생 수행 기록', eng: 'Dental Hygiene Intervention Record', items: {
+    s6: { selected: true, name: '수행 기록', eng: 'Dental Hygiene Intervention Record', items: {
       '양식1 — contenteditable 리치텍스트 에디터': true,
       '서식 툴바 (Bold·Italic·형광펜·글자색·기호)': true,
       '양식2 — 구조화 입력 표': true
@@ -391,7 +395,7 @@ const state = {
       '2차 내원 평가 (칫솔질·용품·흡연·음주·영양·전신질환)': true,
       '3차 내원 평가 (2차 대비 2열 비교)': true
     }},
-    s8: { selected: true, name: '추적 관리 및 권고', eng: 'Follow-up & Recommendations', items: {
+    s8: { selected: true, name: '추적 관리', eng: 'Follow-up & Recommendations', items: {
       '목표별 달성 평가 (Met / Partial met / Unmet)': true,
       '구강건강 유지관리 간격 (1/3/6/12개월)': true,
       '자가평가 (잘한 점·부족한 점)': true,
@@ -403,9 +407,9 @@ const state = {
       desc:'회차별·5매법/6매법 촬영 세트를 관리하며 업로드 즉시 자동 저장됩니다. 각 회차마다 2세트씩 보관.' },
     profEval:   { label:'교수 평가 패널', icon:'fa-user-graduate', color:'#0F766E', enabled:false,
       desc:'각 섹션 하단에 교수 서명 상태 dot 및 읽기 전용 교수 평가 패널을 표시합니다. 서명 요청·완료 상태 관리 포함.' },
-    ai:         { label:'AI 임상 가이드', icon:'fa-robot', color:'#7C3AED', enabled:false,
-      desc:'대상자 데이터 기반 실시간 임상 조언 및 계획 추천을 제공합니다. (추후 지원 예정)' },
-    dashboard:  { label:'관리자 대시보드', icon:'fa-chart-line', color:'#1976D2', enabled:false,
+    ai:         { label:'AI 작성 도우미', icon:'fa-robot', color:'#7C3AED', enabled:false,
+      desc:'현재 입력된 차트 내용을 바탕으로 작성과 학습을 돕습니다. 진단 도구가 아닙니다. (Prototype)' },
+    dashboard:  { label:'교수 대시보드', icon:'fa-chart-line', color:'#1976D2', enabled:false,
       desc:'교수자가 학생 실습 진행 현황을 실시간 모니터링하고 KPI·섹션별 진행률을 한눈에 확인합니다.' },
     survey:     { label:'사전문진 링크 생성', icon:'fa-link', color:'#9333EA', enabled:false,
       desc:'대상자가 내원 전 스마트폰으로 문진을 작성할 수 있는 개인 전용 링크를 생성합니다.' },
@@ -458,6 +462,23 @@ function renderStep1() {
         : ''}
     </div>
   </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-chart-simple"></i> 도입 규모</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+      <div class="form-group"><label class="form-label">차트 적용 연도 <span>*</span></label><input type="number" class="form-input" id="applicationYear" min="2025" max="2100" value="${state.applicationYear}"/></div>
+      <div class="form-group"><label class="form-label">이용 학생 수 <span>*</span></label><input type="number" class="form-input" id="studentCount" min="1" value="${state.studentCount}"/></div>
+      <div class="form-group"><label class="form-label">예상 대상자 수 <span>*</span></label><input type="number" class="form-input" id="participantCount" min="1" value="${state.participantCount}"/></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-sliders"></i> 운영 방식</div>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:14px;">상세 반 편성·학생 배정·교수 실명·시간표는 계약 후 관리자스텝에서 설정합니다.</p>
+    <div class="toggle-grid">
+      ${[['classes','분반 운영'],['practiceTimes','실습 타임 운영'],['multipleProfessors','복수 교수 운영'],['reservation','별도 예약 시스템 운영']].map(([key,label]) => `<button class="toggle-btn ${state.operations[key]?'selected':''}" data-operation="${key}">${label}</button>`).join('')}
+    </div>
+  </div>
   `;
 }
 
@@ -480,6 +501,17 @@ function bindStep1() {
       updateNextBtn();
     });
   });
+  ['applicationYear','studentCount','participantCount'].forEach(id => {
+    document.getElementById(id).addEventListener('input', e => {
+      state[id] = Number(e.target.value);
+      updateNextBtn();
+    });
+  });
+  document.querySelectorAll('[data-operation]').forEach(btn => btn.addEventListener('click', () => {
+    const key = btn.dataset.operation;
+    state.operations[key] = !state.operations[key];
+    btn.classList.toggle('selected', state.operations[key]);
+  }));
   updateNextBtn();
 }
 
@@ -623,7 +655,7 @@ function renderStep3() {
     <div style="display:flex;align-items:flex-start;gap:12px;">
       <i class="fa-solid fa-circle-info" style="color:#D97706;margin-top:2px;"></i>
       <p style="font-size:13px;color:#92400E;line-height:1.7;">
-        <strong>안내:</strong> AI 임상 가이드 · 예약 시스템 연동은 추후 지원 예정입니다. 나머지 부가기능은 선택 시 차트에 즉시 반영됩니다.
+        <strong>안내:</strong> AI 작성 도우미 · 예약 시스템 연동은 추후 지원 예정입니다. 나머지 부가기능은 선택 시 차트에 즉시 반영됩니다.
       </p>
     </div>
   </div>
@@ -700,6 +732,9 @@ function renderStep4() {
       <span class="preview-key">학년</span>
       <span class="preview-val">${state.grades.join(', ')} (${state.grades.length}개 학년)</span>
     </div>
+    <div class="preview-row"><span class="preview-key">차트 적용 연도</span><span class="preview-val">${state.applicationYear}년</span></div>
+    <div class="preview-row"><span class="preview-key">도입 규모</span><span class="preview-val">학생 ${state.studentCount}명 · 예상 대상자 ${state.participantCount}명</span></div>
+    <div class="preview-row"><span class="preview-key">운영 방식</span><span class="preview-val">${Object.entries(state.operations).filter(([,v])=>v).map(([k])=>({classes:'분반',practiceTimes:'실습 타임',multipleProfessors:'복수 교수',reservation:'별도 예약 연동'}[k])).join(', ') || '기본 운영'}</span></div>
     <div class="preview-row">
       <span class="preview-key">선택 섹션</span>
       <span class="preview-val">${selectedSections.length} / 8개</span>
@@ -787,6 +822,10 @@ function openPreview() {
   const config = {
     schoolName: state.schoolName,
     grades: state.grades,
+    applicationYear: state.applicationYear,
+    studentCount: state.studentCount,
+    participantCount: state.participantCount,
+    operations: state.operations,
     sections: selectedSectionKeys,
     sectionItems: Object.fromEntries(
       selectedSectionKeys.map(k => [k, Object.keys(state.sections[k].items).filter(i => state.sections[k].items[i])])
@@ -820,6 +859,10 @@ async function submitOrder() {
   const orderData = {
     schoolName: state.schoolName,
     grades: state.grades,
+    applicationYear: state.applicationYear,
+    studentCount: state.studentCount,
+    participantCount: state.participantCount,
+    operations: state.operations,
     sections: Object.fromEntries(
       SECTION_KEYS
         .filter(k => state.sections[k]?.selected)
@@ -922,7 +965,7 @@ function updateNextBtn() {
   const btn = document.getElementById('btnNext');
   if (!btn) return;
   if (state.currentStep === 1) {
-    const ok = state.schoolName.length > 0 && state.grades.length > 0;
+    const ok = state.schoolName.length > 0 && state.grades.length > 0 && state.applicationYear >= 2025 && state.studentCount > 0 && state.participantCount > 0;
     btn.disabled = !ok;
   } else if (state.currentStep === 2) {
     const ok = SECTION_KEYS.some(k => state.sections[k]?.selected);

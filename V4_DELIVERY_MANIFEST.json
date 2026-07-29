@@ -1,0 +1,73 @@
+{
+  "artifact_type": "delivery ZIP; extract into a checkout based on the recorded main SHA",
+  "repository": "xluggageinx-beep/HySTEP",
+  "base_commit": "ace2c67423c2048898a0502ab33e61a685713117",
+  "changed_files": [
+    "public/index.html",
+    "public/builder.html",
+    "public/admin-step.html",
+    "public/hystep-preview.html",
+    "public/demo-data.js",
+    "server.js"
+  ],
+  "intentionally_unchanged": [
+    "public/chart.html",
+    "public/prescan.html",
+    "functions/api/submit-order.js",
+    "wrangler.toml"
+  ],
+  "checks": {
+    "homepage_legacy_9_sections_removed": true,
+    "homepage_professor_term": true,
+    "builder_has_locked_inputs": true,
+    "builder_keeps_four_step_ui": true,
+    "admin_has_no_s9": true,
+    "admin_roster_shell": true,
+    "central_demo_data": true,
+    "preview_role_paths": true,
+    "professor_student_cards": true,
+    "professor_card_rows": true,
+    "professor_export_shells": true,
+    "professor_inline_ai": true,
+    "student_private_ai": true,
+    "continuous_review_navigation": true,
+    "signed_edit_warning": true,
+    "server_route": true,
+    "section_names_canonical": true,
+    "section_name_legacy_variants_removed": true,
+    "static_paths_resolve": true,
+    "duplicate_ids_absent": true,
+    "inline_javascript_syntax": true,
+    "protected_files_unchanged": true
+  },
+  "protected_sha256": {
+    "public/chart.html": "1a8235b160bd0d112c395a2fd28c69de413c60f45007203f12a3dc625b830be0",
+    "public/prescan.html": "ac3ada67d5df6e16a5e2c92cb7e1239d1e8efbb25463b30d47f3bfda8b544c46",
+    "functions/api/submit-order.js": "99d2007d497252921602848a4cdb1644e3ce8708b8fa0d82e91e9668706f8d80",
+    "wrangler.toml": "3d470f9b0b5e7d34f7726a97c29742c5c93913d305d7bb7e0c4d7ac579ab1bb8"
+  },
+  "duplicate_ids": {},
+  "inline_javascript": {
+    "public/index.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/builder.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/admin-step.html": {
+      "ok": true,
+      "stderr": ""
+    },
+    "public/hystep-preview.html": {
+      "ok": true,
+      "stderr": ""
+    }
+  },
+  "unresolved_conflicts": [
+    "Builder 공식 Step 수는 미확정이므로 기존 4-step UI를 유지함",
+    "가격·판매 패키지·실제 backend·tenant URL 정책은 구현하지 않음",
+    "SignatureRecord/immutable snapshot은 미래 방향이며 Prototype persistence로 구현하지 않음"
+  ]
+}

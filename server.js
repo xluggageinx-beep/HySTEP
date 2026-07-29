@@ -229,6 +229,7 @@ app.get('/prescan/:id', (req, res) => res.sendFile(path.join(__dirname, 'public'
 app.get('/story', (req, res) => res.sendFile(path.join(__dirname, 'public', 'story.html')));
 app.get('/policy', (req, res) => res.sendFile(path.join(__dirname, 'public', 'policy.html')));
 app.get('/admin-step', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-step.html')));
+app.get('/hystep-preview', (req, res) => res.sendFile(path.join(__dirname, 'public', 'hystep-preview.html')));
 
 // Prescan data sync API — store prescan response keyed by prescan ID
 const prescanDir = path.join(__dirname, 'orders', 'prescan');

@@ -852,6 +852,7 @@ textarea.form-input { resize:vertical; min-height:80px; }
         </div>
         <div style="margin-left:auto;display:flex;gap:8px;">
           <span id="sd-status-badge"></span>
+          <button class="quick-btn ghost" onclick="window.open('/hystep-preview','_blank')"><i class="fa fa-arrow-up-right-from-square"></i> Hy-STEP Preview</button>
           <button class="quick-btn ghost" onclick="cloneSchool()"><i class="fa fa-copy"></i> 복제</button>
           <button class="quick-btn primary" onclick="saveSchool()"><i class="fa fa-floppy-disk"></i> 저장</button>
         </div>
@@ -862,6 +863,7 @@ textarea.form-input { resize:vertical; min-height:80px; }
         <div class="detail-tab" data-tab="chart" onclick="switchDetailTab('chart', this)">차트 구성</div>
         <div class="detail-tab" data-tab="perm" onclick="switchDetailTab('perm', this)">권한/노출</div>
         <div class="detail-tab" data-tab="ops" onclick="switchDetailTab('ops', this)">운영 상태</div>
+        <div class="detail-tab" data-tab="roster" onclick="switchDetailTab('roster', this);renderRosterShell()">학생 명단</div>
         <div class="detail-tab" data-tab="memo" onclick="switchDetailTab('memo', this)">메모/이력</div>
       </div>
       <!-- 탭: 기본정보 -->
@@ -935,6 +937,13 @@ textarea.form-input { resize:vertical; min-height:80px; }
           <div class="card-body">
             <div class="toggle-group" id="sd-ops-controls"></div>
           </div>
+        </div>
+      </div>
+      <!-- 탭: 학생 명단 shell -->
+      <div class="detail-tab-content" id="sd-tab-roster">
+        <div class="card">
+          <div class="card-head"><div class="card-head-title"><i class="fa fa-users"></i> 학생 명단</div><button class="btn-sm ghost" disabled title="Prototype shell"><i class="fa fa-file-excel"></i> Excel 가져오기</button></div>
+          <div class="card-body"><div id="sd-roster-shell"></div><p style="margin-top:12px;color:var(--ink-3);font-size:12px;">Prototype에서는 데모 명단을 표시하며 실제 계정 생성이나 가져오기는 수행하지 않습니다.</p></div>
         </div>
       </div>
       <!-- 탭: 메모/이력 -->
@@ -1172,35 +1181,26 @@ textarea.form-input { resize:vertical; min-height:80px; }
   </div>
 </div>
 
+<script src="/demo-data.js"></script>
 <script>
 /* ════════════════════════════════════════════════════════════
    DATA & CONSTANTS
 ════════════════════════════════════════════════════════════ */
 const SECTIONS = {
-  s1:{ name:'초진 및 대상자 사정', eng:'Initial Interview & Patient History',
-    items:['사전문진 링크 관리','치과 방문 경험 및 교정 여부','칫솔질 습관','구강관리용품 사용 현황','흡연·음주·영양 습관','증상 및 불편감 체크리스트','구강불안도 측정','전신질환 병력 및 복용 약물'] },
-  s2:{ name:'임상 검사', eng:'Clinical Examination',
-    items:['혈당 및 혈압 측정','구내·구외 검사 8항목','치식 차팅 (32치아 SVG)','치주지표 통합 탭 (PD/BOP/Mob)','교수님 요청/질문 메모'] },
-  s3:{ name:'구강위생 지수 검사', eng:'Oral Hygiene Index',
-    items:['PI 측정 (치아별 4구역 클릭)','O\'Leary Index 자동 계산','집중 관리 치아 선택','위상차 현미경 검사','구취 측정 0–5 스케일','CO 측정 (흡연자용)'] },
-  s4:{ name:'치위생 판단', eng:'Dental Hygiene Diagnosis',
-    items:['치아우식 위험도','치주 상태 판단','구강위생 실천도·식이','심리·불안 요인 및 협조도'] },
-  s5:{ name:'목표 설정', eng:'Goal Setting',
-    items:['우선순위 문제 목록','단기/장기 목표','목표 달성 지표'] },
-  s6:{ name:'구강보건교육', eng:'Oral Health Education',
-    items:['교육 항목 체크리스트','교육 방법 및 도구','교육 평가 결과'] },
-  s7:{ name:'처치', eng:'Treatment',
-    items:['치석제거 (스케일링)','치근활택술','불소 도포','실란트','기타 처치'] },
-  s8:{ name:'치위생 평가', eng:'Evaluation',
-    items:['치료 후 PI 재측정','BOP 재측정','목표 달성도 평가'] },
-  s9:{ name:'달성도 평가', eng:'Achievement Evaluation',
-    items:['최종 구강위생지수','개선도 그래프','총평 작성'] },
+  s1:{ name:'초진 및 대상자 사정', eng:'Initial Interview & Patient History', items:['사전문진 링크 관리','치과 방문 경험 및 교정 여부','칫솔질 습관','구강관리용품 사용 현황','증상 및 불편감','전신질환 병력 및 복용 약물'] },
+  s2:{ name:'임상 검사', eng:'Clinical Examination', items:['혈압 및 전신 상태','구내·구외 검사','치식 차팅','치주지표 통합 검사','교수 요청/질문 메모'] },
+  s3:{ name:'구강위생 지수 검사', eng:'Oral Hygiene Index Examination', items:['PI 측정','O\'Leary Index','집중 관리 치아','위상차 현미경 검사','구취 측정'] },
+  s4:{ name:'치위생 진단', eng:'Dental Hygiene Diagnosis', items:['치아우식 위험도','치주 상태','구강위생 실천도','심리·불안 요인'] },
+  s5:{ name:'치위생 계획', eng:'Dental Hygiene Care Plan', items:['자가관리 계획','전신질환자 교육 계획','전문가 관리 계획','대상 치아'] },
+  s6:{ name:'수행 기록', eng:'Intervention Record', items:['수행 내용','교육 기록','처치 기록','회차별 메모'] },
+  s7:{ name:'치위생 평가', eng:'Dental Hygiene Evaluation', items:['변화 평가','2차 내원 평가','3차 내원 평가','교수 평가'] },
+  s8:{ name:'추적 관리', eng:'Follow-up Management', items:['유지관리 간격','후속 권고','자가평가','추적 일정'] }
 };
 const ADDONS = {
   photo:       { label:'구강 사진 관리', icon:'fa-camera', color:'#D97706', bg:'#FFFBEB', desc:'회차별 5매법/6매법 촬영 세트 관리' },
   profEval:    { label:'교수 평가 패널', icon:'fa-user-graduate', color:'#0F766E', bg:'#F0FDFA', desc:'교수 서명·평가란 각 섹션 하단 노출' },
-  ai:          { label:'AI 임상 가이드', icon:'fa-robot', color:'#7C3AED', bg:'#F5F3FF', desc:'대상자 데이터 기반 실시간 임상 가이드' },
-  dashboard:   { label:'관리자 대시보드', icon:'fa-chart-line', color:'#1976D2', bg:'#EFF6FF', desc:'교수 대시보드 · 학생 실습 진행 현황' },
+  ai:          { label:'AI 작성 도우미', icon:'fa-robot', color:'#7C3AED', bg:'#F5F3FF', desc:'현재 차트 기반 작성·학습 지원' },
+  dashboard:   { label:'교수 대시보드', icon:'fa-chart-line', color:'#1976D2', bg:'#EFF6FF', desc:'교수 대시보드 · 학생 실습 진행 현황' },
   survey:      { label:'사전문진 링크', icon:'fa-link', color:'#9333EA', bg:'#FAF5FF', desc:'대상자 내원 전 문진 링크 자동 생성' },
   reservation: { label:'예약 시스템 연동', icon:'fa-calendar-check', color:'#DC2626', bg:'#FEF2F2', desc:'대상자 예약 → 대상자 목록 자동 연결' },
 };
@@ -1294,7 +1294,7 @@ function getDemoSchools(){
       expiry: new Date(now + 180*86400000).toISOString().slice(0,10),
       modes:{student_login:true,prof_login:true,reservation_mode:false},
       addons:{photo:true,profEval:true,ai:false,dashboard:true,survey:false,reservation:false},
-      sections:{s1:true,s2:true,s3:true,s4:true,s5:true,s6:false,s7:false,s8:false,s9:false},
+      sections:{s1:true,s2:true,s3:true,s4:true,s5:true,s6:false,s7:false,s8:false},
       sectionItems: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,[...SECTIONS[k].items]])),
       perms: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,{student:'write',prof:'read'}])),
       memo:'2025년 2학기 계약. 교수님 2명 사용 예정.', createdAt: new Date(now-30*86400000).toISOString() },
@@ -1303,7 +1303,7 @@ function getDemoSchools(){
       expiry: new Date(now + 20*86400000).toISOString().slice(0,10),
       modes:{student_login:true,prof_login:false,reservation_mode:true},
       addons:{photo:false,profEval:false,ai:true,dashboard:false,survey:true,reservation:true},
-      sections:{s1:true,s2:true,s3:true,s4:true,s5:true,s6:true,s7:true,s8:false,s9:false},
+      sections:{s1:true,s2:true,s3:true,s4:true,s5:true,s6:true,s7:true,s8:false},
       sectionItems: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,[...SECTIONS[k].items]])),
       perms: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,{student:'write',prof:'read'}])),
       memo:'예약형 운영. 갱신 협의 진행 중.', createdAt: new Date(now-90*86400000).toISOString() },
@@ -1312,7 +1312,7 @@ function getDemoSchools(){
       expiry: new Date(now - 15*86400000).toISOString().slice(0,10),
       modes:{student_login:true,prof_login:true,reservation_mode:false},
       addons:{photo:true,profEval:true,ai:false,dashboard:false,survey:false,reservation:false},
-      sections:{s1:true,s2:true,s3:true,s4:true,s5:false,s6:false,s7:false,s8:false,s9:false},
+      sections:{s1:true,s2:true,s3:true,s4:true,s5:false,s6:false,s7:false,s8:false},
       sectionItems: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,[...SECTIONS[k].items]])),
       perms: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,{student:'write',prof:'read'}])),
       memo:'', createdAt: new Date(now-200*86400000).toISOString() },
@@ -1320,7 +1320,7 @@ function getDemoSchools(){
       contact_name:'최광주', contact_email:'choi@gj.ac.kr', contact_phone:'062-111-2222',
       expiry:'', modes:{student_login:true,prof_login:false,reservation_mode:false},
       addons:{photo:false,profEval:false,ai:false,dashboard:false,survey:false,reservation:false},
-      sections:{s1:true,s2:true,s3:true,s4:true,s5:true,s6:false,s7:false,s8:false,s9:false},
+      sections:{s1:true,s2:true,s3:true,s4:true,s5:true,s6:false,s7:false,s8:false},
       sectionItems: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,[...SECTIONS[k].items]])),
       perms: Object.fromEntries(Object.keys(SECTIONS).map(k=>[k,{student:'write',prof:'read'}])),
       memo:'견적 기반 초안. 미팅 후 확정 예정.', createdAt: new Date(now-5*86400000).toISOString() },
@@ -2400,6 +2400,13 @@ function daysUntil(dateStr){
   if(!dateStr) return 9999;
   return Math.floor((new Date(dateStr).getTime() - Date.now()) / 86400000);
 }
+function renderRosterShell(){
+  const host = document.getElementById('sd-roster-shell');
+  if(!host) return;
+  const students = (window.HYSTEP_DEMO_DATA && window.HYSTEP_DEMO_DATA.students) || [];
+  host.innerHTML = `<table class="school-table"><thead><tr><th>이름</th><th>학번</th><th>학년</th><th>그룹</th></tr></thead><tbody>${students.map(s=>`<tr><td>${esc(s.name)}</td><td class="mono">${esc(s.studentNo)}</td><td>${esc(s.grade)}</td><td>${esc(s.group)}</td></tr>`).join('')}</tbody></table>`;
+}
+
 function getSectionName(key){
   if(SECTIONS[key]) return SECTIONS[key].name;
   // try to match by key or partial
