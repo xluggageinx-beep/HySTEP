@@ -72,10 +72,11 @@
   const style = document.createElement('style');
   style.textContent = `
     .v4-section-integration{margin:22px 0 8px;padding:18px;background:var(--card,#fff);border:1px solid var(--line,rgba(11,18,32,.1));border-radius:var(--r-lg,16px);box-shadow:var(--shadow-sm,0 2px 8px rgba(0,0,0,.05));font-family:inherit}
-    .v4-integration-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.v4-integration-title{font-size:15px;font-weight:800;color:var(--ink-900,#172033)}.v4-state{font-size:12px;font-weight:800;padding:5px 9px;border-radius:999px;background:var(--ink-100,#eef2f7)}
+    .v4-integration-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.v4-integration-title{font-size:15px;font-weight:800;color:var(--ink-900,#172033)}
     .v4-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.v4-btn{border:0;border-radius:9px;padding:9px 12px;font:inherit;font-size:13px;font-weight:750;cursor:pointer}.v4-primary{background:var(--brand-600,#1976d2);color:white}.v4-ghost{background:white;color:var(--ink-700,#344054);border:1px solid var(--line-strong,#ccd5e2)}
     .v4-eval{display:grid;grid-template-columns:1fr 1fr;gap:12px}.v4-eval label{font-size:12px;font-weight:700}.v4-eval textarea{width:100%;min-height:82px;margin-top:6px;border:1px solid var(--line-strong,#ccd5e2);border-radius:9px;padding:10px;font:inherit}
-    .v4-comment,.v4-ai,.v4-warning,.v4-preview{margin-top:12px;padding:12px;border-radius:10px}.v4-comment{background:var(--brand-50,#f2f7ff)}.v4-ai{background:#faf8ff;border:1px solid #d9d0ff}.v4-warning{background:#fff7e8;color:#8b5b00;border:1px solid #f0d59d}.v4-preview{background:#eef7ff;color:#24517d;border:1px solid #c8def2;font-size:12px}
+    .v4-comment,.v4-warning,.v4-preview{margin-top:12px;padding:12px;border-radius:10px}.v4-comment{background:var(--brand-50,#f2f7ff)}.v4-warning{background:#fff7e8;color:#8b5b00;border:1px solid #f0d59d}.v4-preview{background:#eef7ff;color:#24517d;border:1px solid #c8def2;font-size:12px}
+    .v4-ai-anchor{position:relative!important}.v4-ai-field{position:absolute;right:5px;top:5px;z-index:5;border:1px solid #c9d7ea;background:#fff;color:#245aa7;border-radius:7px;padding:3px 7px;font-size:10px;font-weight:800;line-height:1.2}.v4-ai-overlay{position:fixed;right:24px;bottom:24px;z-index:1200;width:min(360px,calc(100vw - 32px));background:#fff;border:1px solid #cdd9e8;border-radius:16px;box-shadow:0 18px 48px rgba(16,42,86,.22);padding:18px}.v4-ai-overlay[hidden]{display:none}.v4-ai-overlay-head{display:flex;justify-content:space-between;align-items:center}.v4-ai-overlay textarea{width:100%;min-height:90px;margin-top:12px;border:1px solid #d6deea;border-radius:10px;padding:10px;font:inherit}
     .v4-nav{position:sticky;top:0;z-index:900;display:flex;gap:7px;align-items:center;padding:8px 14px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--line,#dbe3ef);backdrop-filter:blur(10px)}.v4-nav span{font-size:12px;color:var(--ink-500,#667085);margin-right:auto}
     .v4-runtime-hidden{display:none!important}@media(max-width:680px){.v4-eval{grid-template-columns:1fr}.v4-section-integration{padding:14px}.v4-nav{position:static;flex-wrap:wrap}}
   `;
@@ -140,6 +141,8 @@
     const target = Store.getSchoolForParticipant(id);
     return encodeURIComponent(JSON.stringify({
       sections: (target?.sections || []).filter(section => section.enabled).map(section => section.sectionId),
+      formTargets: (target?.sections || []).filter(section => section.enabled).flatMap(section =>
+        (section.items || []).filter(item => item.enabled).flatMap(item => item.runtimeTargets || [])),
       dashboard: true, photo: Boolean(target?.features?.photo)
     }));
   }
@@ -155,10 +158,54 @@
   }
   function applyVisibility() {
     document.querySelectorAll('.nav-heading').forEach(element => {
-      if (element.textContent.includes('Design System')) element.style.display = 'none';
+      if (element.textContent.includes('공용 Component')) element.style.display = 'none';
     });
     if (!school.features?.photo) document.querySelectorAll('button').forEach(element => {
       if (element.textContent.trim() === '포토') element.style.display = 'none';
+    });
+    ensureAiShell();
+  }
+  function statusFor(sectionId) {
+    const evaluation = data.evaluations().find(item => item.sectionId === sectionId);
+    const request = data.requests().find(item => item.participantId === participantId && item.sectionId === sectionId);
+    const hasData = Object.keys(data.chart().sectionData?.[sectionId] || {}).length > 0;
+    return evaluation ? 'done' : request ? 'review' : hasData ? 'wip' : 'empty';
+  }
+  function publishStatuses() {
+    window.__hystepSectionStatuses = Object.fromEntries(sections.map(section => [section.sectionId, statusFor(section.sectionId)]));
+    window.__hystepRole = role;
+    window.dispatchEvent(new CustomEvent('hystep-status-change'));
+  }
+  window.__hystepToggleSignatureRequest = sectionId => {
+    activeSection = sectionId;
+    data.toggleRequest();
+    renderIntegration();
+  };
+  function ensureAiShell() {
+    if (!school.features?.inlineAi) return;
+    if (!document.getElementById('v4AiOverlay')) {
+      const overlay = document.createElement('aside');
+      overlay.id = 'v4AiOverlay'; overlay.className = 'v4-ai-overlay'; overlay.hidden = true;
+      overlay.innerHTML = '<div class="v4-ai-overlay-head"><b>AI Assistant</b><button class="v4-btn v4-ghost" id="v4AiClose">닫기</button></div><p style="font-size:12px;color:#667085">현재 입력된 차트 내용을 바탕으로 작성만 지원합니다. 진단 도구가 아닙니다.</p><textarea id="v4AiPrompt" placeholder="작성 중 궁금한 내용을 입력하세요."></textarea><div class="v4-actions"><button class="v4-btn v4-primary" id="v4AiApply">적용</button><button class="v4-btn v4-ghost" id="v4AiEvidence">근거 보기</button></div>';
+      document.body.appendChild(overlay);
+      overlay.querySelector('#v4AiClose').onclick = () => overlay.hidden = true;
+      overlay.querySelector('#v4AiApply').onclick = applySuggestion;
+      overlay.querySelector('#v4AiEvidence').onclick = () => alert('현재 활성 Section의 입력 내용을 근거로 참조합니다.');
+    }
+    const photoButton = [...document.querySelectorAll('.nav-item')].find(button => button.textContent.trim() === 'Photo');
+    if (photoButton && !document.getElementById('v4AiMenu')) {
+      const aiMenu = document.createElement('button'); aiMenu.id = 'v4AiMenu'; aiMenu.className = 'nav-item';
+      aiMenu.innerHTML = '<span class="sign-dot placeholder"></span><span class="idx"></span><span class="name">AI Assistant</span><span class="pct"></span>';
+      aiMenu.onclick = () => { document.getElementById('v4AiOverlay').hidden = false; };
+      photoButton.after(aiMenu);
+    }
+    sectionRoot()?.querySelectorAll('input,textarea,[contenteditable="true"]').forEach(field => {
+      if (field.closest('.v4-section-integration,.photo-modal,.photo-page') || field.id === 'tooth-model-state' || field.dataset.aiBound) return;
+      const parent = field.parentElement; if (!parent) return;
+      parent.classList.add('v4-ai-anchor'); field.dataset.aiBound = 'true';
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'v4-ai-field'; button.textContent = 'AI';
+      button.onclick = event => { event.preventDefault(); document.getElementById('v4AiOverlay').hidden = false; };
+      parent.appendChild(button);
     });
   }
   function renderIntegration() {
@@ -174,29 +221,25 @@
       root.querySelectorAll('[data-hystep-integration="true"]').forEach(node => node.remove());
       const request = data.requests().find(item => item.participantId === participantId && item.sectionId === activeSection);
       const evaluation = data.evaluations().find(item => item.sectionId === activeSection);
-      const hasData = Object.keys(data.chart().sectionData?.[activeSection] || {}).length > 0;
-      const status = evaluation ? '서명 완료' : request ? (role === 'student' ? '서명 요청' : '서명 대기') : hasData ? '작성 중' : '미작성';
       const block = document.createElement('section');
       block.className = 'v4-section-integration';
       block.dataset.hystepIntegration = 'true';
-      block.innerHTML = `<div class="v4-integration-head"><div class="v4-integration-title">${role === 'student' ? 'Section 상태와 서명 요청' : '교수 평가'}</div><span class="v4-state">${status}</span></div>${previewMode ? '<div class="v4-preview">Preview 입력은 이 페이지의 메모리에만 유지되며 새로고침하면 초기화됩니다.</div>' : ''}${evaluation?.modifiedAfterSign && role === 'professor' ? '<div class="v4-warning">⚠ 서명 이후 내용이 수정되었습니다.</div>' : ''}${role === 'student' ? studentUi(request, evaluation) : professorUi(evaluation)}`;
+      block.innerHTML = `${role === 'professor' ? '<div class="v4-integration-head"><div class="v4-integration-title">교수 평가</div><button class="v4-btn v4-ghost" id="v4Request">' + (request ? '서명 요청 철회' : '서명 요청') + '</button></div>' : ''}${previewMode ? '<div class="v4-preview">Preview 입력은 이 페이지의 메모리에만 유지되며 새로고침하면 초기화됩니다.</div>' : ''}${evaluation?.modifiedAfterSign && role === 'professor' ? '<div class="v4-warning">⚠ 서명 이후 내용이 수정되었습니다.</div>' : ''}${role === 'student' ? studentUi(evaluation) : professorUi(evaluation)}`;
       root.appendChild(block);
       if (role === 'student') {
         block.querySelector('#v4Save').onclick = save;
+      } else {
         block.querySelector('#v4Request').onclick = toggleRequest;
-        block.querySelector('#v4Apply').onclick = applySuggestion;
-        block.querySelector('#v4Evidence').onclick = () => alert('근거 보기 shell: 현재 Section의 활성 FormSchema와 입력 내용을 참조합니다.');
-        block.querySelector('#v4Refresh').onclick = event => {
-          event.currentTarget.closest('.v4-ai').querySelector('p').textContent = '추가 확인이 필요한 최근 내원 변화 내용을 입력해 주세요.';
-        };
-      } else block.querySelector('#v4Sign').onclick = sign;
+        block.querySelector('#v4Sign').onclick = sign;
+      }
+      publishStatuses();
     } finally {
       rendering = false;
       observeChartRoot();
     }
   }
-  function studentUi(request, evaluation) {
-    return `${evaluation?.signedAt && evaluation.publicComment ? `<div class="v4-comment"><b>교수 공개 코멘트</b><div>${escapeHtml(evaluation.publicComment)}</div></div>` : ''}<div class="v4-actions"><button class="v4-btn v4-primary" id="v4Save">차트 저장</button><button class="v4-btn v4-ghost" id="v4Request">${request ? '서명 요청 철회' : '서명 요청'}</button></div><div class="v4-ai"><b>✨ AI 추천</b><p>현재 입력한 차트 내용을 바탕으로 생성된 비진단적 작성 지원입니다.</p><div class="v4-actions"><button class="v4-btn v4-primary" id="v4Apply">적용</button><button class="v4-btn v4-ghost" id="v4Evidence">근거 보기</button><button class="v4-btn v4-ghost" id="v4Refresh">새 추천</button></div></div>`;
+  function studentUi(evaluation) {
+    return `${evaluation?.signedAt && evaluation.publicComment ? `<div class="v4-comment"><b>교수 공개 코멘트</b><div>${escapeHtml(evaluation.publicComment)}</div></div>` : ''}<div class="v4-actions"><button class="v4-btn v4-primary" id="v4Save">차트 저장</button></div>`;
   }
   function professorUi(evaluation) {
     return `<div class="v4-eval"><label>공개 코멘트<textarea id="v4Public">${escapeHtml(evaluation?.publicComment || '')}</textarea></label><label>비공개 코멘트<textarea id="v4Private">${escapeHtml(evaluation?.privateComment || '')}</textarea></label></div><div class="v4-actions"><button class="v4-btn v4-primary" id="v4Sign">서명</button><span style="font-size:12px;color:var(--ink-500,#667085)">코멘트 없이도 서명할 수 있습니다.</span></div>`;

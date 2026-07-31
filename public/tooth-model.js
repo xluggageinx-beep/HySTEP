@@ -2,7 +2,7 @@
   'use strict';
 
   const entries = [
-    ['caries-check','우식 확인·의심 병소','Caries check / Suspected carious lesion','C.ck','caries','lesion',[],false,true,['C ck']],
+    ['caries-check','우식 확인·의심 병소','Caries Ck','C.ck','caries','lesion',[],false,true,['C ck']],
     ['caries-1','법랑질 우식(초기 충치)','Enamel caries','C1','caries','caries_stage',['caries-2','caries-3'],false,true,['C']],
     ['caries-2','상아질 우식(중기 충치)','Dentin caries','C2','caries','caries_stage',['caries-1','caries-3'],false,true,[]],
     ['caries-3','치수염 또는 치수까지 진행된 충치','Pulpitis / Pulpal caries','C3','caries','caries_stage',['caries-1','caries-2'],false,true,[]],
@@ -31,13 +31,13 @@
     ['zirconia-crown','지르코니아 크라운','Zirconia crown','Zir.Cr','restoration','notation',[],false,true,[]],
     ['pfm-crown','PFM 크라운','PFM crown','PFM','restoration','notation',[],false,true,[]],
     ['gold-crown','금관','Gold crown','G.Cr','restoration','notation',[],false,true,[]],
-    ['temporary-setting','임시 접착','Temporary setting','T/S','restoration','notation',[],false,true,[]],
-    ['final-setting','최종 접착','Final setting','F/S','restoration','notation',[],false,true,[]],
+    ['temporary-setting','임시 접착','Crown Temp. Set','Cr.T/S','restoration','notation',[],false,true,['T/S']],
+    ['final-setting','최종 접착','Crown Final Set','Cr.F/S','restoration','notation',[],false,true,['F/S']],
     ['fracture','치아 파절','Fracture','Fx','lesion','notation',[],false,true,[]],
     ['root-rest','잔존치근','Root rest','R.R','presence','tooth_status',[],true,true,['Rr']],
     ['cervical-abrasion','치경부 마모증 병소','Cervical abrasion','CA','lesion','notation',[],false,true,['C.A']],
     ['cervical-resin','치경부 레진 수복','Cervical abrasion resin filling','CA.RF','restoration','notation',[],false,true,[]],
-    ['cervical-gi','치경부 글라스아이오노머 수복','Cervical abrasion glass ionomer filling','CA.GI','restoration','notation',[],false,true,[]],
+    ['cervical-gi','치경부 GI 수복','Cervical abrasion glass ionomer filling','CA.GI','restoration','notation',[],false,true,[]],
     ['attrition','교모','Attrition','Att','lesion','notation',[],false,true,['At']],
     ['abscess','농양','Abscess','Abs','lesion','notation',[],false,true,['Ab']],
     ['fistula','누공','Fistula','Fi','lesion','notation',[],false,true,[]],
@@ -148,6 +148,35 @@
     state.toothNotations[key] = symbols;
     return state;
   }
+  function removeNotation(input, tooth, notationId) {
+    const state = migrate(input), key = normalizeTooth(tooth), entry = byId[notationId];
+    if (!entry) return state;
+    if (entry.type === 'bridge_action') {
+      const group = state.bridgeGroups.find(item => item.abutments.concat(item.pontics).includes(Number(tooth)));
+      if (!group) return state;
+      group.abutments.concat(group.pontics).forEach(member => {
+        state.toothNotations[member] = (state.toothNotations[member] || []).filter(symbol => symbol !== 'Br');
+        if (['bridge_abutment','pontic'].includes(state.toothStatus[member])) delete state.toothStatus[member];
+      });
+      state.bridgeGroups = state.bridgeGroups.filter(item => item.id !== group.id);
+      return state;
+    }
+    state.toothNotations[key] = (state.toothNotations[key] || []).filter(symbol => symbol !== entry.symbol);
+    if (statusIds.has(entry.id) && state.toothStatus[key] === statusById[entry.id]) delete state.toothStatus[key];
+    return state;
+  }
+  function clearTooth(input, tooth) {
+    let state = migrate(input);
+    const group = state.bridgeGroups.find(item => item.abutments.concat(item.pontics).includes(Number(tooth)));
+    if (group) state = removeNotation(state, tooth, 'bridge');
+    const key = normalizeTooth(tooth);
+    state.toothNotations[key] = [];
+    delete state.toothStatus[key];
+    Object.keys(state.interdentalSpaces).forEach(relation => {
+      if (relation.split('-').map(Number).includes(Number(tooth))) delete state.interdentalSpaces[relation];
+    });
+    return state;
+  }
   function createBridge(input, selectedTeeth) {
     const state = migrate(input);
     const teeth = [...new Set(selectedTeeth.map(Number))];
@@ -193,9 +222,15 @@
   const missingToothCount = state => Object.values(migrate(state).toothStatus)
     .filter(status => status === 'extracted' || status === 'unerupted').length;
   const isPiEligible = (state, tooth) =>
-    !['extracted','unerupted','root_rest','pontic'].includes(migrate(state).toothStatus[normalizeTooth(tooth)]);
+    !['extracted','unerupted','root_rest'].includes(migrate(state).toothStatus[normalizeTooth(tooth)]);
   const isPeriodontalEligible = (state, tooth) =>
     !['extracted','unerupted','pontic'].includes(migrate(state).toothStatus[normalizeTooth(tooth)]);
+  const isCalculusEligible = (state, tooth) =>
+    !['extracted','unerupted','pontic'].includes(migrate(state).toothStatus[normalizeTooth(tooth)]);
+  const isPdBopMobEligible = (state, tooth) =>
+    !['extracted','unerupted','pontic'].includes(migrate(state).toothStatus[normalizeTooth(tooth)]);
+  const isSwEligible = (state, tooth) =>
+    !['extracted','unerupted'].includes(migrate(state).toothStatus[normalizeTooth(tooth)]);
   const displaySymbols = (state, tooth) => {
     const model = migrate(state);
     const key = normalizeTooth(tooth);
@@ -205,8 +240,9 @@
 
   global.HyStepToothModel = Object.freeze({
     registry: entries, legacyReadOnly, byId, bySymbol, upper, lower,
-    emptyState, migrate, migrateSymbol, applyNotation, createBridge,
+    emptyState, migrate, migrateSymbol, applyNotation, removeNotation, clearTooth, createBridge,
     toggleInterdentalSpace, missingToothCount, isPiEligible,
-    isPeriodontalEligible, displaySymbols, archFor, adjacent, relationKey
+    isPeriodontalEligible, isCalculusEligible, isPdBopMobEligible, isSwEligible,
+    displaySymbols, archFor, adjacent, relationKey
   });
 })(window);

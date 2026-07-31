@@ -2471,6 +2471,7 @@ input, textarea, select { font-family: inherit; }
       var filtered = cfg && cfg.sections ? ALL_SECTION_KEYS.filter(k => cfg.sections.includes(k)) : ALL_SECTION_KEYS;
       window.__CONFIG = cfg || {};
       window.__ACTIVE_KEYS = filtered;
+      window.__ACTIVE_FORM_TARGETS = cfg && Array.isArray(cfg.formTargets) ? cfg.formTargets : null;
       window.__HAS_DASHBOARD = !cfg || cfg.dashboard !== false;
     })();
   </script>
@@ -2536,23 +2537,11 @@ const SectionHero = ({ num, ko, en, right }) => (
    - progress %
    - quick-jump chips to subsections
 */
-const REVIEW_STATES = [
-  { k: 'empty',     label: '미작성' },
-  { k: 'wip',       label: '작성 중' },
-  { k: 'requested', label: '서명 대기' },
-  { k: 'done',      label: '서명 완료' },
-];
-
 const SectionStickyHeader = ({ sectionId, ko, en, progress = 0, subsections = [], defaultReviewState = 'empty', hint }) => {
   // Look up section index from sidebar SECTIONS array (data-driven, re-orderable)
   const sectionOnly = (window.SECTIONS || []).filter(s => s.id !== 'dashboard');
   const idx = sectionOnly.findIndex(s => s.id === sectionId);
   const num = idx >= 0 ? String(idx + 1).padStart(2, '0') : '00';
-
-  // Persist review state per section
-  const storageKey = `hy-step:review:${sectionId}`;
-  const [review, setReview] = React.useState(() => window.__chartStorage.getItem(storageKey) || defaultReviewState);
-  React.useEffect(() => { window.__chartStorage.setItem(storageKey, review); }, [review, storageKey]);
 
   const jump = (id) => {
     const el = document.getElementById(id);
@@ -2574,17 +2563,6 @@ const SectionStickyHeader = ({ sectionId, ko, en, progress = 0, subsections = []
           <h1 className="ss-ko">{ko}</h1>
           <div className="ss-en">{en}</div>
         </div>
-        <div className="ss-review">
-          {REVIEW_STATES.map(s => (
-            <button key={s.k}
-              className={`ss-review-btn ${s.k} ${review === s.k ? 'active' : ''}`}
-              onClick={() => setReview(s.k)}
-              title={`상태를 "${s.label}"으로 변경`}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
         <div className="ss-progress">
           <div className="ss-pct">{progress}<small>%</small></div>
           <div className="ss-bar"><span style={{ width: progress + '%' }} /></div>
@@ -2593,7 +2571,7 @@ const SectionStickyHeader = ({ sectionId, ko, en, progress = 0, subsections = []
       {subsections.length > 0 && (
         <div className="ss-subs">
           <span className="ss-subs-l"></span>
-          {subsections.map((s, i) => (
+          {subsections.filter(s => !window.__ACTIVE_FORM_TARGETS || window.__ACTIVE_FORM_TARGETS.includes(s.id)).map((s, i) => (
             <button key={s.id} className="ss-sub-chip" onClick={() => jump(s.id)}>
               <span className="ss-sub-idx">{idx + 1}-{i + 1}</span>
               <span>{s.label}</span>
@@ -2683,7 +2661,7 @@ const SubSection = ({ id, label, title, sub, children, right }) => (
   </div>
 );
 
-Object.assign(window, { PatientPanel, SectionHero, SectionStickyHeader, RadioGroup, CheckGroup, ProfPanel, StatusPill, SubSection, REVIEW_STATES });
+Object.assign(window, { PatientPanel, SectionHero, SectionStickyHeader, RadioGroup, CheckGroup, ProfPanel, StatusPill, SubSection });
 
   </script>
 
@@ -2959,7 +2937,6 @@ const ToothIcon = ({ category, missing, selected, className, style }) => {
     <svg viewBox="0 0 40 52" className={className} style={style} width="100%" height="100%">
       {root}
       {crown}
-      {missing && <line x1="6" y1="6" x2="34" y2="46" stroke="#94A3B8" strokeWidth="1.6" />}
     </svg>
   );
 };
@@ -2970,6 +2947,7 @@ const NotationOverlay = ({ code, isUpper }) => {
   const symbols = (Array.isArray(code) ? code : [code]).filter(Boolean);
   if (!symbols.length) return null;
   const hasAppliance = symbols.includes('App');
+  const redSymbols = new Set(['C.ck','C1','C2','C3',"2'C",'Ext','R.R','Fx','CA','Abs','Fi','Cd','Stain','Att']);
   const visible = symbols.filter(symbol => symbol !== 'App');
   return (
     <div style={{
@@ -2978,7 +2956,7 @@ const NotationOverlay = ({ code, isUpper }) => {
       pointerEvents: 'none',
       fontSize: visible.some(symbol => symbol.length > 5) ? 7.5 : 9.5,
       lineHeight: 1.05, textAlign: 'center', overflowWrap: 'anywhere',
-      fontWeight: 800, color: visible.some(symbol => symbol === '︵' || symbol === '︶') ? '#DC2626' : '#1D4ED8',
+      fontWeight: 800, color: visible.some(symbol => symbol === '︵' || symbol === '︶' || redSymbols.has(symbol)) ? '#DC2626' : '#1D4ED8',
       fontFamily: 'Pretendard, sans-serif',
       textShadow: '0 0 3px rgba(255,253,246,0.9), 0 0 3px rgba(255,253,246,0.9)',
     }}>
@@ -2989,7 +2967,7 @@ const NotationOverlay = ({ code, isUpper }) => {
 };
 
 /* ============ Chart Tab (notation only) ============ */
-const NotationChart = ({ modelState = HyStepToothModel.emptyState(), selectedTeeth = [], onCellClick }) => {
+const NotationChart = ({ modelState = HyStepToothModel.emptyState(), selectedTeeth = [], onCellClick, onCellDoubleClick }) => {
   const renderRow = (teeth, isUpper) => (
     <div className="tooth-row">
       {teeth.map((n, index) => {
@@ -3002,17 +2980,18 @@ const NotationChart = ({ modelState = HyStepToothModel.emptyState(), selectedTee
         return (
           <div key={n} className={`tooth-cell ${selectedTeeth.includes(n) ? 'selected' : ''}`}
             style={{ position:'relative', outline:selectedTeeth.includes(n)?'2px solid #2A6FDB':'none', borderRadius:6 }}
-            onClick={() => onCellClick && onCellClick(n)}>
+            onClick={() => onCellClick && onCellClick(n)}
+            onDoubleClick={event => { event.preventDefault(); onCellDoubleClick && onCellDoubleClick(n); }}>
             <div className="tooth-num">{n}</div>
             <div className="tooth-body" style={!isUpper ? { transform: 'scaleY(-1)' } : undefined}>
-              <ToothIcon category={cat} missing={unavailable} />
+              <div style={{opacity:unavailable ? .32 : 1}}><ToothIcon category={cat} missing={false} /></div>
               {symbols.length > 0 && (
                 <div style={!isUpper ? { transform: 'scaleY(-1)', position: 'absolute', inset: 0 } : { position: 'absolute', inset: 0 }}>
                   <NotationOverlay code={symbols} isUpper={isUpper} />
                 </div>
               )}
             </div>
-            {hasSpace && <span title="치간 이개" style={{ position:'absolute', right:-7, top:'48%', zIndex:4, color:'#DC2626', fontWeight:900, fontSize:14 }}>V</span>}
+            {hasSpace && <span title="치간 이개" style={{ position:'absolute', right:-7, top:'48%', zIndex:4, color:'#DC2626', fontWeight:900, fontSize:16 }}>∨</span>}
           </div>
         );
       })}
@@ -3073,17 +3052,17 @@ const BOPCell = ({ value, onClick }) => (
   </div>
 );
 
-const MobSwCell = ({ value, onChange }) => {
+const MobSwCell = ({ value, onChange, allowMob = true, allowSw = true }) => {
   const [open, setOpen] = React.useState(false);
   return (
     <div className="mobsw-cell" onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}>
       {value ? <span className={`mobsw-badge ${value.startsWith('M') ? 'm' : 's'}`}>{value}</span> : <span className="mobsw-empty">·</span>}
       {open && (
         <div className="mobsw-pop" onClick={e => e.stopPropagation()}>
-          {['M1','M2','M3'].map(v => (
+          {allowMob && ['M1','M2','M3'].map(v => (
             <button key={v} className={`mobsw-opt m ${value === v ? 'active' : ''}`} onClick={() => { onChange(v); setOpen(false); }}>{v}</button>
           ))}
-          {['Sw'].map(v => (
+          {allowSw && ['Sw'].map(v => (
             <button key={v} className={`mobsw-opt s ${value === v ? 'active' : ''}`} onClick={() => { onChange(v); setOpen(false); }}>{v}</button>
           ))}
           <button className="mobsw-opt clear" onClick={() => { onChange(null); setOpen(false); }}>×</button>
@@ -3112,7 +3091,7 @@ const CombinedChart = ({ modelState = HyStepToothModel.emptyState() }) => {
 
   const renderPDStrip = (n, surface) => {
     const arr = (pd[n] && pd[n][surface]) || [null, null, null];
-    const eligible = HyStepToothModel.isPeriodontalEligible(modelState, n);
+    const eligible = HyStepToothModel.isPdBopMobEligible(modelState, n);
     return (
       <div className="strip strip-pd-3" title={eligible ? '' : '해당 치아는 치주검사 대상에서 제외됩니다.'}
         style={eligible ? undefined : { pointerEvents:'none', opacity:.28 }}>
@@ -3140,10 +3119,10 @@ const CombinedChart = ({ modelState = HyStepToothModel.emptyState() }) => {
   };
 
   const upperColumn = (n) => (
-    <div key={n} className="combi-col-new" title={HyStepToothModel.isPeriodontalEligible(modelState,n)?'':'기존 검사값은 삭제되지 않지만 현재 계산에서는 제외됩니다.'}
-      style={HyStepToothModel.isPeriodontalEligible(modelState,n)?undefined:{opacity:.45}}>
+    <div key={n} className="combi-col-new" title={HyStepToothModel.isSwEligible(modelState,n)?'':'기존 검사값은 삭제되지 않지만 현재 계산에서는 제외됩니다.'}
+      style={HyStepToothModel.isSwEligible(modelState,n)?undefined:{opacity:.45}}>
       {/* 1: BOP upper */}
-      <BOPCell value={bop[n]} onClick={() => HyStepToothModel.isPeriodontalEligible(modelState,n) && toggleBop(n)} />
+      <BOPCell value={bop[n]} onClick={() => HyStepToothModel.isPdBopMobEligible(modelState,n) && toggleBop(n)} />
       {/* 2: PD upper Buccal */}
       {renderPDStrip(n, 'buccal')}
       {/* 3: Upper tooth */}
@@ -3152,19 +3131,23 @@ const CombinedChart = ({ modelState = HyStepToothModel.emptyState() }) => {
         {renderTooth(n, false)}
       </div>
       {/* 4: Mob/Sw upper */}
-      <MobSwCell value={mobsw[n]} onChange={v => HyStepToothModel.isPeriodontalEligible(modelState,n) && setMobSw(n, v)} />
+      <MobSwCell value={mobsw[n]} allowMob={HyStepToothModel.isPdBopMobEligible(modelState,n)}
+        allowSw={HyStepToothModel.isSwEligible(modelState,n)}
+        onChange={v => HyStepToothModel.isSwEligible(modelState,n) && setMobSw(n, v)} />
       {/* 5: PD upper Lingual */}
       {renderPDStrip(n, 'lingual')}
     </div>
   );
 
   const lowerColumn = (n) => (
-    <div key={n} className="combi-col-new" title={HyStepToothModel.isPeriodontalEligible(modelState,n)?'':'기존 검사값은 삭제되지 않지만 현재 계산에서는 제외됩니다.'}
-      style={HyStepToothModel.isPeriodontalEligible(modelState,n)?undefined:{opacity:.45}}>
+    <div key={n} className="combi-col-new" title={HyStepToothModel.isSwEligible(modelState,n)?'':'기존 검사값은 삭제되지 않지만 현재 계산에서는 제외됩니다.'}
+      style={HyStepToothModel.isSwEligible(modelState,n)?undefined:{opacity:.45}}>
       {/* 6: PD lower Lingual */}
       {renderPDStrip(n, 'lingual')}
       {/* 7: Mob/Sw lower */}
-      <MobSwCell value={mobsw[n]} onChange={v => HyStepToothModel.isPeriodontalEligible(modelState,n) && setMobSw(n, v)} />
+      <MobSwCell value={mobsw[n]} allowMob={HyStepToothModel.isPdBopMobEligible(modelState,n)}
+        allowSw={HyStepToothModel.isSwEligible(modelState,n)}
+        onChange={v => HyStepToothModel.isSwEligible(modelState,n) && setMobSw(n, v)} />
       {/* 8: Lower tooth — flipped */}
       <div className="tooth-slot lower">
         {renderTooth(n, true)}
@@ -3173,7 +3156,7 @@ const CombinedChart = ({ modelState = HyStepToothModel.emptyState() }) => {
       {/* 9: PD lower Buccal */}
       {renderPDStrip(n, 'buccal')}
       {/* 10: BOP lower */}
-      <BOPCell value={bop[n]} onClick={() => HyStepToothModel.isPeriodontalEligible(modelState,n) && toggleBop(n)} />
+      <BOPCell value={bop[n]} onClick={() => HyStepToothModel.isPdBopMobEligible(modelState,n) && toggleBop(n)} />
     </div>
   );
 
@@ -3240,13 +3223,13 @@ const CalculusChart = ({ modelState = HyStepToothModel.emptyState() }) => {
   // A strip of 3 clickable cells
   const CalStrip3 = ({ n, surface }) => {
     const arr = (calData[n] && calData[n][surface]) || [0,0,0];
-    const eligible = HyStepToothModel.isPeriodontalEligible(modelState, n);
+    const eligible = HyStepToothModel.isCalculusEligible(modelState, n);
     return (
       <div className="strip strip-pd-3" title={eligible?'':'해당 치아는 치주검사 대상에서 제외됩니다.'}
         style={{ cursor:eligible?'pointer':'not-allowed', pointerEvents:eligible?'auto':'none', opacity:eligible?1:.28 }}>
         {[0,1,2].map(i => (
           <div key={i} className="pd-cell" onClick={() => toggleCal(n, surface, i)}
-            style={{ background: arr[i] ? '#DC2626' : undefined, minWidth:14 }}>
+            style={{ minWidth:14 }}>
             {arr[i] ? <span style={{ color:'#fff', fontSize:10, fontWeight:700 }}>●</span>
                     : <span style={{ color:'var(--ink-300)', fontSize:10 }}>·</span>}
           </div>
@@ -3294,7 +3277,7 @@ const CalculusChart = ({ modelState = HyStepToothModel.emptyState() }) => {
   };
 
   // Stats
-  const allTeeth = [...TEETH_UPPER, ...TEETH_LOWER].filter(n => HyStepToothModel.isPeriodontalEligible(modelState, n));
+  const allTeeth = [...TEETH_UPPER, ...TEETH_LOWER].filter(n => HyStepToothModel.isCalculusEligible(modelState, n));
   let dotted = 0, total = allTeeth.length * 6;
   allTeeth.forEach(n => {
     const t = calData[n] || { buccal:[0,0,0], lingual:[0,0,0] };
@@ -3338,14 +3321,14 @@ const CalculusChart = ({ modelState = HyStepToothModel.emptyState() }) => {
             <div style={{ fontSize:13, fontWeight:700 }}>치석 평가 (Calculus Assessment)</div>
             <div style={{ fontSize:11, color:'var(--ink-500)' }}>Calculus 수 / (활성 치아 × 6) × 100</div>
           </div>
-          <div style={{ fontSize:24, fontWeight:700, color:'var(--primary)', fontVariantNumeric:'tabular-nums' }}>
+          <div style={{ fontSize:24, fontWeight:700, color:rate>=50?'#DC2626':rate>=30?'#F59E0B':'#16A34A', fontVariantNumeric:'tabular-nums' }}>
             {rate.toFixed(2)}<span style={{ fontSize:14 }}>%</span>
           </div>
         </div>
         <div className="grid-2" style={{ gap:16 }}>
           <div>
             <label className="field-label">치석 양 (Calculus Amount)</label>
-            <RadioGroup options={['Simple','Moderate','Heavy']} value={calAmount} onChange={setCalAmount} />
+            <div style={{color:calAmount==='Heavy'?'#DC2626':calAmount==='Moderate'?'#F59E0B':'#16A34A'}}><RadioGroup options={['Simple','Moderate','Heavy']} value={calAmount} onChange={setCalAmount} /></div>
           </div>
           <div>
             <label className="field-label">치석 위치 (Calculus Location)</label>
@@ -3459,12 +3442,7 @@ const PIChart = ({ data = {}, modelState = HyStepToothModel.emptyState(), onTogg
 
 /* Multi-visit trend — dual-row horizontal bar comparison + vertical target line + delta chip */
 const PITrend = ({
-  points = [
-    { label: '1회차', v: 58.93, date: '07.06' },
-    { label: '2회차', v: 24.10, date: '07.20' },
-    { label: '3회차', v: null, date: '08.03', planned: true, target: 15 },
-    { label: '4회차', v: null, date: '08.24', planned: true, target: 10 },
-  ],
+  points = [],
   target = 20,
 }) => {
   const actual = points.filter(p => p.v != null);
@@ -3484,7 +3462,6 @@ const PITrend = ({
       <div className="card-head">
         <div>
           <div className="card-title">O\'Leary Index 회차별 비교</div>
-          <div className="card-sub">막대 길이가 짧아질수록 치태 관리가 향상됨. 목표선({target}%) 이하 유지 목표.</div>
         </div>
         {latestDelta != null && (
           <div className={`trend-delta ${latestDelta < 0 ? 'good' : 'bad'}`}>
@@ -3551,37 +3528,11 @@ const PITrend = ({
           );
         })}
 
-        {/* Planned future rows (ghost) */}
-        {points.filter(p => p.v == null && p.target != null).map((p,i) => {
-          const pct = (p.target / maxVal) * 100;
-          return (
-            <div key={'plan-'+i} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10, opacity:0.4 }}>
-              <div style={{ width:48, fontSize:11.5, fontWeight:700, color:'var(--ink-500)', flexShrink:0 }}>
-                <div>{p.label}</div>
-                <div style={{ fontSize:10, color:'var(--ink-400)', fontWeight:400 }}>{p.date}</div>
-              </div>
-              <div style={{ flex:1, position:'relative', height:28 }}>
-                <div style={{
-                  position:'absolute', left:0, top:4, height:20,
-                  width:`${pct}%`,
-                  background:'#94A3B8',
-                  borderRadius:'0 6px 6px 0',
-                  border:'1px dashed #64748B',
-                }}>
-                  <span style={{ position:'absolute', right:6, top:'50%', transform:'translateY(-50%)', fontSize:11, fontWeight:600, color:'#475569' }}>{p.target}%</span>
-                </div>
-                <div style={{ position:'absolute', left:`${targetPct}%`, top:0, height:'100%', width:2, background:'var(--danger)', opacity:0.7, borderRadius:1 }} />
-              </div>
-              <div style={{ flexShrink:0, fontSize:11, color:'var(--ink-400)', padding:'3px 8px' }}>목표</div>
-            </div>
-          );
-        })}
       </div>
 
       <div className="trend-legend">
         <span><span className="tl-swatch actual" /> 실측</span>
         <span><span style={{ display:'inline-block', width:10, height:2, background:'var(--danger)', marginRight:4, borderRadius:1 }} /> 관리 목표선 ({target}%)</span>
-        <span><span className="tl-swatch planned" /> 예정 목표</span>
       </div>
     </div>
   );
@@ -3836,7 +3787,7 @@ const PrescanPage = ({ onSubmit, prefill }) => {
   return (
     <div style={{ maxWidth:800, margin:'0 auto', padding:'32px 24px', fontFamily:'inherit' }}>
       <div style={{ textAlign:'center', marginBottom:32 }}>
-        <img src="/images/hystem-logo.png" alt="Hy-STEP" style={{ height:48, marginBottom:16 }} onError={e=>{e.target.style.display='none'}} />
+        <img src="/images/hy-step-blue.png" alt="Hy-STEP" style={{ height:48, marginBottom:16 }} onError={e=>{e.target.style.display='none'}} />
         <h2 style={{ fontSize:22, fontWeight:800, color:'var(--ink-900)', margin:'0 0 6px' }}>사전 문진표</h2>
         <p style={{ fontSize:13.5, color:'var(--ink-500)', margin:0 }}>아래 질문에 솔직하게 답변해 주세요. 입력하신 내용은 담당 치위생사에게 전달됩니다.</p>
       </div>
@@ -4401,12 +4352,23 @@ const Section2 = () => {
   }, []);
 
   const handleToothClick = tooth => {
-    if (activeNotation && activeNotation.type !== 'bridge_action') {
-      setToothModel(prev => HyStepToothModel.applyNotation(prev, tooth, activeNotation.id));
-      setToothMessage(`${tooth}번 치아에 ${activeNotation.symbol} 적용`);
-      return;
-    }
     setSelectedTeeth(prev => prev.includes(tooth) ? prev.filter(item => item !== tooth) : [...prev, tooth]);
+  };
+  const applySelectedNotation = notation => {
+    if (!selectedTeeth.length) { setToothMessage('먼저 치아를 선택해 주세요.'); return; }
+    setActiveNotation(notation);
+    setToothModel(prev => {
+      const allHave = selectedTeeth.every(tooth => (prev.toothNotations?.[tooth] || []).includes(notation.symbol));
+      return selectedTeeth.reduce((next,tooth) => allHave
+        ? HyStepToothModel.removeNotation(next,tooth,notation.id)
+        : HyStepToothModel.applyNotation(next,tooth,notation.id), prev);
+    });
+    setToothMessage(`${notation.symbol} ${selectedTeeth.length}개 치아 ${selectedTeeth.every(tooth => (toothModel.toothNotations?.[tooth] || []).includes(notation.symbol)) ? '제거' : '입력'}`);
+  };
+  const clearTooth = tooth => {
+    setToothModel(prev => HyStepToothModel.clearTooth(prev,tooth));
+    setSelectedTeeth(prev => prev.filter(item => item !== tooth));
+    setToothMessage(`${tooth}번 치아의 모든 Notation을 제거했습니다.`);
   };
   const createBridge = () => {
     const result = HyStepToothModel.createBridge(toothModel, selectedTeeth);
@@ -4432,7 +4394,8 @@ const Section2 = () => {
 
   const subsections = [
     { id: 's2-sub-1', label: '혈당·혈압 측정' },
-    { id: 's2-sub-2', label: '구내 검사' },
+    { id: 's2-sub-2', label: '구외 검사' },
+    { id: 's2-sub-2b', label: '구내 검사' },
     { id: 's2-sub-3', label: '치식 차팅' },
     { id: 's2-sub-4', label: '교수 요청/질문' },
   ];
@@ -4490,11 +4453,11 @@ const Section2 = () => {
         </div>
       </SubSection>
 
-      {/* 구내 검사 */}
-      <SubSection id="s2-sub-2" label="Intraoral" title="구내 검사"
+      {/* 구외 검사 */}
+      <SubSection id="s2-sub-2" label="Extraoral" title="구외 검사"
         sub="항목별 소견을 토글로 선택하고 필요 시 추가 메모를 남깁니다.">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          {intraoralItems.map(it => (
+          {intraoralItems.slice(0,3).map(it => (
             <div key={it.key} className="toggle-card">
               <div className="tc-title">{it.ko}</div>
               <div className="tc-en">{it.key}</div>
@@ -4516,6 +4479,21 @@ const Section2 = () => {
             </div>
           ))}
         </div>
+      </SubSection>
+
+      <SubSection id="s2-sub-2b" label="Intraoral" title="구내 검사"
+        sub="구강 내 연조직과 치은 상태를 항목별로 기록합니다.">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          {intraoralItems.slice(3).map(it => (
+            <div key={it.key} className="toggle-card">
+              <div className="tc-title">{it.ko}</div><div className="tc-en">{it.key}</div>
+              <div className="toggle-chips">{it.opts.map(o => (
+                <button key={o} className={`chip ${intraoral[it.key]?.includes(o) ? 'active' : ''}`}
+                  onClick={() => setIntraoral(prev => {const cur=prev[it.key]||[];return {...prev,[it.key]:cur.includes(o)?cur.filter(x=>x!==o):[...cur,o]};})}>{o}</button>
+              ))}</div>
+              <textarea className="textarea" style={{ minHeight:48,fontSize:12 }} placeholder="소견 메모…" />
+            </div>
+          ))}</div>
       </SubSection>
 
       {/* 치식 차팅 */}
@@ -4545,20 +4523,22 @@ const Section2 = () => {
                 <button key={o.id} type="button"
                   className={`notation-chip ${activeNotation?.id === o.id ? 'active' : ''}`}
                   title={`${o.korean}\n${o.english}\n${o.symbol}`}
-                  onClick={() => o.type === 'bridge_action' ? setActiveNotation(null) : setActiveNotation(o)}>
-                  <span className="code">{o.symbol}</span>
-                  <span className="desc"><b>{o.korean}</b><small style={{display:'block'}}>{o.english}</small></span>
+                  style={{textAlign:'left',color:new Set(['C.ck','C1','C2','C3',"2'C",'Ext','R.R','Fx','CA','Abs','Fi','Cd','Stain','Att']).has(o.symbol)?'#C62828':'#1D4ED8'}}
+                  onClick={() => o.type === 'bridge_action' ? createBridge() : applySelectedNotation(o)}>
+                  <span className="code" style={{display:'block',fontSize:18}}>{o.symbol}</span>
+                  <span className="desc"><b style={{display:'block'}}>{o.english}</b><small style={{display:'block'}}>{o.korean}</small></span>
                 </button>
               ))}
             </div>
             <div className="v4-actions" style={{margin:'12px 0'}}>
-              <button type="button" className="btn btn-ghost" onClick={() => { setActiveNotation(null); setSelectedTeeth([]); }}>선택 초기화</button>
+              <button type="button" className="btn btn-ghost" onClick={() => setSelectedTeeth([...TEETH_UPPER,...TEETH_LOWER])}>전체 선택</button>
+              <button type="button" className="btn btn-ghost" onClick={() => { setActiveNotation(null); setSelectedTeeth([]); }}>초기화</button>
               <button type="button" className="btn btn-ghost" onClick={createBridge}>선택 구간 브리지 Br / =</button>
               <button type="button" className="btn btn-ghost" onClick={toggleSpacing}>선택 2개 치간 이개 V</button>
               <span style={{fontSize:12,color:'var(--ink-500)'}}>상실치 {HyStepToothModel.missingToothCount(toothModel)}개 · 선택 {selectedTeeth.length}개</span>
             </div>
             {toothMessage && <div style={{fontSize:12,color:'var(--primary)',marginBottom:8}}>{toothMessage}</div>}
-            <NotationChart modelState={toothModel} selectedTeeth={selectedTeeth} onCellClick={handleToothClick} />
+            <NotationChart modelState={toothModel} selectedTeeth={selectedTeeth} onCellClick={handleToothClick} onCellDoubleClick={clearTooth} />
           </>
         )}
 
@@ -4594,8 +4574,19 @@ const Section3 = () => {
     return () => window.removeEventListener('hystep-tooth-model-change', update);
   }, []);
 
-  const initialPI = {};
-  const [pi, setPi] = React.useState(initialPI);
+  const [piByVisit, setPiByVisit] = React.useState({'1회차':{},'2회차':{},'3회차':{}});
+  const [target, setTarget] = React.useState(20);
+  const pi = piByVisit[visit] || {};
+  const setCurrentPi = updater => setPiByVisit(prev => ({
+    ...prev, [visit]: typeof updater === 'function' ? updater(prev[visit] || {}) : updater
+  }));
+  const eligibleTeeth = [...TEETH_UPPER,...TEETH_LOWER].filter(n => HyStepToothModel.isPiEligible(toothModel,n));
+  const piRate = data => {
+    const total = eligibleTeeth.length * 4;
+    const marked = eligibleTeeth.reduce((sum,n) => sum + (data[n] || []).filter(Boolean).length, 0);
+    return total ? marked / total * 100 : 0;
+  };
+  const trendPoints = ['1회차','2회차','3회차'].map(label => ({label,v:piRate(piByVisit[label] || {}),date:''}));
 
   const subsections = [
     { id: 's3-sub-1', label: 'PI 측정' },
@@ -4624,17 +4615,20 @@ const Section3 = () => {
                 <button key={v} className={`tab ${visit === v ? 'active' : ''}`} onClick={() => setVisit(v)}>{v}</button>
               ))}
             </div>
-            <button className="btn sm"><Icon name="check" size={12} />전체 선택</button>
-            <button className="btn sm" style={{ color: 'var(--danger)' }}>{visit} 초기화</button>
+            <button className="btn sm" onClick={() => setCurrentPi(Object.fromEntries(eligibleTeeth.map(n=>[n,[1,1,1,1]])))}><Icon name="check" size={12} />전체 선택</button>
+            <button className="btn sm" style={{ color: 'var(--danger)' }} onClick={() => setCurrentPi({})}>{visit} 초기화</button>
           </div>
         }>
-        <PIChart data={pi} modelState={toothModel} onToggle={(n, arr) => setPi(prev => ({ ...prev, [n]: arr }))} />
-        <div style={{marginTop:8,fontSize:11.5,color:'var(--ink-500)'}}>기존 검사값은 삭제되지 않지만 현재 계산에서는 제외됩니다.</div>
+        <PIChart data={pi} modelState={toothModel} onToggle={(n, arr) => setCurrentPi(prev => ({ ...prev, [n]: arr }))} />
       </SubSection>
 
       {/* Trend graph */}
       <div id="s3-sub-2" style={{ marginTop: 'var(--gap-card)' }}>
-        <PITrend />
+        <div className="card" style={{marginBottom:12}}>
+          <label className="field-label">목표 % <b>{target}%</b></label>
+          <input type="range" min="0" max="100" value={target} onChange={event=>setTarget(Number(event.target.value))} style={{width:'100%'}} />
+        </div>
+        <PITrend points={trendPoints} target={target} />
       </div>
 
       <SubSection id="s3-sub-3" label="Focus" title="집중 관리 치아 (Focus Teeth)">
@@ -5793,7 +5787,7 @@ const ComponentsShowcase = ({ onOpenPhoto }) => {
 
       <div className="card">
         <div className="card-head">
-          <div className="card-title">Photo 모달</div>
+          <div className="card-title">Photo</div>
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button className="btn photo" onClick={onOpenPhoto}><Icon name="camera" size={13} />모달 열기</button>
@@ -5813,11 +5807,11 @@ const ComponentsShowcase = ({ onOpenPhoto }) => {
 const PhotoPage = ({ onOpenPhoto }) => {
   return (
     <div>
-      <div className="page-title">Photo 관리</div>
+      <div className="page-title">Photo</div>
       <div className="page-sub">회차별·촬영법별 사진 세트를 관리합니다.</div>
       <div className="card">
         <div className="card-head">
-          <div className="card-title">Photo 모달 미리보기</div>
+          <div className="card-title">Photo</div>
           <button className="btn photo" onClick={onOpenPhoto}><Icon name="camera" size={13} />모달 열기</button>
         </div>
         <div className="doc-hint" style={{ padding: 0, border: 'none' }}>
@@ -5863,7 +5857,7 @@ const SignDot = ({ status }) => {
   const map = {
     empty:  { title: '미작성' },
     wip:    { title: '작성 중' },
-    review: { title: '서명 대기' },
+    review: { title: window.__hystepRole === 'student' ? '서명 요청' : '서명 대기' },
     done:   { title: '서명 완료' },
   };
   if (!status) return <span className="sign-dot empty" />;
@@ -5896,7 +5890,7 @@ const Sidebar = ({ current, onChange }) => {
       container.className = 'print-all-container';
       // Mount each section
       const sectionKeys = (window.SECTIONS || []).filter(s => s.id !== 'dashboard').map(s => s.id);
-      container.innerHTML = `<div style="text-align:center;padding:32px;"><img src="/images/hystem-logo.png" style="height:48px" /><h1 style="margin-top:16px">Hy-STEP 치위생 차트</h1></div>`;
+      container.innerHTML = `<div style="text-align:center;padding:32px;"><img src="/images/hy-step-blue.png" style="height:48px" /><h1 style="margin-top:16px">Hy-STEP 치위생 차트</h1></div>`;
       sectionKeys.forEach(key => {
         const div = document.createElement('div');
         div.className = 'print-section';
@@ -5934,7 +5928,7 @@ const Sidebar = ({ current, onChange }) => {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <img src="/images/hystem-logo.png" alt="Hy-STEP" />
+        <img src="/images/hy-step-blue.png" alt="Hy-STEP" />
       </div>
 
       <div className="mini-patient">
@@ -5962,7 +5956,11 @@ const Sidebar = ({ current, onChange }) => {
               onClick={() => onChange(s.id)}
               title={isSection ? `Section ${idxLabel} · 교수 서명: ${s.signStatus === 'signed' ? '완료' : s.signStatus === 'pending' ? '대기' : '요청 전'}` : ''}
             >
-              {isSection ? <SignDot status={s.signStatus} /> : <span className="sign-dot placeholder" />}
+              {isSection ? <span role="button" tabIndex="0"
+                onClick={event => { event.stopPropagation(); window.__hystepToggleSignatureRequest?.(s.id); }}
+                onKeyDown={event => { if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();window.__hystepToggleSignatureRequest?.(s.id);} }}>
+                <SignDot status={window.__hystepSectionStatuses?.[s.id] || s.signStatus} />
+              </span> : <span className="sign-dot placeholder" />}
               <span className="idx">{idxLabel}</span>
               <span className="name">{s.name}</span>
               <span className="pct">{s.id === 'dashboard' ? '' : `${s.progress}%`}</span>
@@ -5985,17 +5983,19 @@ const Sidebar = ({ current, onChange }) => {
         </div>
 
 
-        <div className="nav-heading" style={{ marginTop: 12 }}>Design System</div>
-        <button className={`nav-item ${current === 'components' ? 'active' : ''}`} onClick={() => onChange('components')}>
-          <span className="sign-dot placeholder" />
-          <span className="idx"></span>
-          <span className="name">공용 컴포넌트</span>
-          <span className="pct"></span>
-        </button>
+        <div className="shared-components-area" data-blindable="true">
+          <div className="nav-heading" style={{ marginTop: 12 }}>공용 Component</div>
+          <button className={`nav-item ${current === 'components' ? 'active' : ''}`} onClick={() => onChange('components')}>
+            <span className="sign-dot placeholder" />
+            <span className="idx"></span>
+            <span className="name">공용 컴포넌트</span>
+            <span className="pct"></span>
+          </button>
+        </div>
         <button className={`nav-item ${current === 'photo' ? 'active' : ''}`} onClick={() => onChange('photo')}>
           <span className="sign-dot placeholder" />
           <span className="idx"></span>
-          <span className="name">Photo 모달</span>
+          <span className="name">Photo</span>
           <span className="pct"></span>
         </button>
       </nav>
@@ -6028,6 +6028,12 @@ const App = () => {
     return allowed.includes(saved) ? saved : ((window.__ACTIVE_KEYS || [])[0] || 'dashboard');
   });
   const [photoOpen, setPhotoOpen] = useState(false);
+  const [, setStatusVersion] = useState(0);
+  useEffect(() => {
+    const rerender = () => setStatusVersion(version => version + 1);
+    window.addEventListener('hystep-status-change', rerender);
+    return () => window.removeEventListener('hystep-status-change', rerender);
+  }, []);
   useEffect(() => {
     window.__chartStorage.setItem('hy-step:current', current);
     // Fix #17: Scroll main area to top whenever section changes
@@ -6178,4 +6184,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 <script src="/prototype-store.js"></script><script src="/chart-integration.js"></script>
 </body>
 </html>
+
 

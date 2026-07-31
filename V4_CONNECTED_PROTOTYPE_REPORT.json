@@ -1,95 +1,44 @@
 {
-  "version": "v11",
-  "baseline": "HySTEP-v4-LOCKED-connected-prototype-v10.zip",
+  "version": "v12",
+  "baseline": "HySTEP-v4-LOCKED-connected-prototype-v11.zip",
   "sourceOfTruth": [
     "EZSTEP_HYSTEP_CODEX_HANDOFF_v4_LOCKED.md CONTROL LAYER",
-    "v11 user-confirmed notation and tooth-status requirements",
-    "v10 connected prototype structure"
+    "V12 user-confirmed UI/UX and bug-fix requirements",
+    "V11 connected prototype architecture"
   ],
   "changedFiles": [
-    "public/tooth-model.js",
+    "public/admin-step.html",
+    "public/builder.html",
     "public/chart.html",
     "public/chart-integration.js",
+    "public/hystep-preview.html",
     "public/prototype-store.js",
+    "public/tooth-model.js",
+    "public/images/ez-step-blue.png",
+    "public/images/ez-step-white.png",
+    "public/images/hy-step-blue.png",
+    "public/images/hy-step-white.png",
     "V4_CONNECTED_PROTOTYPE_REPORT.json"
   ],
-  "notationRegistry": {
-    "selectableSymbols": [
-      "C.ck", "C1", "C2", "C3", "2'C", "ST", "RPT", "Ext", "UE", "PE",
-      "IMPL", "FD", "PD", "Br", "App", "RCT", "R.I", "G.In", "Zir.In",
-      "G.On", "Zir.On", "T.F", "R.F", "A.F", "S", "T.Cr", "Zir.Cr", "PFM",
-      "G.Cr", "T/S", "F/S", "Fx", "R.R", "CA", "CA.RF", "CA.GI", "Att",
-      "Abs", "Fi", "F.Im", "︵", "︶", "Cd", "Stain"
-    ],
-    "fields": [
-      "id", "korean", "english", "symbol", "category", "type", "conflicts",
-      "affectsToothStatus", "selectable", "legacyAliases"
-    ],
-    "notSelectable": ["Missing", "P.In", "P.R", "Is", "P.Cr", "="],
-    "legacyReadOnly": ["P.R", "Is", "P.Cr"]
-  },
-  "canonicalChartData": {
-    "toothStatus": [
-      "present", "extracted", "unerupted", "partially_erupted", "implant",
-      "root_rest", "pontic", "bridge_abutment", "supernumerary", "retained_primary"
-    ],
-    "bridgeGroups": {
-      "shape": "{ id, abutments: number[], pontics: number[] }",
-      "renderer": "abutment Br, pontic ="
-    },
-    "interdentalSpaces": {
-      "shape": "{ \"11-12\": true }",
-      "renderer": "adjacent tooth midpoint V"
-    }
-  },
-  "rules": {
-    "missingToothCount": "extracted + unerupted only",
-    "piDisabled": ["extracted", "unerupted", "root_rest", "pontic"],
-    "periodontalDisabled": ["extracted", "unerupted", "pontic"],
-    "rootRest": "not missing; PI disabled; other periodontal examination enabled",
-    "preserveExistingMeasurements": "disabled values remain in state and are excluded from current calculation",
-    "cariesStages": "C1/C2/C3 mutually replace; confirmed stage removes C.ck; 2'C coexists",
-    "bridge": "same arch, continuous, non-overlapping; endpoints abutments and middle teeth pontics",
-    "interdentalSpacing": "exactly two adjacent teeth in same arch; toggles; rejects extracted/unerupted/pontic"
-  },
-  "migration": {
-    "aliases": {
-      "Ex": "Ext", "Im": "IMPL", "Fu": "FD", "Pd": "PD", "G.I": "G.In",
-      "P.I": "Zir.In", "Sl": "S", "Rr": "R.R", "C.A": "CA", "At": "Att",
-      "Ab": "Abs", "St": "Stain", "G.Rc": "︵ or ︶ by arch", "Ap": "App"
-    },
-    "readOnly": ["P.R", "Is", "P.Cr"],
-    "idempotent": true
-  },
-  "previewActualParity": {
-    "shared": [
-      "chart.html", "tooth-model.js", "chart-integration.js", "Section renderer",
-      "notation renderer", "PI eligibility", "periodontal eligibility", "print/PDF renderer"
-    ],
-    "actual": "PrototypeStore persistence, Section revision, signature request/evaluation/signature",
-    "preview": "isolated page-memory storage and in-memory signature/evaluation state; no PrototypeStore mutation",
-    "onlyDifference": "persistence"
+  "implementation": {
+    "logos": "좌상단 Builder/관리자/Hy-STEP 텍스트 타이틀을 제공된 브랜드 로고로 교체",
+    "schoolCreation": "SchoolConfig 하나에 previewUrl과 actualUrl을 함께 생성하며 기존 학교도 보정",
+    "ai": "기존 대형 AI 박스를 제거하고 입력란 우측 소형 AI 버튼 및 독립 AI Assistant overlay 제공, Photo 제외",
+    "sectionStatus": "학생/교수 상단 상태 박스를 제거하고 좌측 Dot 및 교수평가 서명 요청 버튼을 동일 SignatureRequest에 양방향 연결",
+    "oleary": "1·2·3회차별 PI 상태 분리, 실제 입력 기반 그래프, 공통 목표 슬라이더와 단일 목표선 연결",
+    "toothChart": "선택 토글, notation 재클릭 제거, 치아 더블클릭 전체 제거, 전체 선택/초기화, bridge/spacing 관계 렌더링",
+    "builder": "8 Sections의 실제 chart subcategory FormSchema와 runtimeTargets를 canonical SchoolConfig로 공유",
+    "dashboard": "기존 학생카드형 교수 대시보드를 유지하며 3:4, 4열/모바일 1열, 행 선택 PDF, participant 기준 Queue/KPI를 보정"
   },
   "validation": {
-    "A_to_Y": {
-      "unchangedStructureStaticRegression": "PASS",
-      "actualSaveRestoreAndSignedRevisionStateModel": "PASS",
-      "previewPersistencePathStaticVerification": "PASS",
-      "browserInteraction": "NOT RUN"
-    },
-    "Z1_notationRegistry": "PASS",
-    "Z2_cariesStages": "PASS",
-    "Z3_bridge": "PASS",
-    "Z4_interdentalSpacing": "PASS",
-    "Z5_examinationLinkage": "PASS",
-    "migrationIdempotence": "PASS",
-    "statusConflictReplacement": "PASS",
-    "jsSyntaxNonJSX": "PASS",
-    "duplicateIds": "PASS",
-    "eightSections": "PASS",
-    "hardcodedInputDefaults": "PASS",
-    "requiredHttpPaths": "PASS (HTTP 200 through isolated local static server)",
-    "browser": "BLOCKED before launch: ERR_INVALID_PACKAGE_CONFIG at C:\\Users\\l_jm0\\AppData\\Local\\Temp\\package.json; not marked PASS and no system workaround attempted"
+    "nonJsxJavaScriptSyntax": "PASS",
+    "prototypeStoreStateAndSignedRevision": "PASS",
+    "toothModelSelectionAndEligibility": "PASS",
+    "duplicateStaticIds": "PASS",
+    "requiredPaths": "PASS",
+    "eightSectionsAndBuilderMapping": "PASS",
+    "protectedHashComparison": "PASS",
+    "browserInteraction": "NOT RUN"
   },
   "protectedHashes": {
     "public/prescan.html": "AC3ADA67D5DF6E16A5E2C92CB7E1239D1E8EFBB25463B30D47F3BFDA8B544C46",
@@ -102,16 +51,10 @@
     "constant": "ADMIN_ACCESS_PASSWORD",
     "value": "0123"
   },
-  "intentionallyNotImplemented": [
-    "새 backend 또는 database",
-    "implant-specific periodontal chart",
-    "legacy Is를 V relation으로 자동 추정",
-    "legacy P.Cr를 Zir.Cr로 자동 변환",
-    "새 UI framework 또는 library"
-  ],
   "knownLimitations": [
-    "PDF는 기존 browser print 기반 Prototype renderer",
-    "실제 클릭·모바일·인쇄 미리보기 검수는 브라우저 런타임 시작 오류로 실행하지 못함"
+    "PDF/Excel은 기존 Prototype shell 및 browser print 기반",
+    "AI Assistant는 비진단적 Interactive Prototype shell이며 실제 AI backend를 호출하지 않음",
+    "브라우저 자동 상호작용 검증은 실행하지 않았으며 상태 모델·정적 회귀 검증으로 대체"
   ],
   "unresolvedConflicts": []
 }

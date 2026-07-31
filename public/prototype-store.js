@@ -10,21 +10,16 @@
   const now = () => new Date().toISOString();
   const sections = [
     {sectionId:'s1',name:'초진 및 대상자 사정',forms:[
-      ['s1-history','문진·병력',['s1-sub-1','s1-sub-2','s1-sub-6']],['s1-medication','복용 약물·주의사항',['s1-sub-7','s1-sub-8']],
-      ['s1-habits','구강관리 습관',['s1-sub-3']],['s1-symptoms','불편감·증상·불안도',['s1-sub-4','s1-sub-5']] ]},
+      ['s1-prescan','사전문진 링크',['s1-sub-1']],['s1-visit','치과 방문 경험',['s1-sub-2']],['s1-habits','건강행태 및 칫솔질',['s1-sub-3']],['s1-symptoms','증상 및 불편감',['s1-sub-4']],['s1-anxiety','구강불안도 (DAS)',['s1-sub-5']],['s1-history','전신질환 병력',['s1-sub-6']],['s1-caution','전신질환 치과 주의사항',['s1-sub-7']],['s1-medication','복용 약물 및 부작용',['s1-sub-8']] ]},
     {sectionId:'s2',name:'임상 검사',forms:[
-      ['s2-vitals','전신 상태 측정',['s2-sub-1']],['s2-general','구내 검사',['s2-sub-2']],
-      ['s2-dentition','치식·치아 상태',['s2-sub-3']],['s2-note','검사 메모',['s2-sub-4']] ]},
-    {sectionId:'s3',name:'구강위생 지수 검사',forms:[
-      ['s3-plaque','치면세균막·O’Leary Index',['s3-sub-1']],['s3-focus','집중관리 치아',['s3-sub-3']] ]},
+      ['s2-vitals','혈당·혈압 측정',['s2-sub-1']],['s2-extraoral','구외 검사',['s2-sub-2']],['s2-intraoral','구내 검사',['s2-sub-2b']],['s2-dentition','치식 차팅',['s2-sub-3']],['s2-note','교수 요청/질문',['s2-sub-4']] ]},
+    {sectionId:'s3',name:'구강위생 지수',forms:[
+      ['s3-pi','PI 측정',['s3-sub-1']],['s3-trend','회차별 추이',['s3-sub-2']],['s3-focus','집중 관리 치아',['s3-sub-3']],['s3-phase','임상차트 판독',['s3-sub-4']],['s3-halitosis','구취 측정',['s3-sub-5']],['s3-co','CO 측정',['s3-sub-6']] ]},
     {sectionId:'s4',name:'치위생 진단',forms:[
-      ['s4-diagnosis','위험도·건강행태 종합 판단',['s4-sub-1']],['s4-psychology','성격 특성·협조도',['s4-sub-2']] ]},
-    {sectionId:'s5',name:'치위생 계획',forms:[
-      ['s5-care-plan','치위생 관리 계획표',['s5-sub-1']] ]},
-    {sectionId:'s6',name:'수행 기록',forms:[
-      ['s6-record','처치·교육·회차별 수행 기록',['s6-sub-1']] ]},
-    {sectionId:'s7',name:'치위생 평가',forms:[
-      ['s7-visit-evaluation','내원별 평가 항목',['s7-sub-1']] ]},
+      ['s4-diagnosis','진단 항목',['s4-sub-1']],['s4-psychology','성격 특성 분석',['s4-sub-2']] ]},
+    {sectionId:'s5',name:'치위생 계획',forms:[['s5-care-plan','치위생 관리 계획안',['s5-sub-1']]]},
+    {sectionId:'s6',name:'수행 기록',forms:[['s6-record','처치·교육·회차별 수행 기록',['s6-sub-1']]]},
+    {sectionId:'s7',name:'치위생 평가',forms:[['s7-visit-evaluation','내원별 평가 항목',['s7-sub-1']]]},
     {sectionId:'s8',name:'추적 관리',forms:[
       ['s8-goal','목표별 달성 평가',['s8-sub-1']],['s8-self','치위생관리과정 자가평가',['s8-sub-2']] ]}
   ].map(s=>({...s,enabled:true,items:s.forms.map(([formSchemaId,name,runtimeTargets])=>({itemId:formSchemaId,formSchemaId,name,runtimeTargets,enabled:true}))}));
@@ -43,7 +38,8 @@
     ];
     return {version:3,selectedSchoolId:DEFAULT_SCHOOL_ID,quotes:[quote],schools:[school],students,groups:[{groupId:'group-a',schoolId:school.schoolId,name:'A조',primaryProfessorId:'prof-01',additionalProfessorIds:[]},{groupId:'group-b',schoolId:school.schoolId,name:'B조',primaryProfessorId:'prof-01',additionalProfessorIds:['prof-02']}],professors:[{professorId:'prof-01',schoolId:school.schoolId,name:'김교수'},{professorId:'prof-02',schoolId:school.schoolId,name:'이교수'}],assignments:[],participants,charts:[],signatureRequests:[],evaluations:[],activities:[]};
   }
-  function read(){try{const parsed=JSON.parse(localStorage.getItem(KEY));if(!parsed||parsed.version!==3)return seed();parsed.schools.forEach(s=>{if(!Array.isArray(s.grades)){const q=parsed.quotes.find(q=>q.quoteId===s.sourceQuoteId);s.grades=clone(q?.grades||[])}});return parsed}catch(_){return seed()}}
+  function upgradeSections(existing=[]){return sections.map(canonical=>{const old=existing.find(item=>item.sectionId===canonical.sectionId);return{...clone(canonical),enabled:old?.enabled!==false,items:canonical.items.map(item=>{const direct=old?.items?.find(candidate=>candidate.itemId===item.itemId);const compatible=old?.items?.find(candidate=>(candidate.runtimeTargets||[]).some(target=>(item.runtimeTargets||[]).includes(target)));return{...item,enabled:(direct||compatible)?.enabled!==false}})}})}
+  function read(){try{const parsed=JSON.parse(localStorage.getItem(KEY));if(!parsed||parsed.version!==3)return seed();parsed.quotes.forEach(q=>{q.sections=upgradeSections(q.sections)});parsed.schools.forEach(s=>{s.sections=upgradeSections(s.sections);if(!Array.isArray(s.grades)){const q=parsed.quotes.find(q=>q.quoteId===s.sourceQuoteId);s.grades=clone(q?.grades||[])}});return parsed}catch(_){return seed()}}
   function write(state,event){localStorage.setItem(KEY,JSON.stringify(state));const message={...event,at:now()};channel?.postMessage(message);listeners.forEach(fn=>fn(message));return clone(state)}
   function mutate(type,fn){const state=read();const result=fn(state);state.activities.unshift({activityId:id('activity'),type,createdAt:now()});write(state,{type});return clone(result)}
   function ensureDemoRosterState(state,schoolId){
@@ -92,7 +88,7 @@
     setCurrentSchool(schoolId){return mutate('school.selected',s=>{if(!s.schools.some(x=>x.schoolId===schoolId))throw Error('School not found');s.selectedSchoolId=schoolId;return schoolId})},
     getSchoolForParticipant(participantId){const s=read(),participant=s.participants.find(x=>x.participantId===participantId);if(!participant)return null;const schoolId=participant.schoolId||DEFAULT_SCHOOL_ID;return clone(s.schools.find(x=>x.schoolId===schoolId)||null)},
     saveSchool(input){return mutate('school.saved',s=>{const item={schoolId:input.schoolId||id('school'),status:'draft',contractStatus:'draft',updatedAt:now(),...clone(input)};const i=s.schools.findIndex(x=>x.schoolId===item.schoolId);i<0?s.schools.unshift(item):s.schools.splice(i,1,item);return item})},
-    createSchoolFromQuote(quoteId){const q=this.getQuote(quoteId);if(!q)throw Error('Quote not found');const existing=this.getSchools().find(x=>x.sourceQuoteId===quoteId);if(existing){this.ensureDemoRoster(existing.schoolId);this.updateQuote(quoteId,{status:'done'});return existing}const school=this.saveSchool({sourceQuoteId:q.quoteId,name:q.schoolName,applicationYear:q.applicationYear,grades:clone(q.grades||[]),studentCount:q.studentCount,participantCount:q.participantCount,sections:clone(q.sections||[]),features:clone(q.features||{}),permissions:{student:true,professor:Boolean(q.features?.professor)}});this.ensureDemoRoster(school.schoolId);this.updateQuote(quoteId,{status:'done'});return school},
+    createSchoolFromQuote(quoteId){const q=this.getQuote(quoteId);if(!q)throw Error('Quote not found');const existing=this.getSchools().find(x=>x.sourceQuoteId===quoteId);if(existing){const current=this.saveSchool({...existing,previewUrl:existing.previewUrl||`/hystep-preview?schoolId=${encodeURIComponent(existing.schoolId)}&mode=preview`,actualUrl:existing.actualUrl||`/hystep-preview?schoolId=${encodeURIComponent(existing.schoolId)}&mode=actual`});this.ensureDemoRoster(current.schoolId);this.updateQuote(quoteId,{status:'done'});return this.getSchool(current.schoolId)}let school=this.saveSchool({sourceQuoteId:q.quoteId,name:q.schoolName,applicationYear:q.applicationYear,grades:clone(q.grades||[]),studentCount:q.studentCount,participantCount:q.participantCount,sections:clone(q.sections||[]),features:clone(q.features||{}),permissions:{student:true,professor:Boolean(q.features?.professor)}});school=this.saveSchool({...school,previewUrl:`/hystep-preview?schoolId=${encodeURIComponent(school.schoolId)}&mode=preview`,actualUrl:`/hystep-preview?schoolId=${encodeURIComponent(school.schoolId)}&mode=actual`});this.ensureDemoRoster(school.schoolId);this.updateQuote(quoteId,{status:'done'});return school},
     ensureDemoRoster(schoolId){return mutate('school.demo-roster.ensured',s=>ensureDemoRosterState(s,schoolId))},
     getStudents:schoolId=>clone(read().students.filter(x=>!schoolId||x.schoolId===schoolId)),
     saveStudent(input){return mutate('student.saved',s=>{const item={studentId:input.studentId||id('student'),...clone(input)};const i=s.students.findIndex(x=>x.studentId===item.studentId);i<0?s.students.push(item):s.students.splice(i,1,item);return item})},
